@@ -54,9 +54,10 @@ enum HevyImport {
                 return row[index].trimmingCharacters(in: .whitespaces)
             }
             if value(setTypeColumn).lowercased() == "warmup" { continue }
-            guard let reps = Int(number(value(repsColumn)) ?? -1), reps > 0,
+            guard let repsValue = number(value(repsColumn)), repsValue >= 1,
                   let start = date(value(startColumn))
             else { continue }
+            let reps = Int(repsValue)
             let weight: Double
             if let kg = number(value(kgColumn)) {
                 weight = kg
