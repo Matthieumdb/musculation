@@ -44,7 +44,10 @@ enum Equipment: String, CaseIterable, Identifiable {
 }
 
 extension Exercise {
-    var equipment: Equipment { Equipment.infer(from: name) }
+    var equipment: Equipment {
+        if libraryId != nil, let equipment = libraryEntry?.appEquipment { return equipment }
+        return Equipment.infer(from: name)
+    }
 
     /// The exercise's own smallest jump, or the equipment's default.
     var effectiveWeightStep: Double { weightStep ?? equipment.defaultStep }

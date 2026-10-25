@@ -11,6 +11,19 @@ struct ExercisePickerView: View {
         let sections = ExerciseSection.make(from: exercises, matching: search)
         NavigationStack {
             List {
+                Section {
+                    NavigationLink {
+                        LibraryView(initialSearch: search) { exercise in
+                            onPick(exercise)
+                            dismiss()
+                        }
+                    } label: {
+                        Label(
+                            search.isEmpty ? "Chercher dans la bibliothèque" : "Chercher « \(search) » dans la bibliothèque",
+                            systemImage: "books.vertical.fill"
+                        )
+                    }
+                }
                 ForEach(sections) { section in
                     Section(section.group.label) {
                         ForEach(section.exercises) { exercise in
@@ -19,7 +32,7 @@ struct ExercisePickerView: View {
                                 dismiss()
                             } label: {
                                 HStack(spacing: 12) {
-                                    MuscleIcon(group: exercise.muscleGroup, size: 32)
+                                    ExerciseIcon(exercise: exercise, size: 32)
                                     Text(exercise.name)
                                     Spacer()
                                     Image(systemName: "plus.circle.fill")
@@ -29,11 +42,6 @@ struct ExercisePickerView: View {
                             .foregroundStyle(.primary)
                         }
                     }
-                }
-            }
-            .overlay {
-                if sections.isEmpty && !search.isEmpty {
-                    ContentUnavailableView.search(text: search)
                 }
             }
             .searchable(text: $search, placement: .navigationBarDrawer(displayMode: .always), prompt: "Rechercher")

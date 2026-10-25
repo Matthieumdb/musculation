@@ -197,6 +197,8 @@ struct WorkoutExerciseSection: View {
     var onSetCompleted: () -> Void
     var onShowPlates: (Double) -> Void
 
+    @State private var demoEntry: LibraryExercise?
+
     var body: some View {
         let previousBest = entry.previousBestOneRepMax
         let previousSets = entry.exercise?.history.first?.orderedSets ?? []
@@ -248,14 +250,28 @@ struct WorkoutExerciseSection: View {
             }
         } header: {
             HStack(spacing: 10) {
-                if let group = entry.exercise?.muscleGroup {
-                    MuscleIcon(group: group, size: 28)
+                if let exercise = entry.exercise {
+                    if let demo = exercise.libraryEntry {
+                        Button {
+                            demoEntry = demo
+                        } label: {
+                            ExerciseThumbnail(entry: demo, size: 30)
+                        }
+                        .buttonStyle(PressableButtonStyle())
+                    } else {
+                        MuscleIcon(group: exercise.muscleGroup, size: 28)
+                    }
                 }
                 Text(entry.exercise?.name ?? "Exercice supprimé")
                     .font(.headline)
                     .foregroundStyle(.primary)
                 Spacer()
                 Menu {
+                    if let demo = entry.exercise?.libraryEntry {
+                        Button("Voir l'exécution", systemImage: "figure.strengthtraining.traditional") {
+                            demoEntry = demo
+                        }
+                    }
                     if canMoveUp {
                         Button("Monter", systemImage: "arrow.up") { onMove(-1) }
                     }
@@ -280,6 +296,17 @@ struct WorkoutExerciseSection: View {
             }
             .textCase(nil)
             .padding(.bottom, 4)
+            .sheet(item: $demoEntry) { demo in
+                NavigationStack {
+                    LibraryDetailView(entry: demo, showsAddButton: false)
+                        .toolbar {
+                            ToolbarItem(placement: .confirmationAction) {
+                                Button("OK") { demoEntry = nil }
+                            }
+                        }
+                }
+                .presentationDetents([.medium, .large])
+            }
         } footer: {
             VStack(alignment: .leading, spacing: 4) {
                 if let target = entry.targetDescription {

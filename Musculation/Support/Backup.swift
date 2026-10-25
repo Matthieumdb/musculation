@@ -15,6 +15,7 @@ struct Backup: Codable {
         var muscleGroup: String
         var notes: String
         var weightStep: Double?
+        var libraryId: String?
     }
 
     struct SetRecord: Codable {
@@ -76,7 +77,7 @@ enum BackupService {
             version: 1,
             exportedAt: .now,
             exercises: exercises.map {
-                Backup.ExerciseRecord(name: $0.name, muscleGroup: $0.muscleGroupRaw, notes: $0.notes, weightStep: $0.weightStep)
+                Backup.ExerciseRecord(name: $0.name, muscleGroup: $0.muscleGroupRaw, notes: $0.notes, weightStep: $0.weightStep, libraryId: $0.libraryId)
             },
             workouts: workouts.map { workout in
                 Backup.WorkoutRecord(
@@ -157,6 +158,7 @@ enum BackupService {
             )
             context.insert(exercise)
             exercise.weightStep = record.weightStep
+            exercise.libraryId = record.libraryId
             exercisesByName[record.name] = exercise
         }
 

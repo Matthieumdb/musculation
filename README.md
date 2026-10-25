@@ -23,6 +23,8 @@ App iOS (SwiftUI + SwiftData) pour suivre ses séances de musculation. Les donn�
 - **Sauvegarde / restauration** de toutes les données en JSON (onglet Réglages).
 - **Programme Hypertrophie 5 séances** (Upper / Lower / Push / Pull / Legs) à activer en un geste : prochaine séance suggérée, cycle de 8 semaines avec décharge automatique, fourchettes de reps, repos et consignes par exercice, double progression.
 
+- **Bibliothèque de 654 exercices illustrés** (Free Exercise DB, domaine public) : noms en français, recherche, filtres par muscle et matériel, animation de l'exécution en deux images, muscles travaillés et consignes. Tes exercices et ceux du programme sont reliés à leur fiche (consignes en français, images embarquées pour fonctionner hors connexion) ; les autres images se téléchargent une fois puis restent en cache. Touche la vignette d'un exercice pendant la séance pour revoir le mouvement.
+
 ## Lancer l'app
 
 1. Ouvre `Musculation.xcodeproj` avec Xcode 16 ou plus récent.

@@ -30,6 +30,8 @@ final class Exercise {
     var createdAt: Date
     /// Smallest weight jump for this exercise, nil to use the equipment's default.
     var weightStep: Double?
+    /// Id in the bundled exercise library, for exercises added from it.
+    var libraryId: String?
 
     @Relationship(deleteRule: .nullify, inverse: \WorkoutExercise.exercise)
     var entries: [WorkoutExercise] = []
