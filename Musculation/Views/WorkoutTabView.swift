@@ -157,9 +157,17 @@ struct StartWorkoutView: View {
                                         )
                                 }
                                 .buttonStyle(PressableButtonStyle())
+                                .contextMenu {
+                                    Button("Modifier les exercices", systemImage: "pencil") {
+                                        editingTemplate = template
+                                    }
+                                }
                             }
                         }
                     }
+                    Text("Appui long sur une séance pour remplacer ses exercices.")
+                        .font(.caption2)
+                        .opacity(0.8)
                 }
                 .foregroundStyle(.white)
                 .padding(18)

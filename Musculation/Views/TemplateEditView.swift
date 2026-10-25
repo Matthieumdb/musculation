@@ -8,6 +8,7 @@ struct TemplateEditView: View {
     let isNew: Bool
 
     @State private var isPickingExercise = false
+    @State private var replacingItem: TemplateExercise?
 
     var body: some View {
         NavigationStack {
@@ -18,7 +19,7 @@ struct TemplateEditView: View {
 
                 Section("Exercices") {
                     ForEach(template.orderedItems) { item in
-                        TemplateItemRow(item: item)
+                        TemplateItemRow(item: item) { replacingItem = item }
                     }
                     .onDelete { offsets in
                         let items = template.orderedItems
@@ -56,6 +57,14 @@ struct TemplateEditView: View {
                     }
                 }
             }
+            .sheet(item: $replacingItem) { item in
+                if let current = item.exercise {
+                    ReplaceExerciseView(current: current) { replacement in
+                        item.exercise = replacement
+                        try? context.save()
+                    }
+                }
+            }
             .sheet(isPresented: $isPickingExercise) {
                 ExercisePickerView { exercise in
                     template.addItem(exercise, in: context)
@@ -67,11 +76,22 @@ struct TemplateEditView: View {
 
 private struct TemplateItemRow: View {
     @Bindable var item: TemplateExercise
+    var onReplace: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(item.exercise?.name ?? "Exercice supprimé")
-                .font(.headline)
+            HStack {
+                Text(item.exercise?.name ?? "Exercice supprimé")
+                    .font(.headline)
+                Spacer()
+                if item.exercise != nil {
+                    Button(action: onReplace) {
+                        Label("Remplacer", systemImage: "arrow.triangle.2.circlepath")
+                            .font(.subheadline)
+                    }
+                    .buttonStyle(.borderless)
+                }
+            }
             Stepper("\(item.targetSets) séries", value: $item.targetSets, in: 1...10)
             if let minReps = item.minReps {
                 Stepper("Reps min : \(minReps)", value: Binding(

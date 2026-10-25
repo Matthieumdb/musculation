@@ -32,6 +32,12 @@ final class WorkoutTemplate {
         return item
     }
 
+    func replace(_ old: Exercise, with new: Exercise) {
+        for item in items where item.exercise?.persistentModelID == old.persistentModelID {
+            item.exercise = new
+        }
+    }
+
     /// Starts a workout from this template. A deload halves the sets and skips the weight increase.
     func startWorkout(in context: ModelContext, deload: Bool = false) {
         let workout = Workout(title: name)

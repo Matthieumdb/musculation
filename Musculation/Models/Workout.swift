@@ -67,6 +67,25 @@ final class Workout {
         return entry
     }
 
+    /// Swaps the exercise of an entry, prefilling the sets not done yet from the new exercise's last workout.
+    func replace(_ entry: WorkoutExercise, with exercise: Exercise) {
+        let previous = exercise.history.first?.orderedSets ?? []
+        entry.exercise = exercise
+        entry.progressionIncrement = nil
+        for (index, set) in entry.orderedSets.enumerated() where !set.isCompleted {
+            set.weight = previous.isEmpty ? 0 : previous[min(index, previous.count - 1)].weight
+        }
+    }
+
+    /// Templates with this workout's name that use `exercise`, so a swap can be kept for next time.
+    func templates(using exercise: Exercise, in context: ModelContext) -> [WorkoutTemplate] {
+        let templates = (try? context.fetch(FetchDescriptor<WorkoutTemplate>())) ?? []
+        return templates.filter { template in
+            template.name == title
+                && template.items.contains { $0.exercise?.persistentModelID == exercise.persistentModelID }
+        }
+    }
+
     /// Moves an exercise up (-1) or down (+1) in the workout.
     func move(_ entry: WorkoutExercise, by offset: Int) {
         var ordered = orderedExercises

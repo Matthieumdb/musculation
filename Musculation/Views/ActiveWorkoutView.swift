@@ -198,6 +198,8 @@ struct WorkoutExerciseSection: View {
     var onShowPlates: (Double) -> Void
 
     @State private var demoEntry: LibraryExercise?
+    @State private var isReplacing = false
+    @State private var pendingSwap: PendingSwap?
 
     var body: some View {
         let previousBest = entry.previousBestOneRepMax
@@ -272,6 +274,11 @@ struct WorkoutExerciseSection: View {
                             demoEntry = demo
                         }
                     }
+                    if entry.exercise != nil {
+                        Button("Remplacer l'exercice", systemImage: "arrow.triangle.2.circlepath") {
+                            isReplacing = true
+                        }
+                    }
                     if canMoveUp {
                         Button("Monter", systemImage: "arrow.up") { onMove(-1) }
                     }
@@ -307,6 +314,27 @@ struct WorkoutExerciseSection: View {
                 }
                 .presentationDetents([.medium, .large])
             }
+            .sheet(isPresented: $isReplacing) {
+                if let current = entry.exercise {
+                    ReplaceExerciseView(current: current) { replacement in
+                        swap(current, for: replacement)
+                    }
+                }
+            }
+            .confirmationDialog(
+                "Garder ce changement pour la prochaine fois ?",
+                isPresented: Binding(get: { pendingSwap != nil }, set: { if !$0 { pendingSwap = nil } }),
+                titleVisibility: .visible,
+                presenting: pendingSwap
+            ) { pending in
+                Button("Remplacer aussi dans « \(pending.templates[0].name) »") {
+                    pending.templates.forEach { $0.replace(pending.old, with: pending.new) }
+                    try? context.save()
+                }
+                Button("Cette séance seulement", role: .cancel) {}
+            } message: { pending in
+                Text("\(pending.new.name) remplacera \(pending.old.name) dans le modèle.")
+            }
         } footer: {
             VStack(alignment: .leading, spacing: 4) {
                 if let target = entry.targetDescription {
@@ -325,6 +353,29 @@ struct WorkoutExerciseSection: View {
                 if let notes = entry.exercise?.notes, !notes.isEmpty {
                     Label(notes, systemImage: "note.text")
                 }
+            }
+        }
+    }
+}
+
+struct PendingSwap {
+    let old: Exercise
+    let new: Exercise
+    let templates: [WorkoutTemplate]
+}
+
+extension WorkoutExerciseSection {
+    func swap(_ old: Exercise, for new: Exercise) {
+        guard let workout = entry.workout else { return }
+        withAnimation(.snappy) {
+            workout.replace(entry, with: new)
+        }
+        try? context.save()
+        let templates = workout.templates(using: old, in: context)
+        if !templates.isEmpty {
+            // Let the replacement sheet close before asking.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                pendingSwap = PendingSwap(old: old, new: new, templates: templates)
             }
         }
     }
