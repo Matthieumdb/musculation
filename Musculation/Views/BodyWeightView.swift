@@ -43,8 +43,6 @@ struct BodyWeightView: View {
                     guard let newWeight, newWeight > 0 else { return }
                     context.insert(BodyWeightEntry(date: newDate, weight: newWeight))
                     try? context.save()
-                    let date = newDate
-                    Task { await HealthSync.save(bodyWeight: newWeight, at: date) }
                     self.newWeight = nil
                     newDate = .now
                     hideKeyboard()

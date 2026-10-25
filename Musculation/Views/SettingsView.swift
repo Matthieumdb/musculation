@@ -13,8 +13,6 @@ struct SettingsView: View {
     @State private var pendingBackup: Backup?
     @State private var alertMessage: String?
     @State private var isImportingHevy = false
-    @AppStorage(HealthSync.enabledKey) private var healthEnabled = false
-    @State private var healthMessage: String?
 
     var body: some View {
         NavigationStack {
@@ -56,29 +54,6 @@ struct SettingsView: View {
                     Text("Sauvegarde")
                 } footer: {
                     Text("Tes données sont uniquement sur cet iPhone. Exporte-les de temps en temps vers Fichiers ou iCloud Drive, surtout avant de réinstaller l'app.")
-                }
-
-                Section {
-                    Toggle(isOn: Binding(
-                        get: { healthEnabled },
-                        set: { enable in
-                            if enable { connectHealth() } else { healthEnabled = false }
-                        }
-                    )) {
-                        Label("Apple Santé", systemImage: "heart.fill")
-                    }
-                    .disabled(!HealthSync.isAvailable)
-                    if healthEnabled {
-                        Button {
-                            Task { await importHealthWeights() }
-                        } label: {
-                            Label("Importer mon poids depuis Santé", systemImage: "scalemass")
-                        }
-                    }
-                } header: {
-                    Text("Apple Santé")
-                } footer: {
-                    Text(healthMessage ?? "Chaque séance terminée est enregistrée dans Santé (musculation, durée, calories estimées), ainsi que tes pesées. Ton poids saisi dans Santé (balance connectée, autres apps) peut être récupéré ici.")
                 }
 
                 Section {
@@ -127,25 +102,6 @@ struct SettingsView: View {
                 Button("OK") {}
             }
         }
-    }
-
-    private func connectHealth() {
-        Task {
-            if let error = await HealthSync.requestAccess() {
-                healthMessage = "Connexion à Apple Santé impossible : \(error)"
-                return
-            }
-            healthEnabled = true
-            await importHealthWeights()
-        }
-    }
-
-    @MainActor
-    private func importHealthWeights() async {
-        let added = await HealthSync.importBodyWeights(into: context)
-        healthMessage = added == 0
-            ? "Connecté à Apple Santé. Aucune nouvelle pesée à récupérer."
-            : "Connecté à Apple Santé. \(added) pesée\(added > 1 ? "s" : "") récupérée\(added > 1 ? "s" : "")."
     }
 
     private var appVersion: String {

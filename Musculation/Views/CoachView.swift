@@ -72,7 +72,7 @@ struct CoachView: View {
                 }
                 .padding()
             }
-            .background(Theme.background)
+            .background { AppBackground() }
             .navigationTitle("Ton coach")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

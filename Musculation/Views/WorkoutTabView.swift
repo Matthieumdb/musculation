@@ -86,7 +86,7 @@ struct StartWorkoutView: View {
             }
             .padding()
         }
-        .background(Theme.background)
+        .background { AppBackground() }
         .toolbar(.hidden, for: .navigationBar)
         .sheet(item: $editingTemplate) { TemplateEditView(template: $0, isNew: false) }
         .sheet(item: $newTemplate) { TemplateEditView(template: $0, isNew: true) }

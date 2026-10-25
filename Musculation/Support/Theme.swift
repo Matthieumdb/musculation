@@ -9,6 +9,77 @@ enum Theme {
     static let background = Color(.systemGroupedBackground)
     static let card = Color(.secondarySystemGroupedBackground)
     static let field = Color(.tertiarySystemFill)
+    static let accentRed = Color(red: 0.84, green: 0.13, blue: 0.24)
+}
+
+/// Soft colored backdrop, so that glass surfaces have something to refract.
+struct AppBackground: View {
+    var body: some View {
+        ZStack {
+            Theme.background
+            Circle()
+                .fill(Color.orange.opacity(0.30))
+                .frame(width: 360, height: 360)
+                .blur(radius: 90)
+                .offset(x: -150, y: -320)
+            Circle()
+                .fill(Theme.accentRed.opacity(0.22))
+                .frame(width: 320, height: 320)
+                .blur(radius: 90)
+                .offset(x: 170, y: -140)
+            Circle()
+                .fill(Color.purple.opacity(0.14))
+                .frame(width: 340, height: 340)
+                .blur(radius: 100)
+                .offset(x: -80, y: 340)
+        }
+        .ignoresSafeArea()
+    }
+}
+
+extension View {
+    /// Liquid Glass on iOS 26, `fallback` fill on earlier versions.
+    @ViewBuilder
+    func glassSurface<S: Shape>(
+        in shape: S,
+        tint: Color? = nil,
+        interactive: Bool = false,
+        fallback: some ShapeStyle = Theme.card
+    ) -> some View {
+        #if compiler(>=6.2)
+        if #available(iOS 26, *) {
+            glassEffect(Self.glass(tint: tint, interactive: interactive), in: shape)
+        } else {
+            background(fallback, in: shape)
+        }
+        #else
+        background(fallback, in: shape)
+        #endif
+    }
+
+    #if compiler(>=6.2)
+    @available(iOS 26, *)
+    private static func glass(tint: Color?, interactive: Bool) -> Glass {
+        var glass = Glass.regular
+        if let tint { glass = glass.tint(tint) }
+        if interactive { glass = glass.interactive() }
+        return glass
+    }
+    #endif
+
+    /// Lets the tab bar shrink while scrolling on iOS 26.
+    @ViewBuilder
+    func minimizingTabBar() -> some View {
+        #if compiler(>=6.2)
+        if #available(iOS 26, *) {
+            tabBarMinimizeBehavior(.onScrollDown)
+        } else {
+            self
+        }
+        #else
+        self
+        #endif
+    }
 }
 
 extension MuscleGroup {
@@ -119,7 +190,7 @@ struct StatTile: View {
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Theme.card, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .glassSurface(in: RoundedRectangle(cornerRadius: 22, style: .continuous))
     }
 }
 
@@ -128,7 +199,7 @@ struct CardModifier: ViewModifier {
         content
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Theme.card, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .glassSurface(in: RoundedRectangle(cornerRadius: 26, style: .continuous))
     }
 }
 
@@ -145,8 +216,7 @@ struct PrimaryButtonStyle: ButtonStyle {
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
-            .background(Theme.gradient, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .shadow(color: Color(red: 0.84, green: 0.13, blue: 0.24).opacity(0.3), radius: 10, y: 5)
+            .glassSurface(in: Capsule(), tint: Theme.accentRed, interactive: true, fallback: Theme.gradient)
             .scaleEffect(configuration.isPressed ? 0.97 : 1)
             .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
     }

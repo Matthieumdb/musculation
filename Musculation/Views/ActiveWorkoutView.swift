@@ -166,18 +166,10 @@ struct ActiveWorkoutView: View {
 
     private func finish() {
         let summary = WorkoutSummary(workout: workout)
-        let start = workout.startedAt
-        let title = workout.title
         restEndDate = nil
         RestNotifier.cancel()
         workout.finish(in: context)
         if summary.setCount > 0 {
-            var latestWeight = FetchDescriptor<BodyWeightEntry>(sortBy: [SortDescriptor(\.date, order: .reverse)])
-            latestWeight.fetchLimit = 1
-            let bodyWeight = (try? context.fetch(latestWeight))?.first?.weight
-            Task {
-                await HealthSync.save(workoutFrom: start, to: .now, title: title, bodyWeight: bodyWeight)
-            }
             onFinish(summary)
         }
     }
@@ -558,8 +550,12 @@ struct RestTimerBar: View {
             }
             .foregroundStyle(.white)
             .padding(14)
-            .background(Theme.gradient, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
-            .shadow(color: .black.opacity(0.2), radius: 12, y: 6)
+            .glassSurface(
+                in: RoundedRectangle(cornerRadius: 30, style: .continuous),
+                tint: Theme.accentRed,
+                fallback: Theme.gradient
+            )
+            .shadow(color: .black.opacity(0.15), radius: 12, y: 6)
             .padding(.horizontal)
             .padding(.bottom, 8)
             .sensoryFeedback(.success, trigger: isOver) { _, nowOver in nowOver }

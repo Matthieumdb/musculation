@@ -11,8 +11,12 @@ jobs:
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
-      - name: Show Xcode version
-        run: xcodebuild -version
+      - name: Select the newest Xcode
+        run: |
+          ls -d /Applications/Xcode*.app
+          XCODE=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
+          sudo xcode-select -s "$XCODE"
+          xcodebuild -version
       - name: Build for iOS Simulator
         run: |
           xcodebuild build \
@@ -28,6 +32,12 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+      - name: Select the newest Xcode
+        run: |
+          ls -d /Applications/Xcode*.app
+          XCODE=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
+          sudo xcode-select -s "$XCODE"
+          xcodebuild -version
       - name: Build for iPhone (unsigned)
         run: |
           xcodebuild build \
@@ -46,10 +56,6 @@ jobs:
           echo "IPA=$IPA" >> "$GITHUB_ENV"
           mkdir -p Payload
           cp -R build/Release-iphoneos/Musculation.app Payload/
-          # Ad-hoc signature carrying the entitlements (HealthKit), so that
-          # Sideloadly or AltStore keep them when they re-sign the app.
-          codesign --force --sign - --entitlements Musculation.entitlements --timestamp=none Payload/Musculation.app
-          codesign -d --entitlements - Payload/Musculation.app
           zip -qry "$IPA" Payload
       - uses: actions/upload-artifact@v4
         with:

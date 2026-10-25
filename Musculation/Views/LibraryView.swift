@@ -196,7 +196,7 @@ struct LibraryDetailView: View {
             }
             .padding()
         }
-        .background(Theme.background)
+        .background { AppBackground() }
         .navigationTitle(entry.nameFR)
         .navigationBarTitleDisplayMode(.inline)
         .safeAreaInset(edge: .bottom) {
@@ -231,7 +231,7 @@ struct LibraryDetailView: View {
                 .foregroundStyle(.green)
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .glassSurface(in: Capsule(), fallback: .regularMaterial)
         } else {
             Button {
                 withAnimation(.snappy) {
@@ -265,7 +265,7 @@ private struct FlowChips: View {
                     .font(.caption.weight(.medium))
                     .padding(.horizontal, 10)
                     .padding(.vertical, 5)
-                    .background(Theme.card, in: Capsule())
+                    .glassSurface(in: Capsule())
             }
         }
     }

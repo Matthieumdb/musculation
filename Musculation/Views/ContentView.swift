@@ -17,6 +17,7 @@ struct ContentView: View {
             SettingsView()
                 .tabItem { Label("Réglages", systemImage: "gearshape") }
         }
+        .minimizingTabBar()
         .task {
             SeedData.insertDefaultExercisesIfNeeded(in: context)
         }

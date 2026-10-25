@@ -30,7 +30,6 @@ App iOS (SwiftUI + SwiftData) pour suivre ses séances de musculation. Les donn�
 
 - **Coach** (onglet Séance) : analyse sur l'iPhone de tes 10 dernières semaines — records, charges à augmenter, exercices qui stagnent ou baissent, volume par muscle, équilibre poussée/tirage, régularité, semaine de décharge.
 - **RPE par série** : note l'effort (6 à 10, avec les reps en réserve) ou laisse l'app l'estimer à partir de ton 1RM récent.
-- **Apple Santé** (Réglages) : chaque séance est enregistrée comme entraînement de musculation avec ses calories estimées, et les pesées sont synchronisées.
 
 ## Lancer l'app
 
