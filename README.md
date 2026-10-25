@@ -15,7 +15,7 @@ App iOS (SwiftUI + SwiftData) pour suivre ses séances de musculation. Les donn�
 
 - **Notification de fin de repos**, même écran verrouillé.
 - **Records en direct** : un trophée s'affiche sur la série qui bat ton meilleur 1RM estimé, et un résumé de fin de séance liste tes nouveaux records.
-- **Surcharge progressive** : si tu as fait toutes les répétitions cibles d'un modèle la dernière fois, la charge augmente automatiquement (+2,5 kg par défaut).
+- **Surcharge progressive** : si tu as fait toutes les répétitions cibles d'un modèle la dernière fois, la charge augmente automatiquement d'environ 2,5 %, arrondi au plus petit saut possible de l'exercice (2,5 kg à la barre, 2 kg aux haltères, 5 kg en machine… réglable dans la fiche de l'exercice).
 - **Calculateur de disques** : les disques à mettre de chaque côté de la barre (appui long sur une série, ou menu ⋯).
 - **Poids de corps** : pesées et courbe d'évolution dans l'onglet Progrès.
 - **Statistiques** : séances par semaine sur 12 semaines et séries par muscle sur 7 jours.

@@ -49,7 +49,8 @@ final class Workout {
 
         // Progressive overload: every target rep was done last time, so add weight.
         let progresses = allowProgression && WorkoutExercise.reachedTarget(previous, targetReps: targetReps)
-        let increment = progresses ? AppSettings.weightIncrement : 0
+        let increment = progresses ? exercise.progressionIncrement(from: previous.map(\.weight).max() ?? 0) : 0
+        entry.progressionIncrement = progresses ? increment : nil
         let count = targetSets ?? max(previous.count, 1)
         for index in 0..<count {
             let reference = previous.isEmpty ? nil : previous[min(index, previous.count - 1)]
@@ -119,6 +120,8 @@ final class WorkoutExercise {
     var minReps: Int?
     var restSeconds: Int?
     var note: String?
+    /// Weight added because the target reps were all reached last time.
+    var progressionIncrement: Double?
     var workout: Workout?
     var exercise: Exercise?
 
@@ -141,11 +144,6 @@ final class WorkoutExercise {
             .filter { $0.workout?.persistentModelID != workout?.persistentModelID }
             .map(\.bestOneRepMax)
             .max()
-    }
-
-    /// True when the last session of this exercise hit the target reps on every set.
-    var isProgressionSuggested: Bool {
-        WorkoutExercise.reachedTarget(exercise?.history.first?.sets ?? [], targetReps: targetReps)
     }
 
     /// "3 × 8-12 reps · repos 2 min 30"

@@ -66,12 +66,14 @@ struct ExerciseEditView: View {
     @State private var name: String
     @State private var muscleGroup: MuscleGroup
     @State private var notes: String
+    @State private var weightStep: Double?
 
     init(exercise: Exercise?) {
         self.exercise = exercise
         _name = State(initialValue: exercise?.name ?? "")
         _muscleGroup = State(initialValue: exercise?.muscleGroup ?? .chest)
         _notes = State(initialValue: exercise?.notes ?? "")
+        _weightStep = State(initialValue: exercise?.weightStep)
     }
 
     private var trimmedName: String { name.trimmingCharacters(in: .whitespaces) }
@@ -85,6 +87,20 @@ struct ExerciseEditView: View {
                         Text(group.label).tag(group)
                     }
                 }
+                Section {
+                    let inferred = Equipment.infer(from: name)
+                    Picker("Saut de charge", selection: $weightStep) {
+                        Text("Auto : \(inferred.defaultStep.preciseKgText) (\(inferred.label))").tag(Double?.none)
+                        ForEach(Equipment.stepOptions, id: \.self) { step in
+                            Text(step.preciseKgText).tag(Double?.some(step))
+                        }
+                    }
+                } header: {
+                    Text("Progression")
+                } footer: {
+                    Text("Le plus petit poids que tu peux ajouter sur cet exercice. Quand tu atteins le haut de ta fourchette de reps, l'app ajoute environ \(AppSettings.progressionPercent.formatted()) % de la charge, arrondi à ce saut (au moins un saut).")
+                }
+
                 Section {
                     TextField("Réglages machine, consignes…", text: $notes, axis: .vertical)
                         .lineLimit(3...6)
@@ -115,8 +131,11 @@ struct ExerciseEditView: View {
             exercise.name = trimmedName
             exercise.muscleGroup = muscleGroup
             exercise.notes = notes
+            exercise.weightStep = weightStep
         } else {
-            context.insert(Exercise(name: trimmedName, muscleGroup: muscleGroup, notes: notes))
+            let exercise = Exercise(name: trimmedName, muscleGroup: muscleGroup, notes: notes)
+            context.insert(exercise)
+            exercise.weightStep = weightStep
         }
         try? context.save()
         dismiss()

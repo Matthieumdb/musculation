@@ -5,7 +5,7 @@ import UniformTypeIdentifiers
 struct SettingsView: View {
     @Environment(\.modelContext) private var context
     @AppStorage(AppSettings.restDurationKey) private var restDuration = AppSettings.defaultRestDuration
-    @AppStorage(AppSettings.weightIncrementKey) private var weightIncrement = AppSettings.defaultWeightIncrement
+    @AppStorage(AppSettings.progressionPercentKey) private var progressionPercent = AppSettings.defaultProgressionPercent
     @AppStorage(AppSettings.barWeightKey) private var barWeight = AppSettings.defaultBarWeight
 
     @State private var exportURL: URL?
@@ -22,9 +22,9 @@ struct SettingsView: View {
                             Text(AppSettings.restLabel(seconds)).tag(seconds)
                         }
                     }
-                    Picker("Progression de charge", selection: $weightIncrement) {
-                        ForEach(AppSettings.incrementOptions, id: \.self) { increment in
-                            Text("+ \(increment.kgText)").tag(increment)
+                    Picker("Progression de charge", selection: $progressionPercent) {
+                        ForEach(AppSettings.progressionOptions, id: \.self) { percent in
+                            Text("+ \(percent.formatted()) %").tag(percent)
                         }
                     }
                     Picker("Barre", selection: $barWeight) {
@@ -35,7 +35,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Entraînement")
                 } footer: {
-                    Text("Quand tu réussis toutes les répétitions cibles d'un modèle, la charge de la séance suivante augmente de cette valeur.")
+                    Text("Quand tu réussis toutes les répétitions cibles d'un modèle, la charge augmente d'environ ce pourcentage, arrondi au plus petit saut possible de l'exercice (réglable dans sa fiche).")
                 }
 
                 Section {

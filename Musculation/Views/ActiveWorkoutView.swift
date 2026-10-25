@@ -288,9 +288,9 @@ struct WorkoutExerciseSection: View {
                 if let note = entry.note, !note.isEmpty {
                     Label(note, systemImage: "lightbulb")
                 }
-                if entry.isProgressionSuggested {
+                if let increment = entry.progressionIncrement, increment > 0 {
                     Label(
-                        "Objectif atteint la dernière fois : charge augmentée de \(AppSettings.weightIncrement.kgText).",
+                        "Objectif atteint la dernière fois : +\(increment.preciseKgText).",
                         systemImage: "arrow.up.circle.fill"
                     )
                     .foregroundStyle(.green)
