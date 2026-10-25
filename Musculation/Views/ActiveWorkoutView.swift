@@ -50,7 +50,7 @@ struct ActiveWorkoutView: View {
                     canMoveUp: entry.persistentModelID != entries.first?.persistentModelID,
                     canMoveDown: entry.persistentModelID != entries.last?.persistentModelID,
                     onMove: { offset in withAnimation(.snappy) { workout.move(entry, by: offset) } },
-                    onSetCompleted: startRest,
+                    onSetCompleted: { startRest(seconds: entry.restSeconds) },
                     onShowPlates: { plateTarget = PlateTarget(weight: $0) }
                 )
             }
@@ -156,9 +156,9 @@ struct ActiveWorkoutView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private func startRest() {
+    private func startRest(seconds: Int?) {
         RestNotifier.requestAuthorization()
-        restTotal = TimeInterval(restDuration)
+        restTotal = TimeInterval(seconds ?? restDuration)
         withAnimation(.snappy) {
             restEndDate = .now.addingTimeInterval(restTotal)
         }
@@ -282,6 +282,12 @@ struct WorkoutExerciseSection: View {
             .padding(.bottom, 4)
         } footer: {
             VStack(alignment: .leading, spacing: 4) {
+                if let target = entry.targetDescription {
+                    Label("Objectif : \(target)", systemImage: "target")
+                }
+                if let note = entry.note, !note.isEmpty {
+                    Label(note, systemImage: "lightbulb")
+                }
                 if entry.isProgressionSuggested {
                     Label(
                         "Objectif atteint la dernière fois : charge augmentée de \(AppSettings.weightIncrement.kgText).",

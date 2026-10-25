@@ -25,8 +25,32 @@ struct StartWorkoutView: View {
     @Query(filter: #Predicate<Workout> { $0.endedAt != nil }, sort: \Workout.startedAt, order: .reverse)
     private var finishedWorkouts: [Workout]
 
+    @AppStorage(TrainingProgram.startDateKey) private var programStart: Double = 0
     @State private var editingTemplate: WorkoutTemplate?
     @State private var newTemplate: WorkoutTemplate?
+    @State private var isShowingProgram = false
+
+    private var programTemplates: [WorkoutTemplate] {
+        templates
+            .filter { $0.programName != nil }
+            .sorted { ($0.programOrder ?? 0) < ($1.programOrder ?? 0) }
+    }
+
+    private var customTemplates: [WorkoutTemplate] {
+        templates.filter { $0.programName == nil }
+    }
+
+    /// The program session after the last one done, or the first one.
+    private var nextProgramTemplate: WorkoutTemplate? {
+        let sessions = programTemplates
+        guard !sessions.isEmpty else { return nil }
+        for workout in finishedWorkouts {
+            if let index = sessions.firstIndex(where: { $0.name == workout.title }) {
+                return sessions[(index + 1) % sessions.count]
+            }
+        }
+        return sessions.first
+    }
 
     var body: some View {
         ScrollView {
@@ -41,6 +65,8 @@ struct StartWorkoutView: View {
                     Label("Démarrer une séance libre", systemImage: "play.fill")
                 }
                 .buttonStyle(PrimaryButtonStyle())
+
+                programSection
 
                 templatesSection
 
@@ -57,6 +83,127 @@ struct StartWorkoutView: View {
         .toolbar(.hidden, for: .navigationBar)
         .sheet(item: $editingTemplate) { TemplateEditView(template: $0, isNew: false) }
         .sheet(item: $newTemplate) { TemplateEditView(template: $0, isNew: true) }
+        .sheet(isPresented: $isShowingProgram) {
+            if let programName = programTemplates.first?.programName {
+                ProgramDetailView(programName: programName)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var programSection: some View {
+        if let next = nextProgramTemplate {
+            let phase = TrainingProgram.phase(startedAt: Date(timeIntervalSince1970: programStart))
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text("Mon programme").font(.title2.bold())
+                    Spacer()
+                    Button("Détails") { isShowingProgram = true }
+                        .font(.subheadline.weight(.semibold))
+                }
+
+                VStack(alignment: .leading, spacing: 14) {
+                    HStack(spacing: 8) {
+                        Text("Semaine \(phase.week)/\(TrainingProgram.cycleWeeks)")
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(.white.opacity(0.25), in: Capsule())
+                        Text(phase.title)
+                    }
+                    .font(.caption.bold())
+
+                    Text(phase.detail)
+                        .font(.subheadline)
+                        .opacity(0.9)
+
+                    HStack(alignment: .center) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Prochaine séance")
+                                .font(.caption)
+                                .opacity(0.85)
+                            Text(next.name)
+                                .font(.largeTitle.bold())
+                            Text("\(next.items.count) exercices\(phase.isDeload ? " · séries réduites" : "")")
+                                .font(.caption)
+                                .opacity(0.85)
+                        }
+                        Spacer()
+                        Button {
+                            next.startWorkout(in: context, deload: phase.isDeload)
+                        } label: {
+                            Image(systemName: "play.fill")
+                                .font(.title2)
+                                .foregroundStyle(Color(red: 0.84, green: 0.13, blue: 0.24))
+                                .frame(width: 64, height: 64)
+                                .background(.white, in: Circle())
+                        }
+                        .buttonStyle(PressableButtonStyle())
+                        .accessibilityLabel("Démarrer \(next.name)")
+                    }
+
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(programTemplates) { template in
+                                Button {
+                                    template.startWorkout(in: context, deload: phase.isDeload)
+                                } label: {
+                                    Text(template.name)
+                                        .font(.caption.bold())
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 7)
+                                        .background(
+                                            .white.opacity(template.persistentModelID == next.persistentModelID ? 0.4 : 0.18),
+                                            in: Capsule()
+                                        )
+                                }
+                                .buttonStyle(PressableButtonStyle())
+                            }
+                        }
+                    }
+                }
+                .foregroundStyle(.white)
+                .padding(18)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Theme.gradient, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+                .shadow(color: Color(red: 0.84, green: 0.13, blue: 0.24).opacity(0.25), radius: 12, y: 6)
+            }
+        } else {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Programmes").font(.title2.bold())
+                ForEach(TrainingProgram.all, id: \.name) { program in
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "sparkles")
+                                .foregroundStyle(Theme.gradient)
+                            Text(program.name).font(.headline)
+                        }
+                        Text(program.summary)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        HStack(spacing: 6) {
+                            ForEach(program.sessions) { session in
+                                Text(session.name)
+                                    .font(.caption.bold())
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(Theme.field, in: Capsule())
+                            }
+                        }
+                        Button {
+                            withAnimation(.snappy) {
+                                program.install(in: context)
+                                programStart = Date.now.timeIntervalSince1970
+                            }
+                        } label: {
+                            Label("Suivre ce programme", systemImage: "plus")
+                        }
+                        .buttonStyle(PrimaryButtonStyle())
+                        .padding(.top, 4)
+                    }
+                    .card()
+                }
+            }
+        }
     }
 
     private var header: some View {
@@ -98,7 +245,7 @@ struct StartWorkoutView: View {
                 }
             }
 
-            if templates.isEmpty {
+            if customTemplates.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
                     Image(systemName: "square.stack.3d.up.fill")
                         .font(.title)
@@ -112,7 +259,7 @@ struct StartWorkoutView: View {
                 .card()
             }
 
-            ForEach(templates) { template in
+            ForEach(customTemplates) { template in
                 TemplateCard(
                     template: template,
                     onStart: { template.startWorkout(in: context) },

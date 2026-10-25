@@ -73,7 +73,24 @@ private struct TemplateItemRow: View {
             Text(item.exercise?.name ?? "Exercice supprimé")
                 .font(.headline)
             Stepper("\(item.targetSets) séries", value: $item.targetSets, in: 1...10)
-            Stepper("\(item.targetReps) répétitions", value: $item.targetReps, in: 1...50)
+            if let minReps = item.minReps {
+                Stepper("Reps min : \(minReps)", value: Binding(
+                    get: { minReps },
+                    set: { item.minReps = min($0, item.targetReps) }
+                ), in: 1...50)
+                Stepper("Reps max : \(item.targetReps)", value: Binding(
+                    get: { item.targetReps },
+                    set: { item.targetReps = max($0, minReps) }
+                ), in: 1...50)
+            } else {
+                Stepper("\(item.targetReps) répétitions", value: $item.targetReps, in: 1...50)
+            }
+            if let restSeconds = item.restSeconds {
+                Stepper("Repos : \(AppSettings.restLabel(restSeconds))", value: Binding(
+                    get: { restSeconds },
+                    set: { item.restSeconds = $0 }
+                ), in: 30...300, step: 15)
+            }
         }
     }
 }

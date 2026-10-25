@@ -31,6 +31,10 @@ final class Workout {
         _ exercise: Exercise,
         targetSets: Int? = nil,
         targetReps: Int? = nil,
+        minReps: Int? = nil,
+        restSeconds: Int? = nil,
+        note: String? = nil,
+        allowProgression: Bool = true,
         in context: ModelContext
     ) -> WorkoutExercise {
         let previous = exercise.history.first?.orderedSets ?? []
@@ -39,18 +43,25 @@ final class Workout {
         entry.exercise = exercise
         entry.workout = self
         entry.targetReps = targetReps
+        entry.minReps = minReps
+        entry.restSeconds = restSeconds
+        entry.note = note
 
         // Progressive overload: every target rep was done last time, so add weight.
-        let increment = WorkoutExercise.reachedTarget(previous, targetReps: targetReps) ? AppSettings.weightIncrement : 0
+        let progresses = allowProgression && WorkoutExercise.reachedTarget(previous, targetReps: targetReps)
+        let increment = progresses ? AppSettings.weightIncrement : 0
         let count = targetSets ?? max(previous.count, 1)
         for index in 0..<count {
             let reference = previous.isEmpty ? nil : previous[min(index, previous.count - 1)]
             let weight = reference?.weight ?? 0
-            entry.addSet(
-                reps: targetReps ?? reference?.reps ?? 10,
-                weight: weight > 0 ? weight + increment : 0,
-                in: context
-            )
+            let reps: Int
+            if let minReps, let targetReps {
+                // Double progression: back to the bottom of the range after a weight increase.
+                reps = progresses ? minReps : min(max(reference?.reps ?? minReps, minReps), targetReps)
+            } else {
+                reps = targetReps ?? reference?.reps ?? 10
+            }
+            entry.addSet(reps: reps, weight: weight > 0 ? weight + increment : 0, in: context)
         }
         return entry
     }
@@ -105,6 +116,9 @@ final class Workout {
 final class WorkoutExercise {
     var order: Int
     var targetReps: Int?
+    var minReps: Int?
+    var restSeconds: Int?
+    var note: String?
     var workout: Workout?
     var exercise: Exercise?
 
@@ -132,6 +146,17 @@ final class WorkoutExercise {
     /// True when the last session of this exercise hit the target reps on every set.
     var isProgressionSuggested: Bool {
         WorkoutExercise.reachedTarget(exercise?.history.first?.sets ?? [], targetReps: targetReps)
+    }
+
+    /// "3 × 8-12 reps · repos 2 min 30"
+    var targetDescription: String? {
+        guard let targetReps else { return nil }
+        let reps = minReps.map { "\($0)-\(targetReps)" } ?? "\(targetReps)"
+        var text = "\(sets.count) × \(reps) reps"
+        if let restSeconds {
+            text += " · repos \(AppSettings.restLabel(restSeconds))"
+        }
+        return text
     }
 
     static func reachedTarget(_ sets: [WorkoutSet], targetReps: Int?) -> Bool {

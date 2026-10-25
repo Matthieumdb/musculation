@@ -174,6 +174,9 @@ struct WorkoutDetailView: View {
             let item = template.addItem(exercise, in: context)
             item.targetSets = max(entry.sets.count, 1)
             item.targetReps = entry.targetReps ?? entry.orderedSets.first?.reps ?? 10
+            item.minReps = entry.minReps
+            item.restSeconds = entry.restSeconds
+            item.notes = entry.note
         }
         try? context.save()
         didCreateTemplate = true

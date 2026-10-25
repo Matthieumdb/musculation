@@ -21,6 +21,7 @@ App iOS (SwiftUI + SwiftData) pour suivre ses séances de musculation. Les donn�
 - **Statistiques** : séances par semaine sur 12 semaines et séries par muscle sur 7 jours.
 - **Modèle depuis l'historique** et **réorganisation des exercices** pendant la séance.
 - **Sauvegarde / restauration** de toutes les données en JSON (onglet Réglages).
+- **Programme Hypertrophie 5 séances** (Upper / Lower / Push / Pull / Legs) à activer en un geste : prochaine séance suggérée, cycle de 8 semaines avec décharge automatique, fourchettes de reps, repos et consignes par exercice, double progression.
 
 ## Lancer l'app
 

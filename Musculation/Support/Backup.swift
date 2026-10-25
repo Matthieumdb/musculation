@@ -25,6 +25,9 @@ struct Backup: Codable {
     struct WorkoutExerciseRecord: Codable {
         var exercise: String?
         var targetReps: Int?
+        var minReps: Int?
+        var restSeconds: Int?
+        var note: String?
         var sets: [SetRecord]
     }
 
@@ -40,10 +43,15 @@ struct Backup: Codable {
         var exercise: String?
         var targetSets: Int
         var targetReps: Int
+        var minReps: Int?
+        var restSeconds: Int?
+        var notes: String?
     }
 
     struct TemplateRecord: Codable {
         var name: String
+        var programName: String?
+        var programOrder: Int?
         var items: [TemplateItemRecord]
     }
 
@@ -79,6 +87,9 @@ enum BackupService {
                         Backup.WorkoutExerciseRecord(
                             exercise: entry.exercise?.name,
                             targetReps: entry.targetReps,
+                            minReps: entry.minReps,
+                            restSeconds: entry.restSeconds,
+                            note: entry.note,
                             sets: entry.orderedSets.map {
                                 Backup.SetRecord(reps: $0.reps, weight: $0.weight, isCompleted: $0.isCompleted)
                             }
@@ -89,8 +100,17 @@ enum BackupService {
             templates: templates.map { template in
                 Backup.TemplateRecord(
                     name: template.name,
+                    programName: template.programName,
+                    programOrder: template.programOrder,
                     items: template.orderedItems.map {
-                        Backup.TemplateItemRecord(exercise: $0.exercise?.name, targetSets: $0.targetSets, targetReps: $0.targetReps)
+                        Backup.TemplateItemRecord(
+                            exercise: $0.exercise?.name,
+                            targetSets: $0.targetSets,
+                            targetReps: $0.targetReps,
+                            minReps: $0.minReps,
+                            restSeconds: $0.restSeconds,
+                            notes: $0.notes
+                        )
                     }
                 )
             },
@@ -149,6 +169,9 @@ enum BackupService {
                 entry.workout = workout
                 entry.exercise = entryRecord.exercise.flatMap { exercisesByName[$0] }
                 entry.targetReps = entryRecord.targetReps
+                entry.minReps = entryRecord.minReps
+                entry.restSeconds = entryRecord.restSeconds
+                entry.note = entryRecord.note
                 for setRecord in entryRecord.sets {
                     let set = entry.addSet(reps: setRecord.reps, weight: setRecord.weight, in: context)
                     set.isCompleted = setRecord.isCompleted
@@ -159,11 +182,16 @@ enum BackupService {
         for record in backup.templates {
             let template = WorkoutTemplate(name: record.name)
             context.insert(template)
+            template.programName = record.programName
+            template.programOrder = record.programOrder
             for itemRecord in record.items {
                 guard let exercise = itemRecord.exercise.flatMap({ exercisesByName[$0] }) else { continue }
                 let item = template.addItem(exercise, in: context)
                 item.targetSets = itemRecord.targetSets
                 item.targetReps = itemRecord.targetReps
+                item.minReps = itemRecord.minReps
+                item.restSeconds = itemRecord.restSeconds
+                item.notes = itemRecord.notes
             }
         }
 
