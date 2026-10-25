@@ -166,10 +166,18 @@ struct ActiveWorkoutView: View {
 
     private func finish() {
         let summary = WorkoutSummary(workout: workout)
+        let start = workout.startedAt
+        let title = workout.title
         restEndDate = nil
         RestNotifier.cancel()
         workout.finish(in: context)
         if summary.setCount > 0 {
+            var latestWeight = FetchDescriptor<BodyWeightEntry>(sortBy: [SortDescriptor(\.date, order: .reverse)])
+            latestWeight.fetchLimit = 1
+            let bodyWeight = (try? context.fetch(latestWeight))?.first?.weight
+            Task {
+                await HealthSync.save(workoutFrom: start, to: .now, title: title, bodyWeight: bodyWeight)
+            }
             onFinish(summary)
         }
     }
