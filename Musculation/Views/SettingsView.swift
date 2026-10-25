@@ -65,7 +65,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Autres apps")
                 } footer: {
-                    Text("Récupère ton historique Hevy à partir de son export CSV.")
+                    Text("Récupère tes séances et tes pesées Hevy à partir de leurs exports CSV.")
                 }
 
                 Section {

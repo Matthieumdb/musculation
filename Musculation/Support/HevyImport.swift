@@ -98,6 +98,42 @@ enum HevyImport {
         return workouts.sorted { $0.start < $1.start }
     }
 
+    /// Body weights from Hevy's measurements export, or nil when the file is not one.
+    static func parseBodyWeights(_ text: String) -> [(date: Date, weight: Double)]? {
+        let rows = CSV.rows(text)
+        guard let header = rows.first?.map({ $0.trimmingCharacters(in: .whitespaces).lowercased() }),
+              !header.contains("exercise_title"),
+              let dateColumn = header.firstIndex(of: "date")
+        else { return nil }
+        let kgColumn = header.firstIndex(of: "weight_kg")
+        let lbsColumn = header.firstIndex(of: "weight_lbs")
+        guard kgColumn != nil || lbsColumn != nil else { return nil }
+        return rows.dropFirst().compactMap { row in
+            func value(_ index: Int?) -> String {
+                guard let index, index < row.count else { return "" }
+                return row[index].trimmingCharacters(in: .whitespaces)
+            }
+            guard let date = date(value(dateColumn)) else { return nil }
+            if let kg = number(value(kgColumn)), kg > 0 { return (date, kg) }
+            if let lbs = number(value(lbsColumn)), lbs > 0 { return (date, (lbs * 0.45359237 * 10).rounded() / 10) }
+            return nil
+        }
+    }
+
+    /// Adds the weigh-ins whose day has none yet. Returns how many were added.
+    @discardableResult
+    static func importBodyWeights(_ entries: [(date: Date, weight: Double)], in context: ModelContext) -> Int {
+        let calendar = Calendar.current
+        var days = Set(((try? context.fetch(FetchDescriptor<BodyWeightEntry>())) ?? []).map { calendar.startOfDay(for: $0.date) })
+        var added = 0
+        for entry in entries where days.insert(calendar.startOfDay(for: entry.date)).inserted {
+            context.insert(BodyWeightEntry(date: entry.date, weight: entry.weight))
+            added += 1
+        }
+        try? context.save()
+        return added
+    }
+
     private static func number(_ text: String) -> Double? {
         Double(text.replacingOccurrences(of: ",", with: "."))
     }
@@ -126,8 +162,45 @@ enum HevyImport {
         }
     }()
 
+    private static let months: [String: Int] = [
+        "janv": 1, "janvier": 1, "jan": 1, "january": 1,
+        "févr": 2, "fevr": 2, "février": 2, "fev": 2, "feb": 2, "february": 2,
+        "mars": 3, "mar": 3, "march": 3,
+        "avr": 4, "avril": 4, "apr": 4, "april": 4,
+        "mai": 5, "may": 5,
+        "juin": 6, "jun": 6, "june": 6,
+        "juil": 7, "juillet": 7, "jul": 7, "july": 7,
+        "août": 8, "aout": 8, "aug": 8, "august": 8,
+        "sept": 9, "septembre": 9, "sep": 9, "september": 9,
+        "oct": 10, "octobre": 10, "october": 10,
+        "nov": 11, "novembre": 11, "november": 11,
+        "déc": 12, "dec": 12, "décembre": 12, "december": 12,
+    ]
+
+    /// "14 oct. 2026, 09:26" or "14 Oct 2026, 09:26", as Hevy writes dates in each language.
+    private static func dayMonthYear(_ text: String) -> Date? {
+        let parts = text
+            .replacingOccurrences(of: ",", with: " ")
+            .replacingOccurrences(of: ".", with: " ")
+            .split(separator: " ")
+            .map { String($0).lowercased() }
+        guard parts.count >= 3,
+              let day = Int(parts[0]),
+              let month = months[parts[1]],
+              let year = Int(parts[2])
+        else { return nil }
+        var components = DateComponents(year: year, month: month, day: day)
+        if parts.count >= 4 {
+            let time = parts[3].split(separator: ":").compactMap { Int($0) }
+            components.hour = time.first
+            components.minute = time.count > 1 ? time[1] : 0
+        }
+        return Calendar.current.date(from: components)
+    }
+
     static func date(_ text: String) -> Date? {
         guard !text.isEmpty else { return nil }
+        if let date = dayMonthYear(text) { return date }
         for formatter in dateFormatters {
             if let date = formatter.date(from: text) { return date }
         }
@@ -199,6 +272,51 @@ extension HevyImport {
         "bulgarian split squat": "Fentes bulgares",
         "seated calf raise": "Mollets assis",
         "hip adduction (machine)": "Adducteurs machine",
+        // Hevy in French
+        "curl incliné assis (haltère)": "Curl incliné haltères",
+        "extension triceps poulie haute": "Extension triceps poulie",
+        "extension triceps (poulie)": "Extension triceps poulie",
+        "élévation latérale (haltère)": "Élévations latérales",
+        "chest press (machine)": "Développé pectoraux machine",
+        "développé couché incliné (machine smith)": "Développé incliné machine",
+        "tirage vers visage": "Face pull",
+        "extension des triceps au-dessus de la tête (câble)": "Extension triceps au-dessus de la tête",
+        "curl biceps (poulie)": "Curl biceps poulie debout",
+        "curl biceps (haltère)": "Curl haltères",
+        "curl marteau (haltère)": "Curl marteau",
+        "rowing assis (machine)": "Rowing iso machine",
+        "tirage poitrine (machine)": "Tirage vertical",
+        "tirage poitrine (poulie)": "Tirage vertical",
+        "vertical traction (machine)": "Tirage vertical",
+        "tirage poitrine - prise serrée (poulie)": "Tirage vertical prise serrée",
+        "tirage poitrine bras tendus (poulie)": "Pull-over poulie",
+        "curl derrière le dos (poulie)": "Curl derrière le dos (poulie)",
+        "curl derrière le dos (câble)": "Curl derrière le dos (poulie)",
+        "élévation frontale (haltère)": "Élévation frontale haltères",
+        "développé couché décliné (machine)": "Développé décliné machine",
+        "élévation latérale un bras (poulie)": "Élévation deltoïde poulie basse",
+        "élévation latérale à un bras (câble)": "Élévation deltoïde poulie basse",
+        "extension jambes": "Leg extension",
+        "leg curl assis": "Leg curl assis",
+        "leg curl assis (machine)": "Leg curl assis",
+        "curl pupitre (machine)": "Curl pupitre machine",
+        "curl pupitre (haltère)": "Curl pupitre haltères",
+        "presse à cuisses": "Presse à cuisses",
+        "presse à cuisses horizontal": "Presse à cuisses",
+        "rowing barre t": "Rowing T-bar",
+        "oiseau (machine)": "Oiseau (reverse pec deck)",
+        "oiseau penché (haltère)": "Oiseau",
+        "rowing poulie assis - prise en v": "Rowing assis poulie",
+        "tirage assis à la poulie - prise en v (poulie)": "Rowing assis poulie",
+        "développé couché incliné (haltère)": "Développé incliné haltères",
+        "développé couché (haltère)": "Développé couché haltères",
+        "développé couché (barre)": "Développé couché",
+        "écartés poulie": "Écarté à la poulie",
+        "écarté (machine)": "Pec deck",
+        "split squat bulgare (haltère)": "Fentes bulgares",
+        "squat (barre)": "Squat",
+        "soulevé de terre (barre)": "Soulevé de terre",
+        "traction": "Tractions",
     ]
 
     /// Best guess for a Hevy exercise among the user's exercises and the library.
@@ -216,6 +334,7 @@ extension HevyImport {
             if let entry = ExerciseLibrary.entry(name: name) {
                 return .library(entry.id)
             }
+            return .new(name: name)
         }
         if let entry = bestLibraryMatch(for: title) {
             if let exercise = exercises.first(where: { $0.libraryEntry?.id == entry.id }) {
@@ -274,6 +393,10 @@ extension HevyImport {
     static func guessMuscleGroup(for title: String) -> MuscleGroup {
         let name = title.lowercased()
         func has(_ words: String...) -> Bool { words.contains { name.contains($0) } }
+        if has("développé", "écarté", "pompe") { return .chest }
+        if has("rowing", "tirage", "traction") { return .back }
+        if has("élévation", "épaule", "oiseau") { return .shoulders }
+        if has("jambe", "fente", "presse", "mollet") { return .legs }
         if has("leg curl", "leg extension", "squat", "lunge", "leg press", "calf", "step up") { return .legs }
         if has("hip thrust", "glute", "kickback", "abduct") { return .glutes }
         if has("tricep", "skull", "pushdown", "dip") { return .triceps }

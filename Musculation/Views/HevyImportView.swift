@@ -15,6 +15,8 @@ struct HevyImportView: View {
     @State private var choosingFor: ChoosingTitle?
     @State private var errorMessage: String?
     @State private var importedCount: Int?
+    @State private var bodyWeights: [(date: Date, weight: Double)] = []
+    @State private var importedWeights: Int?
 
     private struct ChoosingTitle: Identifiable {
         let title: String
@@ -30,7 +32,9 @@ struct HevyImportView: View {
     var body: some View {
         NavigationStack {
             List {
-                if workouts.isEmpty {
+                if !bodyWeights.isEmpty {
+                    weightsSummary
+                } else if workouts.isEmpty {
                     instructions
                 } else {
                     summary
@@ -45,7 +49,16 @@ struct HevyImportView: View {
                 }
             }
             .safeAreaInset(edge: .bottom) {
-                if !workouts.isEmpty {
+                if !bodyWeights.isEmpty {
+                    Button {
+                        importedWeights = HevyImport.importBodyWeights(bodyWeights, in: context)
+                    } label: {
+                        Label("Importer \(bodyWeights.count) pesées", systemImage: "square.and.arrow.down")
+                    }
+                    .buttonStyle(PrimaryButtonStyle())
+                    .padding(.horizontal)
+                    .padding(.bottom, 8)
+                } else if !workouts.isEmpty {
                     let count = newWorkouts.count
                     Button {
                         importedCount = HevyImport.importWorkouts(newWorkouts, targets: targets, in: context)
@@ -81,6 +94,17 @@ struct HevyImportView: View {
             } message: {
                 Text(errorMessage ?? "")
             }
+            .alert("Pesées importées", isPresented: Binding(
+                get: { importedWeights != nil },
+                set: { if !$0 { importedWeights = nil } }
+            )) {
+                Button("OK") { dismiss() }
+            } message: {
+                let count = importedWeights ?? 0
+                Text(count == 0
+                    ? "Ces pesées étaient déjà dans l'app."
+                    : "\(count) pesée\(count > 1 ? "s" : "") ajoutée\(count > 1 ? "s" : "") dans Progrès › Poids de corps.")
+            }
             .alert("Import terminé", isPresented: Binding(
                 get: { importedCount != nil },
                 set: { if !$0 { importedCount = nil } }
@@ -104,6 +128,9 @@ struct HevyImportView: View {
                 step(1, "Dans Hevy, ouvre ton profil puis les réglages (roue dentée).")
                 step(2, "Touche « Exporter et importer des données », puis « Exporter les séances ».")
                 step(3, "Enregistre le fichier CSV dans Fichiers, puis choisis-le ici.")
+                Text("Tu peux aussi importer l'export des mensurations de Hevy : tes pesées iront dans le suivi du poids de corps.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
                 Text("Tes séances, exercices, charges et répétitions sont importés. Les séries d'échauffement sont ignorées, et une séance déjà présente n'est jamais importée deux fois.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
@@ -154,6 +181,21 @@ struct HevyImportView: View {
         let skipped = workouts.count - newWorkouts.count
         guard skipped > 0 else { return range }
         return range + " \(skipped) déjà dans l'app, ignorée\(skipped > 1 ? "s" : "")."
+    }
+
+    private var weightsSummary: some View {
+        Section {
+            ForEach(Array(bodyWeights.enumerated().reversed()), id: \.offset) { pair in
+                LabeledContent(
+                    pair.element.date.formatted(date: .abbreviated, time: .omitted),
+                    value: pair.element.weight.preciseKgText
+                )
+            }
+        } header: {
+            Text("\(bodyWeights.count) pesées trouvées")
+        } footer: {
+            Text("Les jours où tu as déjà une pesée dans l'app sont ignorés.")
+        }
     }
 
     private var mapping: some View {
@@ -213,6 +255,11 @@ struct HevyImportView: View {
             guard let text = String(data: data, encoding: .utf8) ?? String(data: data, encoding: .isoLatin1) else {
                 throw HevyImport.ImportError.notHevy
             }
+            if let weights = HevyImport.parseBodyWeights(text) {
+                guard !weights.isEmpty else { throw HevyImport.ImportError.empty }
+                withAnimation(.snappy) { bodyWeights = weights.sorted { $0.date < $1.date } }
+                return
+            }
             let parsed = try HevyImport.parse(text)
             var seen = Set<String>()
             let names = parsed.flatMap { $0.exercises.map(\.title) }.filter { seen.insert($0).inserted }
@@ -220,7 +267,10 @@ struct HevyImportView: View {
             targets = Dictionary(uniqueKeysWithValues: names.map {
                 ($0, HevyImport.suggestedTarget(for: $0, exercises: exercises))
             })
-            withAnimation(.snappy) { workouts = parsed }
+            withAnimation(.snappy) {
+                bodyWeights = []
+                workouts = parsed
+            }
         } catch {
             errorMessage = error.localizedDescription
         }
