@@ -51,7 +51,9 @@ private struct WorkoutRow: View {
 }
 
 struct WorkoutDetailView: View {
+    @Environment(\.modelContext) private var context
     @Bindable var workout: Workout
+    @State private var didCreateTemplate = false
 
     var body: some View {
         List {
@@ -83,5 +85,32 @@ struct WorkoutDetailView: View {
         }
         .navigationTitle(workout.title)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Menu {
+                    Button("Enregistrer comme modèle", systemImage: "square.on.square") { createTemplate() }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                }
+            }
+        }
+        .alert("Modèle créé", isPresented: $didCreateTemplate) {
+            Button("OK") {}
+        } message: {
+            Text("Retrouve « \(workout.title) » dans l'onglet Séance.")
+        }
+    }
+
+    private func createTemplate() {
+        let template = WorkoutTemplate(name: workout.title)
+        context.insert(template)
+        for entry in workout.orderedExercises {
+            guard let exercise = entry.exercise else { continue }
+            let item = template.addItem(exercise, in: context)
+            item.targetSets = max(entry.sets.count, 1)
+            item.targetReps = entry.targetReps ?? entry.orderedSets.first?.reps ?? 10
+        }
+        try? context.save()
+        didCreateTemplate = true
     }
 }

@@ -11,6 +11,17 @@ App iOS (SwiftUI + SwiftData) pour suivre ses séances de musculation. Les donn�
 - **Progrès** : bilan de la semaine et, par exercice, un graphique (1RM estimé, charge max, volume) et les records.
 - **Exercices** : une bibliothèque préremplie, classée par groupe musculaire et modifiable.
 
+### Nouveautés de la V2
+
+- **Notification de fin de repos**, même écran verrouillé.
+- **Records en direct** : un trophée s'affiche sur la série qui bat ton meilleur 1RM estimé, et un résumé de fin de séance liste tes nouveaux records.
+- **Surcharge progressive** : si tu as fait toutes les répétitions cibles d'un modèle la dernière fois, la charge augmente automatiquement (+2,5 kg par défaut).
+- **Calculateur de disques** : les disques à mettre de chaque côté de la barre (appui long sur une série, ou menu ⋯).
+- **Poids de corps** : pesées et courbe d'évolution dans l'onglet Progrès.
+- **Statistiques** : séances par semaine sur 12 semaines et séries par muscle sur 7 jours.
+- **Modèle depuis l'historique** et **réorganisation des exercices** pendant la séance.
+- **Sauvegarde / restauration** de toutes les données en JSON (onglet Réglages).
+
 ## Lancer l'app
 
 1. Ouvre `Musculation.xcodeproj` avec Xcode 16 ou plus récent.

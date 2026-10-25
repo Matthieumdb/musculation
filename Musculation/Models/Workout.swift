@@ -38,17 +38,32 @@ final class Workout {
         context.insert(entry)
         entry.exercise = exercise
         entry.workout = self
+        entry.targetReps = targetReps
 
+        // Progressive overload: every target rep was done last time, so add weight.
+        let increment = WorkoutExercise.reachedTarget(previous, targetReps: targetReps) ? AppSettings.weightIncrement : 0
         let count = targetSets ?? max(previous.count, 1)
         for index in 0..<count {
             let reference = previous.isEmpty ? nil : previous[min(index, previous.count - 1)]
+            let weight = reference?.weight ?? 0
             entry.addSet(
                 reps: targetReps ?? reference?.reps ?? 10,
-                weight: reference?.weight ?? 0,
+                weight: weight > 0 ? weight + increment : 0,
                 in: context
             )
         }
         return entry
+    }
+
+    /// Moves an exercise up (-1) or down (+1) in the workout.
+    func move(_ entry: WorkoutExercise, by offset: Int) {
+        var ordered = orderedExercises
+        guard let index = ordered.firstIndex(where: { $0.persistentModelID == entry.persistentModelID }),
+              ordered.indices.contains(index + offset) else { return }
+        ordered.swapAt(index, index + offset)
+        for (position, item) in ordered.enumerated() {
+            item.order = position
+        }
     }
 
     /// Ends the workout. Unchecked sets are dropped right after, once the
@@ -89,6 +104,7 @@ final class Workout {
 @Model
 final class WorkoutExercise {
     var order: Int
+    var targetReps: Int?
     var workout: Workout?
     var exercise: Exercise?
 
@@ -104,6 +120,24 @@ final class WorkoutExercise {
     var bestOneRepMax: Double { sets.map(\.estimatedOneRepMax).max() ?? 0 }
     var volume: Double { sets.reduce(0) { $0 + $1.volume } }
     var bestSet: WorkoutSet? { sets.max { $0.estimatedOneRepMax < $1.estimatedOneRepMax } }
+
+    /// Best estimated 1RM before this workout, nil the first time the exercise is done.
+    var previousBestOneRepMax: Double? {
+        exercise?.history
+            .filter { $0.workout?.persistentModelID != workout?.persistentModelID }
+            .map(\.bestOneRepMax)
+            .max()
+    }
+
+    /// True when the last session of this exercise hit the target reps on every set.
+    var isProgressionSuggested: Bool {
+        WorkoutExercise.reachedTarget(exercise?.history.first?.sets ?? [], targetReps: targetReps)
+    }
+
+    static func reachedTarget(_ sets: [WorkoutSet], targetReps: Int?) -> Bool {
+        guard let targetReps, !sets.isEmpty else { return false }
+        return sets.allSatisfy { $0.reps >= targetReps && $0.weight > 0 }
+    }
 
     /// "80 kg × 8 · 80 kg × 8 · 85 kg × 6"
     var summary: String {

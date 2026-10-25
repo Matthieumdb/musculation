@@ -20,11 +20,13 @@ final class WorkoutTemplate {
         orderedItems.compactMap { $0.exercise?.name }.joined(separator: " · ")
     }
 
-    func addItem(_ exercise: Exercise, in context: ModelContext) {
+    @discardableResult
+    func addItem(_ exercise: Exercise, in context: ModelContext) -> TemplateExercise {
         let item = TemplateExercise(order: (items.map(\.order).max() ?? -1) + 1)
         context.insert(item)
         item.exercise = exercise
         item.template = self
+        return item
     }
 
     func startWorkout(in context: ModelContext) {

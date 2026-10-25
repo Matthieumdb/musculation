@@ -4,15 +4,17 @@ import SwiftData
 struct WorkoutTabView: View {
     @Query(filter: #Predicate<Workout> { $0.endedAt == nil }, sort: \Workout.startedAt, order: .reverse)
     private var activeWorkouts: [Workout]
+    @State private var summary: WorkoutSummary?
 
     var body: some View {
         NavigationStack {
             if let workout = activeWorkouts.first {
-                ActiveWorkoutView(workout: workout)
+                ActiveWorkoutView(workout: workout) { summary = $0 }
             } else {
                 StartWorkoutView()
             }
         }
+        .sheet(item: $summary) { WorkoutSummaryView(summary: $0) }
     }
 }
 

@@ -4,12 +4,14 @@ import SwiftData
 struct ActiveWorkoutView: View {
     @Environment(\.modelContext) private var context
     @Bindable var workout: Workout
+    var onFinish: (WorkoutSummary) -> Void
 
-    @AppStorage("restDuration") private var restDuration = 90
+    @AppStorage(AppSettings.restDurationKey) private var restDuration = AppSettings.defaultRestDuration
     @State private var restEndDate: Date?
     @State private var isPickingExercise = false
     @State private var isConfirmingFinish = false
     @State private var isConfirmingDiscard = false
+    @State private var plateTarget: PlateTarget?
 
     var body: some View {
         List {
@@ -26,8 +28,16 @@ struct ActiveWorkoutView: View {
                 }
             }
 
-            ForEach(workout.orderedExercises) { entry in
-                WorkoutExerciseSection(entry: entry, onSetCompleted: startRest)
+            let entries = workout.orderedExercises
+            ForEach(entries) { entry in
+                WorkoutExerciseSection(
+                    entry: entry,
+                    canMoveUp: entry.persistentModelID != entries.first?.persistentModelID,
+                    canMoveDown: entry.persistentModelID != entries.last?.persistentModelID,
+                    onMove: { workout.move(entry, by: $0) },
+                    onSetCompleted: startRest,
+                    onShowPlates: { plateTarget = PlateTarget(weight: $0) }
+                )
             }
 
             Section {
@@ -48,15 +58,25 @@ struct ActiveWorkoutView: View {
                 )
             }
         }
+        .onChange(of: restEndDate) { _, endDate in
+            if let endDate {
+                RestNotifier.schedule(at: endDate)
+            } else {
+                RestNotifier.cancel()
+            }
+        }
         .navigationTitle("Séance en cours")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Menu {
                     Picker("Temps de repos", selection: $restDuration) {
-                        ForEach([60, 90, 120, 180, 240], id: \.self) { seconds in
-                            Text("Repos : \(restLabel(seconds))").tag(seconds)
+                        ForEach(AppSettings.restOptions, id: \.self) { seconds in
+                            Text("Repos : \(AppSettings.restLabel(seconds))").tag(seconds)
                         }
+                    }
+                    Button("Calculateur de disques", systemImage: "circle.grid.2x1") {
+                        plateTarget = PlateTarget(weight: 60)
                     }
                     Button("Abandonner la séance", systemImage: "trash", role: .destructive) {
                         isConfirmingDiscard = true
@@ -79,36 +99,72 @@ struct ActiveWorkoutView: View {
                 workout.addExercise(exercise, in: context)
             }
         }
+        .sheet(item: $plateTarget) { target in
+            PlateCalculatorView(target: target.weight)
+                .presentationDetents([.medium, .large])
+        }
         .confirmationDialog("Terminer la séance ?", isPresented: $isConfirmingFinish, titleVisibility: .visible) {
-            Button("Terminer") { workout.finish(in: context) }
+            Button("Terminer") { finish() }
         } message: {
             Text("Seules les séries cochées seront enregistrées.")
         }
         .confirmationDialog("Abandonner la séance ?", isPresented: $isConfirmingDiscard, titleVisibility: .visible) {
-            Button("Abandonner", role: .destructive) { workout.discard(in: context) }
+            Button("Abandonner", role: .destructive) {
+                restEndDate = nil
+                RestNotifier.cancel()
+                workout.discard(in: context)
+            }
         } message: {
             Text("Toutes les données de cette séance seront supprimées.")
         }
     }
 
     private func startRest() {
+        RestNotifier.requestAuthorization()
         restEndDate = .now.addingTimeInterval(TimeInterval(restDuration))
     }
 
-    private func restLabel(_ seconds: Int) -> String {
-        seconds % 60 == 0 ? "\(seconds / 60) min" : "\(seconds / 60) min \(seconds % 60)"
+    private func finish() {
+        let summary = WorkoutSummary(workout: workout)
+        restEndDate = nil
+        RestNotifier.cancel()
+        workout.finish(in: context)
+        if summary.setCount > 0 {
+            onFinish(summary)
+        }
     }
+}
+
+struct PlateTarget: Identifiable {
+    let id = UUID()
+    let weight: Double
 }
 
 struct WorkoutExerciseSection: View {
     @Environment(\.modelContext) private var context
     @Bindable var entry: WorkoutExercise
+    var canMoveUp: Bool
+    var canMoveDown: Bool
+    var onMove: (Int) -> Void
     var onSetCompleted: () -> Void
+    var onShowPlates: (Double) -> Void
 
     var body: some View {
+        let previousBest = entry.previousBestOneRepMax
         Section {
             ForEach(Array(entry.orderedSets.enumerated()), id: \.element.id) { pair in
-                SetRow(number: pair.offset + 1, set: pair.element, onCompleted: onSetCompleted)
+                let set = pair.element
+                SetRow(
+                    number: pair.offset + 1,
+                    set: set,
+                    isRecord: set.isCompleted && previousBest.map { set.estimatedOneRepMax > $0 } == true,
+                    onCompleted: onSetCompleted
+                )
+                .contextMenu {
+                    Button("Calculer les disques", systemImage: "circle.grid.2x1") {
+                        onShowPlates(set.weight)
+                    }
+                }
             }
             .onDelete { offsets in
                 let sets = entry.orderedSets
@@ -129,6 +185,15 @@ struct WorkoutExerciseSection: View {
                     .foregroundStyle(.primary)
                 Spacer()
                 Menu {
+                    if canMoveUp {
+                        Button("Monter", systemImage: "arrow.up") { onMove(-1) }
+                    }
+                    if canMoveDown {
+                        Button("Descendre", systemImage: "arrow.down") { onMove(1) }
+                    }
+                    Button("Calculer les disques", systemImage: "circle.grid.2x1") {
+                        onShowPlates(entry.orderedSets.last?.weight ?? 0)
+                    }
                     Button("Retirer l'exercice", systemImage: "trash", role: .destructive) {
                         context.delete(entry)
                         try? context.save()
@@ -140,8 +205,20 @@ struct WorkoutExerciseSection: View {
             }
             .textCase(nil)
         } footer: {
-            if let previous = entry.exercise?.history.first {
-                Text("Dernière fois : \(previous.summary)")
+            VStack(alignment: .leading, spacing: 4) {
+                if entry.isProgressionSuggested {
+                    Label(
+                        "Objectif atteint la dernière fois : charge augmentée de \(AppSettings.weightIncrement.kgText).",
+                        systemImage: "arrow.up.circle.fill"
+                    )
+                    .foregroundStyle(.green)
+                }
+                if let previous = entry.exercise?.history.first {
+                    Text("Dernière fois : \(previous.summary)")
+                }
+                if let notes = entry.exercise?.notes, !notes.isEmpty {
+                    Text(notes).italic()
+                }
             }
         }
     }
@@ -150,14 +227,21 @@ struct WorkoutExerciseSection: View {
 struct SetRow: View {
     let number: Int
     @Bindable var set: WorkoutSet
+    var isRecord: Bool
     var onCompleted: () -> Void
 
     var body: some View {
         HStack(spacing: 10) {
-            Text("\(number)")
-                .font(.subheadline.monospacedDigit())
-                .foregroundStyle(.secondary)
-                .frame(width: 22)
+            Group {
+                if isRecord {
+                    Image(systemName: "trophy.fill").foregroundStyle(.yellow)
+                } else {
+                    Text("\(number)")
+                        .font(.subheadline.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .frame(width: 22)
 
             TextField("0", value: $set.weight, format: .number.precision(.fractionLength(0...2)))
                 .keyboardType(.decimalPad)
@@ -186,6 +270,7 @@ struct SetRow: View {
             .buttonStyle(.plain)
             .sensoryFeedback(.selection, trigger: set.isCompleted)
         }
+        .sensoryFeedback(.success, trigger: isRecord) { _, isNowRecord in isNowRecord }
     }
 }
 
