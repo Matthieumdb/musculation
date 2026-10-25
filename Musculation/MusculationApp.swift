@@ -14,6 +14,7 @@ struct MusculationApp: App {
             WorkoutSet.self,
             WorkoutTemplate.self,
             TemplateExercise.self,
+            BodyWeightEntry.self,
         ])
     }
 }

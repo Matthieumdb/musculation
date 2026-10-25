@@ -5,6 +5,9 @@ import SwiftData
 final class WorkoutTemplate {
     var name: String
     var createdAt: Date
+    /// Set when the template was installed from a built-in program.
+    var programName: String?
+    var programOrder: Int?
 
     @Relationship(deleteRule: .cascade, inverse: \TemplateExercise.template)
     var items: [TemplateExercise] = []
@@ -20,19 +23,37 @@ final class WorkoutTemplate {
         orderedItems.compactMap { $0.exercise?.name }.joined(separator: " · ")
     }
 
-    func addItem(_ exercise: Exercise, in context: ModelContext) {
+    @discardableResult
+    func addItem(_ exercise: Exercise, in context: ModelContext) -> TemplateExercise {
         let item = TemplateExercise(order: (items.map(\.order).max() ?? -1) + 1)
         context.insert(item)
         item.exercise = exercise
         item.template = self
+        return item
     }
 
-    func startWorkout(in context: ModelContext) {
+    func replace(_ old: Exercise, with new: Exercise) {
+        for item in items where item.exercise?.persistentModelID == old.persistentModelID {
+            item.exercise = new
+        }
+    }
+
+    /// Starts a workout from this template. A deload halves the sets and skips the weight increase.
+    func startWorkout(in context: ModelContext, deload: Bool = false) {
         let workout = Workout(title: name)
         context.insert(workout)
         for item in orderedItems {
             guard let exercise = item.exercise else { continue }
-            workout.addExercise(exercise, targetSets: item.targetSets, targetReps: item.targetReps, in: context)
+            workout.addExercise(
+                exercise,
+                targetSets: deload ? max(1, (item.targetSets + 1) / 2) : item.targetSets,
+                targetReps: item.targetReps,
+                minReps: item.minReps,
+                restSeconds: item.restSeconds,
+                note: item.notes,
+                allowProgression: !deload,
+                in: context
+            )
         }
         try? context.save()
     }
@@ -42,7 +63,12 @@ final class WorkoutTemplate {
 final class TemplateExercise {
     var order: Int
     var targetSets: Int
+    /// Top of the rep range: once every set reaches it, the weight goes up.
     var targetReps: Int
+    /// Bottom of the rep range, nil for a fixed rep target.
+    var minReps: Int?
+    var restSeconds: Int?
+    var notes: String?
     var template: WorkoutTemplate?
     var exercise: Exercise?
 

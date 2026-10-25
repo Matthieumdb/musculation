@@ -11,6 +11,27 @@ App iOS (SwiftUI + SwiftData) pour suivre ses séances de musculation. Les donn�
 - **Progrès** : bilan de la semaine et, par exercice, un graphique (1RM estimé, charge max, volume) et les records.
 - **Exercices** : une bibliothèque préremplie, classée par groupe musculaire et modifiable.
 
+### Nouveautés de la V2
+
+- **Notification de fin de repos**, même écran verrouillé.
+- **Records en direct** : un trophée s'affiche sur la série qui bat ton meilleur 1RM estimé, et un résumé de fin de séance liste tes nouveaux records.
+- **Surcharge progressive** : si tu as fait toutes les répétitions cibles d'un modèle la dernière fois, la charge augmente automatiquement d'environ 2,5 %, arrondi au plus petit saut possible de l'exercice (2,5 kg à la barre, 2 kg aux haltères, 5 kg en machine… réglable dans la fiche de l'exercice).
+- **Calculateur de disques** : les disques à mettre de chaque côté de la barre (appui long sur une série, ou menu ⋯).
+- **Poids de corps** : pesées et courbe d'évolution dans l'onglet Progrès.
+- **Statistiques** : séances par semaine sur 12 semaines et séries par muscle sur 7 jours.
+- **Modèle depuis l'historique** et **réorganisation des exercices** pendant la séance.
+- **Sauvegarde / restauration** de toutes les données en JSON (onglet Réglages).
+- **Programme Hypertrophie 5 séances** (Upper / Lower / Push / Pull / Legs) à activer en un geste : prochaine séance suggérée, cycle de 8 semaines avec décharge automatique, fourchettes de reps, repos et consignes par exercice, double progression.
+
+- **Bibliothèque de 654 exercices illustrés** (Free Exercise DB, domaine public) : noms en français, recherche, filtres par muscle et matériel, animation de l'exécution en deux images, muscles travaillés et consignes. Tes exercices et ceux du programme sont reliés à leur fiche (consignes en français, images embarquées pour fonctionner hors connexion) ; les autres images se téléchargent une fois puis restent en cache. Touche la vignette d'un exercice pendant la séance pour revoir le mouvement.
+
+- **Remplacer un exercice** par une variante qui travaille le même muscle (barre, haltères, machine, poulie…), pendant la séance ou dans un modèle. En séance, le changement peut aussi être gardé dans le modèle.
+- **Import depuis Hevy** (Réglages › Importer depuis Hevy) : l'export CSV des séances Hevy (en français ou en anglais) est importé dans l'historique, et l'export des mensurations dans le suivi du poids de corps, avec une correspondance des exercices modifiable avant l'import.
+
+- **Coach** (onglet Séance) : analyse sur l'iPhone de tes 10 dernières semaines — records, charges à augmenter, exercices qui stagnent ou baissent, volume par muscle, équilibre poussée/tirage, régularité, semaine de décharge.
+- **Objectif par série** : chaque série d'un exercice déjà fait reçoit un objectif (charge × reps) calculé depuis la même série de la dernière séance : une rep de plus jusqu'au haut de la fourchette, puis la charge augmente et les reps repartent du bas. Une série facile (RPE ≤ 7) monte plus vite, une série ratée de loin redescend.
+- **RPE par série** : note l'effort (6 à 10, avec les reps en réserve) ou laisse l'app l'estimer à partir de ton 1RM récent.
+
 ## Lancer l'app
 
 1. Ouvre `Musculation.xcodeproj` avec Xcode 16 ou plus récent.
@@ -30,4 +51,4 @@ Musculation/
 
 ## Installer sans Mac
 
-Le workflow GitHub Actions *Build* produit un fichier `Musculation-unsigned.ipa`, disponible dans les artefacts de chaque exécution. Ce fichier n'est pas signé : installe-le avec [Sideloadly](https://sideloadly.io) ou [AltStore](https://altstore.io) (Windows ou Mac). Ces outils le signent avec ton Apple ID. Avec un compte gratuit, l'app est à réinstaller tous les 7 jours.
+La dernière version est toujours téléchargeable directement (même depuis Safari sur iPhone) : https://github.com/Matthieumdb/musculation/releases/latest/download/Musculation.ipa. Le workflow GitHub Actions *Build* la publie à chaque mise à jour de `main`. Chaque release contient aussi le même fichier nommé avec sa version, par exemple `Musculation-2.1-build-12.ipa`. Ce fichier n'est pas signé : installe-le avec [Sideloadly](https://sideloadly.io) ou [AltStore](https://altstore.io) (Windows ou Mac). Ces outils le signent avec ton Apple ID. Avec un compte gratuit, l'app est à réinstaller tous les 7 jours.

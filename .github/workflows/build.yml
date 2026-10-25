@@ -8,11 +8,15 @@ on:
 
 jobs:
   build:
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
-      - name: Show Xcode version
-        run: xcodebuild -version
+      - name: Select the newest Xcode
+        run: |
+          ls -d /Applications/Xcode*.app
+          XCODE=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
+          sudo xcode-select -s "$XCODE"
+          xcodebuild -version
       - name: Build for iOS Simulator
         run: |
           xcodebuild build \
@@ -23,9 +27,17 @@ jobs:
             CODE_SIGNING_ALLOWED=NO
 
   ipa:
-    runs-on: macos-15
+    runs-on: macos-26
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
+      - name: Select the newest Xcode
+        run: |
+          ls -d /Applications/Xcode*.app
+          XCODE=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
+          sudo xcode-select -s "$XCODE"
+          xcodebuild -version
       - name: Build for iPhone (unsigned)
         run: |
           xcodebuild build \
@@ -38,10 +50,28 @@ jobs:
             CODE_SIGN_IDENTITY=""
       - name: Package unsigned IPA
         run: |
+          VERSION=$(grep -m1 'MARKETING_VERSION' Musculation.xcodeproj/project.pbxproj | sed -E 's/.*= *([^;]+);/\1/')
+          IPA="Musculation-${VERSION}-build-${{ github.run_number }}.ipa"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "IPA=$IPA" >> "$GITHUB_ENV"
           mkdir -p Payload
           cp -R build/Release-iphoneos/Musculation.app Payload/
-          zip -qry Musculation-unsigned.ipa Payload
+          zip -qry "$IPA" Payload
       - uses: actions/upload-artifact@v4
         with:
-          name: Musculation-unsigned-ipa
-          path: Musculation-unsigned.ipa
+          name: ${{ env.IPA }}
+          path: ${{ env.IPA }}
+      # Outside pull requests, publish a release with the versioned .ipa, plus a copy
+      # named Musculation.ipa so this direct link always serves the latest one:
+      # https://github.com/Matthieumdb/musculation/releases/latest/download/Musculation.ipa
+      - name: Publish release
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp "$IPA" Musculation.ipa
+          gh release create "v${VERSION}-build-${{ github.run_number }}" "$IPA" Musculation.ipa \
+            --target "${{ github.sha }}" \
+            --title "Musculation ${VERSION} (build ${{ github.run_number }})" \
+            --notes "Compilée depuis ${{ github.ref_name }}. À installer avec Sideloadly ou AltStore." \
+            --latest

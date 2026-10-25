@@ -14,7 +14,10 @@ struct ContentView: View {
                 .tabItem { Label("Progrès", systemImage: "chart.line.uptrend.xyaxis") }
             ExerciseListView()
                 .tabItem { Label("Exercices", systemImage: "list.bullet") }
+            SettingsView()
+                .tabItem { Label("Réglages", systemImage: "gearshape") }
         }
+        .minimizingTabBar()
         .task {
             SeedData.insertDefaultExercisesIfNeeded(in: context)
         }

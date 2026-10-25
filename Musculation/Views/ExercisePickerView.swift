@@ -11,21 +11,37 @@ struct ExercisePickerView: View {
         let sections = ExerciseSection.make(from: exercises, matching: search)
         NavigationStack {
             List {
+                Section {
+                    NavigationLink {
+                        LibraryView(initialSearch: search) { exercise in
+                            onPick(exercise)
+                            dismiss()
+                        }
+                    } label: {
+                        Label(
+                            search.isEmpty ? "Chercher dans la bibliothèque" : "Chercher « \(search) » dans la bibliothèque",
+                            systemImage: "books.vertical.fill"
+                        )
+                    }
+                }
                 ForEach(sections) { section in
                     Section(section.group.label) {
                         ForEach(section.exercises) { exercise in
-                            Button(exercise.name) {
+                            Button {
                                 onPick(exercise)
                                 dismiss()
+                            } label: {
+                                HStack(spacing: 12) {
+                                    ExerciseIcon(exercise: exercise, size: 32)
+                                    Text(exercise.name)
+                                    Spacer()
+                                    Image(systemName: "plus.circle.fill")
+                                        .foregroundStyle(Color.accentColor)
+                                }
                             }
                             .foregroundStyle(.primary)
                         }
                     }
-                }
-            }
-            .overlay {
-                if sections.isEmpty && !search.isEmpty {
-                    ContentUnavailableView.search(text: search)
                 }
             }
             .searchable(text: $search, placement: .navigationBarDrawer(displayMode: .always), prompt: "Rechercher")
