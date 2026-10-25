@@ -24,6 +24,8 @@ jobs:
 
   ipa:
     runs-on: macos-15
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - name: Build for iPhone (unsigned)
@@ -45,3 +47,16 @@ jobs:
         with:
           name: Musculation-unsigned-ipa
           path: Musculation-unsigned.ipa
+      # Outside pull requests, publish a release so the .ipa has a direct link:
+      # https://github.com/Matthieumdb/musculation/releases/latest/download/Musculation.ipa
+      - name: Publish release
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp Musculation-unsigned.ipa Musculation.ipa
+          gh release create "build-${{ github.run_number }}" Musculation.ipa \
+            --target "${{ github.sha }}" \
+            --title "Musculation (build ${{ github.run_number }})" \
+            --notes "Compilée depuis ${{ github.ref_name }}. À installer avec Sideloadly ou AltStore." \
+            --latest
