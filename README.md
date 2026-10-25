@@ -29,6 +29,7 @@ App iOS (SwiftUI + SwiftData) pour suivre ses séances de musculation. Les donn�
 - **Import depuis Hevy** (Réglages › Importer depuis Hevy) : l'export CSV des séances Hevy (en français ou en anglais) est importé dans l'historique, et l'export des mensurations dans le suivi du poids de corps, avec une correspondance des exercices modifiable avant l'import.
 
 - **Coach** (onglet Séance) : analyse sur l'iPhone de tes 10 dernières semaines — records, charges à augmenter, exercices qui stagnent ou baissent, volume par muscle, équilibre poussée/tirage, régularité, semaine de décharge.
+- **Objectif par série** : chaque série d'un exercice déjà fait reçoit un objectif (charge × reps) calculé depuis la même série de la dernière séance : une rep de plus jusqu'au haut de la fourchette, puis la charge augmente et les reps repartent du bas. Une série facile (RPE ≤ 7) monte plus vite, une série ratée de loin redescend.
 - **RPE par série** : note l'effort (6 à 10, avec les reps en réserve) ou laisse l'app l'estimer à partir de ton 1RM récent.
 
 ## Lancer l'app

@@ -147,7 +147,7 @@ enum Coach {
                     kind: .action,
                     symbol: "arrow.up.circle.fill",
                     title: "Monte la charge sur \(exercise.name)",
-                    message: "Tu as fait toutes tes répétitions cibles. La prochaine fois, essaie \((latest.topWeight + increment).kgText) (+\(increment.preciseKgText)).",
+                    message: "Tu as atteint le haut de ta fourchette de reps. Ton objectif de la prochaine fois : \((latest.topWeight + increment).kgText) (+\(increment.preciseKgText)), déjà prérempli dans la séance.",
                     exercise: exercise
                 ))
                 continue
@@ -216,13 +216,14 @@ enum Coach {
         return Array(records.prefix(3)) + Array(progress.prefix(4)) + Array(stalls.prefix(3)) + Array(drops.prefix(3))
     }
 
-    /// Weight to add when every set reached the target reps of a template exercise.
+    /// Weight to add when the heaviest set reached the top of its rep range.
     private static func nextIncrement(for entry: WorkoutExercise, exercise: Exercise) -> Double? {
-        guard let target = entry.targetReps,
-              WorkoutExercise.reachedTarget(entry.orderedSets, targetReps: target)
+        let sets = entry.orderedSets
+        let range = SetTarget.repRange(minReps: entry.minReps, targetReps: entry.targetReps, previous: sets)
+        guard let top = sets.max(by: { $0.weight < $1.weight }), top.weight > 0, top.reps >= range.upperBound
         else { return nil }
-        let increment = exercise.progressionIncrement(from: entry.maxWeight)
-        return increment > 0 && entry.maxWeight > 0 ? increment : nil
+        let increment = exercise.progressionIncrement(from: top.weight)
+        return increment > 0 ? increment : nil
     }
 
     private static func setsPerGroup(_ workouts: [Workout], days: Double, now: Date) -> [MuscleGroup: Int] {

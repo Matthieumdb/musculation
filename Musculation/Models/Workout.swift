@@ -47,23 +47,26 @@ final class Workout {
         entry.restSeconds = restSeconds
         entry.note = note
 
-        // Progressive overload: every target rep was done last time, so add weight.
-        let progresses = allowProgression && WorkoutExercise.reachedTarget(previous, targetReps: targetReps)
-        let increment = progresses ? exercise.progressionIncrement(from: previous.map(\.weight).max() ?? 0) : 0
-        entry.progressionIncrement = progresses ? increment : nil
+        // Each set aims a bit above the matching set of last time (see SetTarget).
+        let range = SetTarget.repRange(minReps: minReps, targetReps: targetReps, previous: previous)
+        let reference1RM = exercise.history.first.map(\.bestOneRepMax)
+        var increment: Double = 0
         let count = targetSets ?? max(previous.count, 1)
         for index in 0..<count {
             let reference = previous.isEmpty ? nil : previous[min(index, previous.count - 1)]
-            let weight = reference?.weight ?? 0
-            let reps: Int
-            if let minReps, let targetReps {
-                // Double progression: back to the bottom of the range after a weight increase.
-                reps = progresses ? minReps : min(max(reference?.reps ?? minReps, minReps), targetReps)
+            if let reference, reference.reps > 0 {
+                let target = allowProgression
+                    ? SetTarget.next(after: reference, range: range, exercise: exercise, oneRepMax: reference1RM)
+                    : SetTarget(weight: reference.weight, reps: min(reference.reps, range.upperBound))
+                increment = max(increment, target.weight - reference.weight)
+                let set = entry.addSet(reps: target.reps, weight: target.weight, in: context)
+                set.targetWeight = target.weight
+                set.targetReps = target.reps
             } else {
-                reps = targetReps ?? reference?.reps ?? 10
+                entry.addSet(reps: targetReps ?? 10, weight: 0, in: context)
             }
-            entry.addSet(reps: reps, weight: weight > 0 ? weight + increment : 0, in: context)
         }
+        entry.progressionIncrement = increment > 0 ? increment : nil
         return entry
     }
 
@@ -72,8 +75,25 @@ final class Workout {
         let previous = exercise.history.first?.orderedSets ?? []
         entry.exercise = exercise
         entry.progressionIncrement = nil
+        let range = SetTarget.repRange(minReps: entry.minReps, targetReps: entry.targetReps, previous: previous)
+        let reference1RM = exercise.history.first.map(\.bestOneRepMax)
         for (index, set) in entry.orderedSets.enumerated() where !set.isCompleted {
-            set.weight = previous.isEmpty ? 0 : previous[min(index, previous.count - 1)].weight
+            guard !previous.isEmpty else {
+                set.weight = 0
+                set.targetWeight = nil
+                set.targetReps = nil
+                continue
+            }
+            let target = SetTarget.next(
+                after: previous[min(index, previous.count - 1)],
+                range: range,
+                exercise: exercise,
+                oneRepMax: reference1RM
+            )
+            set.weight = target.weight
+            set.reps = target.reps
+            set.targetWeight = target.weight
+            set.targetReps = target.reps
         }
     }
 
@@ -203,6 +223,14 @@ final class WorkoutSet {
     var isCompleted: Bool
     /// Rate of perceived exertion, 6 to 10 (10 = failure, 9 = one rep left…).
     var rpe: Double?
+    /// Goal for this set, computed from the same set last time.
+    var targetWeight: Double?
+    var targetReps: Int?
+
+    var reachedTarget: Bool {
+        guard let targetReps else { return false }
+        return weight >= (targetWeight ?? 0) && reps >= targetReps
+    }
     var workoutExercise: WorkoutExercise?
 
     init(order: Int, reps: Int, weight: Double) {
@@ -214,6 +242,51 @@ final class WorkoutSet {
 
     var volume: Double { Double(reps) * weight }
     var estimatedOneRepMax: Double { OneRepMax.epley(weight: weight, reps: reps) }
+}
+
+/// Per-set double progression: add reps up to the top of the range, then add weight and
+/// go back to the bottom. An easy set (RPE 7 or less) moves up faster, a missed one holds.
+struct SetTarget {
+    let weight: Double
+    let reps: Int
+
+    static func repRange(minReps: Int?, targetReps: Int?, previous: [WorkoutSet]) -> ClosedRange<Int> {
+        if let minReps, let targetReps, minReps <= targetReps { return minReps...targetReps }
+        if let targetReps { return targetReps...targetReps }
+        let typical = previous.map(\.reps).max() ?? 10
+        switch typical {
+        case ...6: return 4...6
+        case 7...12: return 8...12
+        default: return 12...20
+        }
+    }
+
+    static func next(after set: WorkoutSet, range: ClosedRange<Int>, exercise: Exercise, oneRepMax: Double?) -> SetTarget {
+        let weight = set.weight
+        let reps = set.reps
+        guard weight > 0 else {
+            // Bodyweight: one more rep each time.
+            return SetTarget(weight: 0, reps: reps + 1)
+        }
+        let effort = set.rpe ?? RPE.estimate(weight: weight, reps: reps, reference: oneRepMax)
+        let increment = exercise.progressionIncrement(from: weight)
+
+        if reps >= range.upperBound {
+            return SetTarget(weight: weight + increment, reps: range.lowerBound)
+        }
+        if let effort, effort <= 7, reps >= range.lowerBound {
+            // Plenty left in the tank: heavier, same reps.
+            return SetTarget(weight: weight + increment, reps: reps)
+        }
+        if reps < range.lowerBound - 2 {
+            // Clearly too heavy: step back to land in the range.
+            return SetTarget(weight: max(0, weight - increment), reps: range.lowerBound)
+        }
+        if let effort, effort >= 10, reps < range.lowerBound {
+            return SetTarget(weight: weight, reps: range.lowerBound)
+        }
+        return SetTarget(weight: weight, reps: min(reps + 1, range.upperBound))
+    }
 }
 
 enum RPE {

@@ -209,7 +209,7 @@ struct WorkoutExerciseSection: View {
         Section {
             HStack(spacing: 8) {
                 Text("Série").frame(width: SetColumns.number, alignment: .leading)
-                Text("Précédent").frame(maxWidth: .infinity, alignment: .leading)
+                Text("Objectif").frame(maxWidth: .infinity, alignment: .leading)
                 Text("kg").frame(width: SetColumns.weight)
                 Text("Reps").frame(width: SetColumns.reps)
                 Text("RPE").frame(width: SetColumns.rpe)
@@ -348,7 +348,7 @@ struct WorkoutExerciseSection: View {
                 }
                 if let increment = entry.progressionIncrement, increment > 0 {
                     Label(
-                        "Objectif atteint la dernière fois : +\(increment.preciseKgText).",
+                        "Objectif en hausse : +\(increment.preciseKgText) par rapport à la dernière fois.",
                         systemImage: "arrow.up.circle.fill"
                     )
                     .foregroundStyle(.green)
@@ -412,19 +412,41 @@ struct SetRow: View {
             .frame(width: SetColumns.number, alignment: .leading)
 
             Button {
-                guard let previous else { return }
-                set.weight = previous.weight
-                set.reps = previous.reps
+                if let targetReps = set.targetReps {
+                    set.weight = set.targetWeight ?? set.weight
+                    set.reps = targetReps
+                } else if let previous {
+                    set.weight = previous.weight
+                    set.reps = previous.reps
+                }
             } label: {
-                Text(previous.map { "\($0.weight.formatted(.number.precision(.fractionLength(0...2)))) × \($0.reps)" } ?? "—")
-                    .font(.subheadline.monospacedDigit())
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                VStack(alignment: .leading, spacing: 1) {
+                    if let targetReps = set.targetReps {
+                        HStack(spacing: 3) {
+                            Image(systemName: set.isCompleted && set.reachedTarget ? "checkmark.seal.fill" : "target")
+                                .font(.caption2.weight(.bold))
+                            Text(Self.text(weight: set.targetWeight ?? 0, reps: targetReps))
+                                .font(.subheadline.weight(.semibold).monospacedDigit())
+                        }
+                        .foregroundStyle(set.isCompleted && set.reachedTarget ? Color.green : Color.accentColor)
+                        if let previous {
+                            Text("avant \(Self.text(weight: previous.weight, reps: previous.reps))")
+                                .font(.caption2.monospacedDigit())
+                                .foregroundStyle(.secondary)
+                        }
+                    } else {
+                        Text(previous.map { Self.text(weight: $0.weight, reps: $0.reps) } ?? "—")
+                            .font(.subheadline.monospacedDigit())
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .buttonStyle(.plain)
-            .disabled(previous == nil)
+            .disabled(previous == nil && set.targetReps == nil)
+            .accessibilityHint("Remplit la série avec l'objectif")
 
             TextField("0", value: $set.weight, format: .number.precision(.fractionLength(0...2)))
                 .keyboardType(.decimalPad)
@@ -472,6 +494,12 @@ struct SetRow: View {
         }
         .padding(.vertical, 2)
         .sensoryFeedback(.success, trigger: isRecord) { _, isNowRecord in isNowRecord }
+    }
+
+    private static func text(weight: Double, reps: Int) -> String {
+        weight > 0
+            ? "\(weight.formatted(.number.precision(.fractionLength(0...2)))) × \(reps)"
+            : "\(reps) reps"
     }
 
     private func rpeColor(_ rpe: Double) -> Color {
