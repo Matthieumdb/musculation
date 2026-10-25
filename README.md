@@ -27,3 +27,7 @@ Musculation/
   Views/     écrans SwiftUI
   Support/   1RM (formule d'Epley), formatage, exercices par défaut
 ```
+
+## Installer sans Mac
+
+Le workflow GitHub Actions *Build* produit un fichier `Musculation-unsigned.ipa`, disponible dans les artefacts de chaque exécution. Ce fichier n'est pas signé : installe-le avec [Sideloadly](https://sideloadly.io) ou [AltStore](https://altstore.io) (Windows ou Mac). Ces outils le signent avec ton Apple ID. Avec un compte gratuit, l'app est à réinstaller tous les 7 jours.
