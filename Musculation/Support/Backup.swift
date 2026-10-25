@@ -19,6 +19,7 @@ struct Backup: Codable {
     }
 
     struct SetRecord: Codable {
+        var rpe: Double?
         var reps: Int
         var weight: Double
         var isCompleted: Bool
@@ -93,7 +94,7 @@ enum BackupService {
                             restSeconds: entry.restSeconds,
                             note: entry.note,
                             sets: entry.orderedSets.map {
-                                Backup.SetRecord(reps: $0.reps, weight: $0.weight, isCompleted: $0.isCompleted)
+                                Backup.SetRecord(rpe: $0.rpe, reps: $0.reps, weight: $0.weight, isCompleted: $0.isCompleted)
                             }
                         )
                     }
@@ -179,6 +180,7 @@ enum BackupService {
                 for setRecord in entryRecord.sets {
                     let set = entry.addSet(reps: setRecord.reps, weight: setRecord.weight, in: context)
                     set.isCompleted = setRecord.isCompleted
+                    set.rpe = setRecord.rpe
                 }
             }
         }

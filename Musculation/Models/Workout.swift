@@ -201,6 +201,8 @@ final class WorkoutSet {
     var reps: Int
     var weight: Double
     var isCompleted: Bool
+    /// Rate of perceived exertion, 6 to 10 (10 = failure, 9 = one rep left…).
+    var rpe: Double?
     var workoutExercise: WorkoutExercise?
 
     init(order: Int, reps: Int, weight: Double) {
@@ -212,4 +214,36 @@ final class WorkoutSet {
 
     var volume: Double { Double(reps) * weight }
     var estimatedOneRepMax: Double { OneRepMax.epley(weight: weight, reps: reps) }
+}
+
+enum RPE {
+    static let values: [Double] = [6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10]
+
+    static func label(_ rpe: Double) -> String {
+        rpe.formatted(.number.precision(.fractionLength(0...1)))
+    }
+
+    /// Expected RPE of a set, from how many reps the reference 1RM allows at that weight (Epley).
+    static func estimate(weight: Double, reps: Int, reference: Double?) -> Double? {
+        guard let reference, reference > 0, weight > 0, reps > 0 else { return nil }
+        let possibleReps = 30 * (reference / weight - 1)
+        let inReserve = possibleReps - Double(reps)
+        let rpe = (10 - inReserve) * 2
+        return min(10, max(5, rpe.rounded() / 2))
+    }
+
+    static func meaning(_ rpe: Double) -> String {
+        switch rpe {
+        case 10: "Échec, plus aucune rep possible"
+        case 9.5: "Peut-être une rep de plus"
+        case 9: "1 rep en réserve"
+        case 8.5: "1 à 2 reps en réserve"
+        case 8: "2 reps en réserve"
+        case 7.5: "2 à 3 reps en réserve"
+        case 7: "3 reps en réserve"
+        case 6.5: "3 à 4 reps en réserve"
+        case 6: "4 reps en réserve"
+        default: "5 reps ou plus en réserve"
+        }
+    }
 }

@@ -185,6 +185,7 @@ private enum SetColumns {
     static let number: CGFloat = 30
     static let weight: CGFloat = 72
     static let reps: CGFloat = 54
+    static let rpe: CGFloat = 38
     static let check: CGFloat = 36
 }
 
@@ -211,6 +212,7 @@ struct WorkoutExerciseSection: View {
                 Text("Précédent").frame(maxWidth: .infinity, alignment: .leading)
                 Text("kg").frame(width: SetColumns.weight)
                 Text("Reps").frame(width: SetColumns.reps)
+                Text("RPE").frame(width: SetColumns.rpe)
                 Image(systemName: "checkmark").frame(width: SetColumns.check)
             }
             .font(.caption.weight(.semibold))
@@ -224,6 +226,7 @@ struct WorkoutExerciseSection: View {
                     set: set,
                     previous: pair.offset < previousSets.count ? previousSets[pair.offset] : nil,
                     isRecord: set.isCompleted && previousBest.map { set.estimatedOneRepMax > $0 } == true,
+                    referenceOneRepMax: previousBest,
                     onCompleted: onSetCompleted
                 )
                 .listRowBackground(set.isCompleted ? Color.green.opacity(0.14) : nil)
@@ -386,6 +389,7 @@ struct SetRow: View {
     @Bindable var set: WorkoutSet
     var previous: WorkoutSet?
     var isRecord: Bool
+    var referenceOneRepMax: Double? = nil
     var onCompleted: () -> Void
 
     var body: some View {
@@ -432,6 +436,24 @@ struct SetRow: View {
                 .modifier(SetFieldStyle())
                 .frame(width: SetColumns.reps)
 
+            let estimate = RPE.estimate(weight: set.weight, reps: set.reps, reference: referenceOneRepMax)
+            Menu {
+                Picker("RPE", selection: $set.rpe) {
+                    Text(estimate.map { "Calculé : ~\(RPE.label($0))" } ?? "Non noté").tag(Double?.none)
+                    ForEach(RPE.values.reversed(), id: \.self) { value in
+                        Text("\(RPE.label(value)) · \(RPE.meaning(value))").tag(Double?.some(value))
+                    }
+                }
+            } label: {
+                Text(set.rpe.map(RPE.label) ?? estimate.map { "~" + RPE.label($0) } ?? "–")
+                    .font(.subheadline.weight(set.rpe == nil ? .regular : .semibold).monospacedDigit())
+                    .minimumScaleFactor(0.7)
+                    .foregroundStyle(set.rpe.map(rpeColor) ?? Color.secondary)
+                    .frame(width: SetColumns.rpe, height: 34)
+                    .background(Theme.field, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            }
+            .accessibilityLabel("RPE")
+
             Button {
                 withAnimation(.snappy) {
                     set.isCompleted.toggle()
@@ -450,6 +472,14 @@ struct SetRow: View {
         }
         .padding(.vertical, 2)
         .sensoryFeedback(.success, trigger: isRecord) { _, isNowRecord in isNowRecord }
+    }
+
+    private func rpeColor(_ rpe: Double) -> Color {
+        switch rpe {
+        case 9.5...: .red
+        case 8.5..<9.5: .orange
+        default: .green
+        }
     }
 }
 

@@ -13,7 +13,7 @@ enum HevyImport {
 
     struct ParsedExercise {
         var title: String
-        var sets: [(weight: Double, reps: Int)]
+        var sets: [(weight: Double, reps: Int, rpe: Double?)]
     }
 
     enum ImportError: LocalizedError {
@@ -44,6 +44,7 @@ enum HevyImport {
         let setTypeColumn = column("set_type")
         let kgColumn = column("weight_kg")
         let lbsColumn = column("weight_lbs")
+        let rpeColumn = column("rpe")
 
         var workouts: [ParsedWorkout] = []
         var indexByKey: [String: Int] = [:]
@@ -67,6 +68,7 @@ enum HevyImport {
                 weight = 0
             }
 
+            let rpe = number(value(rpeColumn)).flatMap { (6...10).contains($0) ? $0 : nil }
             let title = value(titleColumn)
             let key = "\(title)|\(value(startColumn))"
             let workoutIndex: Int
@@ -87,9 +89,9 @@ enum HevyImport {
             let exerciseTitle = value(exerciseColumn)
             guard !exerciseTitle.isEmpty else { continue }
             if workouts[workoutIndex].exercises.last?.title == exerciseTitle {
-                workouts[workoutIndex].exercises[workouts[workoutIndex].exercises.count - 1].sets.append((weight, reps))
+                workouts[workoutIndex].exercises[workouts[workoutIndex].exercises.count - 1].sets.append((weight, reps, rpe))
             } else {
-                workouts[workoutIndex].exercises.append(ParsedExercise(title: exerciseTitle, sets: [(weight, reps)]))
+                workouts[workoutIndex].exercises.append(ParsedExercise(title: exerciseTitle, sets: [(weight, reps, rpe)]))
             }
         }
 
@@ -453,7 +455,9 @@ extension HevyImport {
                 entry.exercise = exercise
                 entry.workout = workout
                 for set in parsedExercise.sets {
-                    entry.addSet(reps: set.reps, weight: set.weight, in: context).isCompleted = true
+                    let added = entry.addSet(reps: set.reps, weight: set.weight, in: context)
+                    added.isCompleted = true
+                    added.rpe = set.rpe
                 }
             }
             added += 1

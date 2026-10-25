@@ -29,6 +29,7 @@ struct StartWorkoutView: View {
     @State private var editingTemplate: WorkoutTemplate?
     @State private var newTemplate: WorkoutTemplate?
     @State private var isShowingProgram = false
+    @State private var isShowingCoach = false
 
     private var programTemplates: [WorkoutTemplate] {
         templates
@@ -58,6 +59,12 @@ struct StartWorkoutView: View {
                 header
                 stats
 
+                if !finishedWorkouts.isEmpty {
+                    CoachCard(report: Coach.analyze(Array(finishedWorkouts.prefix(120)))) {
+                        isShowingCoach = true
+                    }
+                }
+
                 Button {
                     context.insert(Workout(title: "Séance du \(Date.now.formatted(.dateTime.day().month(.wide)))"))
                     try? context.save()
@@ -83,6 +90,7 @@ struct StartWorkoutView: View {
         .toolbar(.hidden, for: .navigationBar)
         .sheet(item: $editingTemplate) { TemplateEditView(template: $0, isNew: false) }
         .sheet(item: $newTemplate) { TemplateEditView(template: $0, isNew: true) }
+        .sheet(isPresented: $isShowingCoach) { CoachView() }
         .sheet(isPresented: $isShowingProgram) {
             if let programName = programTemplates.first?.programName {
                 ProgramDetailView(programName: programName)
