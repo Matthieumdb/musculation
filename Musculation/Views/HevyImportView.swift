@@ -75,11 +75,11 @@ struct HevyImportView: View {
                     .padding(.bottom, 8)
                 }
             }
-            .fileImporter(
-                isPresented: $isPickingFile,
-                allowedContentTypes: [.commaSeparatedText, .plainText, .text, .data]
-            ) { result in
-                load(result)
+            .sheet(isPresented: $isPickingFile) {
+                DocumentPicker(types: [.commaSeparatedText, .plainText, .text, .data]) { url in
+                    load(.success(url))
+                }
+                .ignoresSafeArea()
             }
             .sheet(item: $choosingFor) { choosing in
                 ExercisePickerView { exercise in

@@ -131,8 +131,8 @@ struct SettingsView: View {
 
     private func connectHealth() {
         Task {
-            guard await HealthSync.requestAccess() else {
-                healthMessage = "Apple Santé n'est pas accessible. Si l'app a été installée sans l'autorisation Santé, réinstalle-la avec Sideloadly (voir le README)."
+            if let error = await HealthSync.requestAccess() {
+                healthMessage = "Connexion à Apple Santé impossible : \(error)"
                 return
             }
             healthEnabled = true

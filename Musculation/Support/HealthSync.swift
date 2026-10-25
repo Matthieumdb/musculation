@@ -13,17 +13,17 @@ enum HealthSync {
     private static let bodyMass = HKQuantityType(.bodyMass)
     private static let activeEnergy = HKQuantityType(.activeEnergyBurned)
 
-    /// Asks for access. Returns false when Health is unavailable or the request failed.
-    static func requestAccess() async -> Bool {
-        guard isAvailable else { return false }
+    /// Asks for access. Returns nil on success, otherwise why it failed.
+    static func requestAccess() async -> String? {
+        guard isAvailable else { return "Apple Santé n'est pas disponible sur cet appareil." }
         do {
             try await store.requestAuthorization(
                 toShare: [HKObjectType.workoutType(), bodyMass, activeEnergy],
                 read: [bodyMass]
             )
-            return true
+            return nil
         } catch {
-            return false
+            return error.localizedDescription
         }
     }
 
