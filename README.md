@@ -25,6 +25,9 @@ App iOS (SwiftUI + SwiftData) pour suivre ses séances de musculation. Les donn�
 
 - **Bibliothèque de 654 exercices illustrés** (Free Exercise DB, domaine public) : noms en français, recherche, filtres par muscle et matériel, animation de l'exécution en deux images, muscles travaillés et consignes. Tes exercices et ceux du programme sont reliés à leur fiche (consignes en français, images embarquées pour fonctionner hors connexion) ; les autres images se téléchargent une fois puis restent en cache. Touche la vignette d'un exercice pendant la séance pour revoir le mouvement.
 
+- **Remplacer un exercice** par une variante qui travaille le même muscle (barre, haltères, machine, poulie…), pendant la séance ou dans un modèle. En séance, le changement peut aussi être gardé dans le modèle.
+- **Import depuis Hevy** (Réglages › Importer depuis Hevy) : l'export CSV des séances Hevy est importé dans l'historique, avec une correspondance des exercices modifiable avant l'import.
+
 ## Lancer l'app
 
 1. Ouvre `Musculation.xcodeproj` avec Xcode 16 ou plus récent.

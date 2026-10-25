@@ -12,6 +12,7 @@ struct SettingsView: View {
     @State private var isImporting = false
     @State private var pendingBackup: Backup?
     @State private var alertMessage: String?
+    @State private var isImportingHevy = false
 
     var body: some View {
         NavigationStack {
@@ -56,10 +57,23 @@ struct SettingsView: View {
                 }
 
                 Section {
+                    Button {
+                        isImportingHevy = true
+                    } label: {
+                        Label("Importer depuis Hevy", systemImage: "arrow.down.doc")
+                    }
+                } header: {
+                    Text("Autres apps")
+                } footer: {
+                    Text("Récupère ton historique Hevy à partir de son export CSV.")
+                }
+
+                Section {
                     LabeledContent("Version", value: appVersion)
                 }
             }
             .navigationTitle("Réglages")
+            .sheet(isPresented: $isImportingHevy) { HevyImportView() }
             .onAppear {
                 exportURL = try? BackupService.exportFile(from: context)
             }

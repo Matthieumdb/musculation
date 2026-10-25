@@ -122,6 +122,12 @@ enum ExerciseLibrary {
 
     static func entry(id: String) -> LibraryExercise? { byId[id] }
 
+    /// Entry for an exercise name, built-in or as named in the library.
+    static func entry(name: String) -> LibraryExercise? {
+        if let id = builtInIds[name] { return byId[id] }
+        return byFrenchName[name.lowercased()]
+    }
+
     static func entry(for exercise: Exercise) -> LibraryExercise? {
         if let id = exercise.libraryId, let entry = byId[id] { return entry }
         if let id = builtInIds[exercise.name] { return byId[id] }
