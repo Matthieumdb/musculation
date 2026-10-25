@@ -18,13 +18,16 @@ struct ExerciseListView: View {
                             Button {
                                 editingExercise = exercise
                             } label: {
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(exercise.name)
-                                    if !exercise.notes.isEmpty {
-                                        Text(exercise.notes)
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
-                                            .lineLimit(1)
+                                HStack(spacing: 12) {
+                                    MuscleIcon(group: exercise.muscleGroup, size: 32)
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(exercise.name)
+                                        if !exercise.notes.isEmpty {
+                                            Text(exercise.notes)
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                                .lineLimit(1)
+                                        }
                                     }
                                 }
                             }

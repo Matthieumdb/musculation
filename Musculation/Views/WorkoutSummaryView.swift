@@ -33,20 +33,27 @@ struct WorkoutSummary: Identifiable {
 struct WorkoutSummaryView: View {
     @Environment(\.dismiss) private var dismiss
     let summary: WorkoutSummary
+    @State private var appeared = false
 
     var body: some View {
         NavigationStack {
             List {
                 Section {
-                    VStack(spacing: 8) {
+                    VStack(spacing: 10) {
                         Image(systemName: summary.records.isEmpty ? "checkmark.seal.fill" : "trophy.fill")
-                            .font(.system(size: 56))
-                            .foregroundStyle(summary.records.isEmpty ? Color.green : Color.yellow)
-                        Text("Bien joué !").font(.title.bold())
+                            .font(.system(size: 44, weight: .bold))
+                            .foregroundStyle(.white)
+                            .frame(width: 96, height: 96)
+                            .background(Theme.gradient, in: Circle())
+                            .scaleEffect(appeared ? 1 : 0.4)
+                            .symbolEffect(.bounce, value: appeared)
+                        Text(summary.records.isEmpty ? "Bien joué !" : "Nouveau record !")
+                            .font(.title.bold())
                         Text(summary.title).foregroundStyle(.secondary)
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical)
+                    .listRowBackground(Color.clear)
                 }
 
                 Section {
@@ -64,6 +71,10 @@ struct WorkoutSummaryView: View {
                     }
                 }
             }
+            .onAppear {
+                withAnimation(.spring(response: 0.5, dampingFraction: 0.6)) { appeared = true }
+            }
+            .sensoryFeedback(.success, trigger: appeared)
             .navigationTitle("Séance terminée")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

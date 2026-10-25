@@ -14,9 +14,17 @@ struct ExercisePickerView: View {
                 ForEach(sections) { section in
                     Section(section.group.label) {
                         ForEach(section.exercises) { exercise in
-                            Button(exercise.name) {
+                            Button {
                                 onPick(exercise)
                                 dismiss()
+                            } label: {
+                                HStack(spacing: 12) {
+                                    MuscleIcon(group: exercise.muscleGroup, size: 32)
+                                    Text(exercise.name)
+                                    Spacer()
+                                    Image(systemName: "plus.circle.fill")
+                                        .foregroundStyle(Color.accentColor)
+                                }
                             }
                             .foregroundStyle(.primary)
                         }

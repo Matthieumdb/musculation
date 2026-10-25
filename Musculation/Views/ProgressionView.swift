@@ -60,9 +60,18 @@ struct ProgressionView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section("Cette semaine") {
-                    LabeledContent("Séances", value: "\(thisWeek.count)")
-                    LabeledContent("Volume", value: thisWeek.reduce(0) { $0 + $1.totalVolume }.kgText)
+                Section {
+                    HStack(spacing: 10) {
+                        StatTile(value: "\(thisWeek.count)", label: "séances cette semaine", symbol: "calendar", tint: .orange)
+                        StatTile(
+                            value: thisWeek.reduce(0) { $0 + $1.totalVolume }.kgText,
+                            label: "soulevés cette semaine",
+                            symbol: "scalemass.fill",
+                            tint: .green
+                        )
+                    }
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets())
                 }
 
                 Section("Séances par semaine") {
@@ -71,7 +80,8 @@ struct ProgressionView: View {
                             x: .value("Semaine", week.start, unit: .weekOfYear),
                             y: .value("Séances", week.count)
                         )
-                        .foregroundStyle(Color.accentColor)
+                        .foregroundStyle(Theme.gradient)
+                        .cornerRadius(4)
                     }
                     .chartXAxis {
                         AxisMarks(values: .stride(by: .month)) { _ in
@@ -115,12 +125,15 @@ struct ProgressionView: View {
                 Section("Par exercice") {
                     ForEach(trainedExercises) { exercise in
                         NavigationLink(value: exercise) {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(exercise.name)
-                                let best = exercise.history.map(\.bestOneRepMax).max() ?? 0
-                                Text("1RM estimé : \(best.kgText) · \(exercise.history.count) séances")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
+                            HStack(spacing: 12) {
+                                MuscleIcon(group: exercise.muscleGroup, size: 32)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(exercise.name)
+                                    let best = exercise.history.map(\.bestOneRepMax).max() ?? 0
+                                    Text("1RM estimé : \(best.kgText) · \(exercise.history.count) séances")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
                             }
                         }
                     }
@@ -180,7 +193,10 @@ struct ExerciseProgressView: View {
                 Chart(points) { point in
                     LineMark(x: .value("Date", point.date), y: .value(metric.rawValue, point.value))
                         .interpolationMethod(.monotone)
+                        .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round))
+                        .foregroundStyle(Theme.gradient)
                     PointMark(x: .value("Date", point.date), y: .value(metric.rawValue, point.value))
+                        .foregroundStyle(Color.accentColor)
                 }
                 .chartYScale(domain: .automatic(includesZero: false))
                 .frame(height: 220)
