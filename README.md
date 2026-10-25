@@ -44,4 +44,4 @@ Musculation/
 
 ## Installer sans Mac
 
-La dernière version est toujours téléchargeable directement (même depuis Safari sur iPhone) : https://github.com/Matthieumdb/musculation/releases/latest/download/Musculation.ipa. Le workflow GitHub Actions *Build* la publie à chaque mise à jour de `main`. Ce fichier n'est pas signé : installe-le avec [Sideloadly](https://sideloadly.io) ou [AltStore](https://altstore.io) (Windows ou Mac). Ces outils le signent avec ton Apple ID. Avec un compte gratuit, l'app est à réinstaller tous les 7 jours.
+La dernière version est toujours téléchargeable directement (même depuis Safari sur iPhone) : https://github.com/Matthieumdb/musculation/releases/latest/download/Musculation.ipa. Le workflow GitHub Actions *Build* la publie à chaque mise à jour de `main`. Chaque release contient aussi le même fichier nommé avec sa version, par exemple `Musculation-2.1-build-12.ipa`. Ce fichier n'est pas signé : installe-le avec [Sideloadly](https://sideloadly.io) ou [AltStore](https://altstore.io) (Windows ou Mac). Ces outils le signent avec ton Apple ID. Avec un compte gratuit, l'app est à réinstaller tous les 7 jours.
