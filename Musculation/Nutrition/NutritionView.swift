@@ -29,6 +29,7 @@ final class NutritionSession {
     /// Grams per cart item once computed; nil while the meal is being built.
     var doses: [Double]?
     var scanTarget: ScanTarget?
+    var searchTarget: ScanTarget?
     var isLookingUp = false
     var mealError: String?
     var groceryError: String?
@@ -52,6 +53,23 @@ final class NutritionSession {
         }
     }
 
+    /// Puts a scanned or searched product in the meal, or opens it in the groceries.
+    func use(_ product: Product, for target: ScanTarget, store: NutritionStore) {
+        mealError = nil
+        groceryError = nil
+        switch target {
+        case .meal:
+            doses = nil
+            store.addToCart(product)
+            let grade = store.settings.score(product).grade
+            flash("\(product.name) ajouté · note \(grade.rawValue)")
+        case .groceries:
+            groceryItem = product
+            groceryMatch = store.settings.matchRow(product, in: store.state.shopList)
+            groceryTake = nil
+        }
+    }
+
     func lookup(_ code: String, for target: ScanTarget, store: NutritionStore) async {
         mealError = nil
         groceryError = nil
@@ -59,17 +77,7 @@ final class NutritionSession {
         defer { isLookingUp = false }
         do {
             let product = try await OpenFoodFacts.product(code: code)
-            switch target {
-            case .meal:
-                doses = nil
-                store.addToCart(product)
-                let grade = store.settings.score(product).grade
-                flash("\(product.name) ajouté · note \(grade.rawValue)")
-            case .groceries:
-                groceryItem = product
-                groceryMatch = store.settings.matchRow(product, in: store.state.shopList)
-                groceryTake = nil
-            }
+            use(product, for: target, store: store)
         } catch {
             let message = (error as? LocalizedError)?.errorDescription ?? "Produit introuvable."
             if target == .meal { mealError = message } else { groceryError = message }
@@ -126,6 +134,11 @@ struct NutritionView: View {
                     Task { await session.lookup(code, for: target, store: store) }
                 }
             }
+            .sheet(item: $session.searchTarget) { target in
+                FoodSearchSheet { product in
+                    withAnimation(.appSpring) { session.use(product, for: target, store: store) }
+                }
+            }
         }
         .environment(session)
         .onAppear {
@@ -145,6 +158,14 @@ struct NutritionView: View {
             switch session.page {
             case .today:
                 if session.doses == nil {
+                    Button {
+                        session.searchTarget = .meal
+                    } label: {
+                        Label("Rechercher", systemImage: "magnifyingglass")
+                            .labelStyle(.iconOnly)
+                    }
+                    .glassButton()
+
                     Button {
                         session.scanTarget = .meal
                     } label: {
@@ -189,6 +210,14 @@ struct NutritionView: View {
                 }
             case .groceries:
                 if session.groceryItem == nil {
+                    Button {
+                        session.searchTarget = .groceries
+                    } label: {
+                        Label("Rechercher", systemImage: "magnifyingglass")
+                            .labelStyle(.iconOnly)
+                    }
+                    .glassButton()
+
                     Button {
                         session.scanTarget = .groceries
                     } label: {
