@@ -17,8 +17,6 @@ jobs:
           XCODE=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
           sudo xcode-select -s "$XCODE"
           xcodebuild -version
-      - name: Fetch fonts
-        run: scripts/fetch-fonts.sh || echo "Fonts unavailable, falling back to SF Pro"
       - name: Build for iOS Simulator
         run: |
           xcodebuild build \
@@ -40,8 +38,6 @@ jobs:
           XCODE=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
           sudo xcode-select -s "$XCODE"
           xcodebuild -version
-      - name: Fetch fonts
-        run: scripts/fetch-fonts.sh || echo "Fonts unavailable, falling back to SF Pro"
       - name: Build for iPhone (unsigned)
         run: |
           xcodebuild build \

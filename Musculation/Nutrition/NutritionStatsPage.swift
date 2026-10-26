@@ -71,6 +71,7 @@ struct NutritionStatsPage: View {
         let streaks = Self.streaks(long, t: t)
 
         VStack(alignment: .leading, spacing: 14) {
+            CardTitle("Moyennes", symbol: "chart.line.uptrend.xyaxis")
             Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 14) {
                 GridRow {
                     metric(logged.isEmpty ? "—" : "\(Int(avg.kcal.rounded()))", "kcal / jour · cible \(Int(t.kcal))", Theme.calories)
@@ -136,7 +137,7 @@ struct NutritionStatsPage: View {
         let data = bars(all, n: n, t: t) { showsProtein ? $0.p : $0.kcal }
         return VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text(n > 30 ? "Par semaine" : "Par jour").font(.display(20, relativeTo: .title3))
+                CardTitle(n > 30 ? "Par semaine" : "Par jour", symbol: "chart.bar.fill", tint: tint)
                 Spacer()
                 Picker("Mesure", selection: $showsProtein.animation(.appEase)) {
                     Text("kcal").tag(false)
@@ -184,7 +185,7 @@ struct NutritionStatsPage: View {
             )
         }
         return VStack(alignment: .leading, spacing: 12) {
-            Text("Répartition des calories").font(.display(20, relativeTo: .title3))
+            CardTitle("Répartition des calories", symbol: "chart.pie.fill", tint: Theme.calories)
             GeometryReader { proxy in
                 HStack(spacing: 3) {
                     ForEach(parts, id: \.0) { part in

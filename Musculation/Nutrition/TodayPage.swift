@@ -35,6 +35,7 @@ private struct DayCard: View {
         let selected = slots.first { $0.id == session.slotId } ?? slots.first
 
         VStack(alignment: .leading, spacing: 16) {
+            CardTitle("Calories", symbol: "flame.fill", tint: Theme.calories)
             HStack(spacing: 20) {
                 ZStack {
                     ProgressRing(progress: t.kcal > 0 ? e.kcal / t.kcal : 0, tint: left < 0 ? Color.red : Theme.calories, lineWidth: 14)
@@ -121,7 +122,7 @@ private struct MealCard: View {
 
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .firstTextBaseline) {
-                Text("Ce que tu manges").font(.display(18, relativeTo: .headline))
+                CardTitle("Ce que tu manges", symbol: "fork.knife", tint: Theme.calories)
                 Spacer()
                 if !cart.isEmpty {
                     Text("\(cart.count) produit\(cart.count > 1 ? "s" : "")").font(.subheadline).foregroundStyle(.secondary)
@@ -249,7 +250,7 @@ private struct DosesCard: View {
         let onTarget = abs(worst.1) <= 0.1
 
         VStack(alignment: .leading, spacing: 12) {
-            Text("Tes doses à peser").font(.display(18, relativeTo: .headline))
+            CardTitle("Tes doses à peser", symbol: "scalemass.fill")
             Label(onTarget ? "Pile dans tes objectifs"
                   : worst.1 < 0 ? "Il manque des \(worst.0.label.lowercased())"
                   : "Trop de \(worst.0.label.lowercased()) : fixe une quantité plus bas",
@@ -332,7 +333,7 @@ private struct JournalCard: View {
                     BodyWeightView()
                 } label: {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Poids").font(.subheadline).foregroundStyle(.secondary)
+                        CardTitle("Poids", symbol: "scalemass.fill", tint: .indigo)
                         HStack(alignment: .firstTextBaseline, spacing: 6) {
                             Text(now.avg.map(\.kgText) ?? weights[DayKey.today].map(\.kgText) ?? "—")
                                 .font(.display(22))

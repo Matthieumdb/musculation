@@ -1,16 +1,17 @@
 import SwiftUI
 
 enum Theme {
-    static let gradient = LinearGradient(
-        colors: [Color(red: 1.0, green: 0.55, blue: 0.2), Color(red: 0.84, green: 0.13, blue: 0.24)],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
+    /// The accent color with the light system gradient used by SF Symbols and widgets.
+    static let gradient = Color.accentColor.gradient
     static let background = Color(.systemGroupedBackground)
     static let card = Color(.secondarySystemGroupedBackground)
     static let field = Color(.tertiarySystemFill)
     static let accentRed = Color(red: 0.84, green: 0.13, blue: 0.24)
-    static let cardRadius: CGFloat = 20
+    /// Matches inset grouped lists: rounder on iOS 26.
+    static let cardRadius: CGFloat = {
+        if #available(iOS 26, *) { return 26 }
+        return 12
+    }()
 
     // Macro colors, shared by every nutrition screen
     static let calories = Color.orange
@@ -19,51 +20,12 @@ enum Theme {
     static let fat = Color.pink
 }
 
-/// Grouped background with a slow, soft color glow behind the title.
-/// Content sits on solid cards; Liquid Glass is kept for the controls that float above it.
+/// The system grouped background, as in Health, Fitness and Settings.
 struct AppBackground: View {
-    @Environment(\.scenePhase) private var scenePhase
-    @Environment(\.colorScheme) private var colorScheme
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
     var body: some View {
-        ZStack(alignment: .top) {
-            Theme.background
-            if #available(iOS 18, *) {
-                GlowMesh(paused: scenePhase != .active || reduceMotion)
-                    .opacity(colorScheme == .dark ? 0.32 : 0.45)
-                    .frame(height: 360)
-                    .mask(LinearGradient(colors: [.black, .black.opacity(0.6), .clear], startPoint: .top, endPoint: .bottom))
-            }
-        }
-        .ignoresSafeArea()
-        .allowsHitTesting(false)
-    }
-}
-
-/// Animated mesh gradient in the app's warm colors. It stops redrawing when paused.
-@available(iOS 18, *)
-private struct GlowMesh: View {
-    var paused: Bool
-
-    var body: some View {
-        TimelineView(.animation(minimumInterval: 1 / 30, paused: paused)) { context in
-            let t = context.date.timeIntervalSinceReferenceDate / 6
-            MeshGradient(
-                width: 3,
-                height: 3,
-                points: [
-                    [0, 0], [0.5, 0], [1, 0],
-                    [Float(0.05 * sin(t)), 0.5], [Float(0.5 + 0.18 * sin(t * 1.3)), Float(0.5 + 0.12 * cos(t))], [Float(1 + 0.05 * cos(t)), 0.5],
-                    [0, 1], [Float(0.5 + 0.15 * cos(t * 0.8)), 1], [1, 1],
-                ],
-                colors: [
-                    .orange, Color(red: 1, green: 0.42, blue: 0.3), .pink,
-                    Color(red: 1, green: 0.7, blue: 0.4), Theme.accentRed, .purple.opacity(0.7),
-                    .clear, .clear, .clear,
-                ]
-            )
-        }
+        Theme.background
+            .ignoresSafeArea()
+            .allowsHitTesting(false)
     }
 }
 
@@ -268,7 +230,7 @@ struct SectionHeader<Trailing: View>: View {
 
     var body: some View {
         HStack(alignment: .firstTextBaseline) {
-            Text(title).font(.display(20, relativeTo: .title3))
+            Text(title).font(.title2.bold())
             Spacer()
             trailing
                 .font(.subheadline.weight(.semibold))

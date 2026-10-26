@@ -1,39 +1,51 @@
 import SwiftUI
-import CoreText
 
-/// Satoshi (Fontshare) for titles and figures, SF Pro for running text.
-/// The font files are fetched by `scripts/fetch-fonts.sh`; without them the app falls back to SF Pro Rounded.
-enum AppFont {
-    static let medium = "Satoshi-Medium"
-    static let bold = "Satoshi-Bold"
-    static let black = "Satoshi-Black"
-
-    /// Registers the bundled font files and styles the navigation bar titles.
-    static func setUp() {
-        for ext in ["otf", "ttf"] {
-            for url in Bundle.main.urls(forResourcesWithExtension: ext, subdirectory: nil) ?? [] {
-                CTFontManagerRegisterFontsForURL(url as CFURL, .process, nil)
-            }
-        }
-        guard let large = UIFont(name: black, size: 34), let inline = UIFont(name: bold, size: 17) else { return }
-        let bar = UINavigationBar.appearance()
-        bar.largeTitleTextAttributes = [.font: UIFontMetrics(forTextStyle: .largeTitle).scaledFont(for: large)]
-        bar.titleTextAttributes = [.font: UIFontMetrics(forTextStyle: .headline).scaledFont(for: inline)]
+extension Font {
+    /// SF Pro Rounded for big figures, as in Fitness and Health, scaled with Dynamic Type.
+    static func display(_ size: CGFloat, weight: Font.Weight = .bold, relativeTo style: Font.TextStyle = .title2) -> Font {
+        .system(size: UIFontMetrics(forTextStyle: style.uiTextStyle).scaledValue(for: size), weight: weight, design: .rounded)
     }
 }
 
-extension Font {
-    /// Display face for titles and big numbers, scaled with Dynamic Type.
-    static func display(_ size: CGFloat, weight: Font.Weight = .bold, relativeTo style: Font.TextStyle = .title2) -> Font {
-        let name = switch weight {
-        case .black, .heavy: AppFont.black
-        case .medium, .regular, .light: AppFont.medium
-        default: AppFont.bold
+private extension Font.TextStyle {
+    var uiTextStyle: UIFont.TextStyle {
+        switch self {
+        case .largeTitle: .largeTitle
+        case .title: .title1
+        case .title2: .title2
+        case .title3: .title3
+        case .headline: .headline
+        case .subheadline: .subheadline
+        case .callout: .callout
+        case .footnote: .footnote
+        case .caption: .caption1
+        case .caption2: .caption2
+        default: .body
         }
-        if UIFont(name: name, size: size) != nil {
-            return .custom(name, size: size, relativeTo: style)
+    }
+}
+
+/// Card header in the style of Health: a small tinted symbol and title above the figures.
+struct CardTitle: View {
+    let title: String
+    var symbol: String?
+    var tint: Color = .accentColor
+
+    init(_ title: String, symbol: String? = nil, tint: Color = .accentColor) {
+        self.title = title
+        self.symbol = symbol
+        self.tint = tint
+    }
+
+    var body: some View {
+        HStack(spacing: 6) {
+            if let symbol { Image(systemName: symbol) }
+            Text(title)
         }
-        return .system(style, design: .rounded).weight(weight)
+        .font(.subheadline.weight(.semibold))
+        .foregroundStyle(tint)
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isHeader)
     }
 }
 

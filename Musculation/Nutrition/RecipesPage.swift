@@ -22,8 +22,7 @@ struct RecipesPage: View {
                 ForEach(Array(groups.enumerated()), id: \.element.id) { gi, group in
                     if !group.items.isEmpty {
                         VStack(alignment: .leading, spacing: 0) {
-                            Label(group.type.label, systemImage: group.type.symbol)
-                                .font(.display(20, relativeTo: .title3))
+                            CardTitle(group.type.label, symbol: group.type.symbol)
                                 .padding(.bottom, 4)
                             ForEach(Array(group.items.enumerated()), id: \.element.id) { index, _ in
                                 Divider()
@@ -361,7 +360,7 @@ private struct RecipeWeek: View {
         let groups = store.state.recipeGroups ?? []
 
         VStack(alignment: .leading, spacing: 0) {
-            Text("Courses et semaine").font(.display(20, relativeTo: .title3))
+            CardTitle("Courses et semaine", symbol: "basket.fill")
             Text("\(servings) portion\(servings > 1 ? "s" : "") · \(totals.count) produit\(totals.count > 1 ? "s" : "")")
                 .font(.caption)
                 .foregroundStyle(.secondary)

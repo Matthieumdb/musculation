@@ -115,7 +115,7 @@ struct StartWorkoutView: View {
                             .font(.caption)
                             .opacity(0.85)
                         Text(next.name)
-                            .font(.display(34, relativeTo: .largeTitle))
+                            .font(.largeTitle.bold())
                         Text("\(next.items.count) exercices\(phase.isDeload ? " · séries réduites" : "")")
                             .font(.caption)
                             .opacity(0.85)
@@ -166,7 +166,7 @@ struct StartWorkoutView: View {
             .shadow(color: Color(red: 0.84, green: 0.13, blue: 0.24).opacity(0.25), radius: 12, y: 6)
         } else {
             VStack(alignment: .leading, spacing: 0) {
-                Text("Programmes").font(.display(20, relativeTo: .title3))
+                CardTitle("Programmes", symbol: "sparkles")
                 ForEach(TrainingProgram.all, id: \.name) { program in
                     Divider().padding(.top, 12)
                     VStack(alignment: .leading, spacing: 10) {
@@ -206,6 +206,14 @@ struct StartWorkoutView: View {
     }
 
     private var stats: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            CardTitle("Activité", symbol: "flame.fill", tint: .orange)
+            statsRow
+        }
+        .card()
+    }
+
+    private var statsRow: some View {
         HStack(spacing: 0) {
             statItem("\(workoutsThisWeek)", "cette semaine", tint: .orange)
             Divider().frame(height: 36)
@@ -213,7 +221,6 @@ struct StartWorkoutView: View {
             Divider().frame(height: 36)
             statItem("\(finishedWorkouts.count)", "séances au total", tint: .yellow)
         }
-        .card()
     }
 
     private func statItem(_ value: String, _ label: String, tint: Color) -> some View {
@@ -235,7 +242,7 @@ struct StartWorkoutView: View {
     private var templatesSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .firstTextBaseline) {
-                Text("Mes modèles").font(.display(20, relativeTo: .title3))
+                CardTitle("Mes modèles", symbol: "square.stack.3d.up.fill")
                 Spacer()
                 Button {
                     let template = WorkoutTemplate(name: "")

@@ -275,7 +275,7 @@ private struct ShoppingListSection: View {
 
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .firstTextBaseline) {
-                Text("Ma liste").font(.display(20, relativeTo: .title3))
+                CardTitle("Ma liste", symbol: "checklist")
                 Spacer()
                 if !list.isEmpty {
                     Text("≈ \(NutritionFormat.money(total, currency: settings.currency))")
@@ -376,7 +376,7 @@ private struct GoodChoicesSection: View {
     var body: some View {
         let settings = store.settings
         VStack(alignment: .leading, spacing: 4) {
-            Text("Bons choix pour toi").font(.display(20, relativeTo: .title3))
+            CardTitle("Bons choix pour toi", symbol: "hand.thumbsup.fill", tint: .green)
             Text("Rayon par rayon, avec la quantité pour la semaine.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
