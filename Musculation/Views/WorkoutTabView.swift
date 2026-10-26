@@ -298,51 +298,6 @@ struct StartWorkoutView: View {
         .card()
     }
 
-    private var templatesSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            SectionHeader("Mes modèles") {
-                Button {
-                    let template = WorkoutTemplate(name: "")
-                    context.insert(template)
-                    newTemplate = template
-                } label: {
-                    Label("Nouveau", systemImage: "plus")
-                }
-            }
-
-            if customTemplates.isEmpty {
-                VStack(alignment: .leading, spacing: 8) {
-                    Image(systemName: "square.stack.3d.up.fill")
-                        .font(.title)
-                        .foregroundStyle(Theme.gradient)
-                    Text("Crée ton premier modèle")
-                        .font(.headline)
-                    Text("Push, Pull, Legs… Démarre ensuite une séance en un geste, avec les charges de la dernière fois.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                .card()
-            }
-
-            ForEach(customTemplates) { template in
-                TemplateCard(
-                    template: template,
-                    onStart: { template.startWorkout(in: context) },
-                    onEdit: { editingTemplate = template }
-                )
-                .contextMenu {
-                    Button("Modifier", systemImage: "pencil") { editingTemplate = template }
-                    Button("Supprimer", systemImage: "trash", role: .destructive) {
-                        withAnimation {
-                            context.delete(template)
-                            try? context.save()
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     private var greeting: String {
         switch Calendar.current.component(.hour, from: .now) {
         case 5..<12: "Bonjour"
