@@ -116,6 +116,7 @@ private struct DayCard: View {
 private struct MealCard: View {
     @Environment(NutritionStore.self) private var store
     @Environment(NutritionSession.self) private var session
+    @State private var isShowingPastMeals = false
 
     var body: some View {
         let cart = store.state.cart
@@ -127,6 +128,9 @@ private struct MealCard: View {
                 if !cart.isEmpty {
                     Text("\(cart.count) produit\(cart.count > 1 ? "s" : "")").font(.subheadline).foregroundStyle(.secondary)
                 }
+                Button("Repas déjà mangés", systemImage: "clock.arrow.circlepath") { isShowingPastMeals = true }
+                    .labelStyle(.iconOnly)
+                    .font(.title3)
             }
 
             if let error = session.mealError { InlineError(text: error) }
@@ -164,8 +168,22 @@ private struct MealCard: View {
                 }
             }
             .scrollClipDisabled()
+
+            if cart.isEmpty {
+                Button {
+                    isShowingPastMeals = true
+                } label: {
+                    Label("Reprendre un repas déjà mangé", systemImage: "clock.arrow.circlepath")
+                        .font(.subheadline.weight(.semibold))
+                }
+            }
         }
         .card()
+        .sheet(isPresented: $isShowingPastMeals) {
+            PastMealsSheet()
+                .environment(store)
+                .environment(session)
+        }
     }
 
     private var quickFoods: [Food] {
@@ -467,4 +485,98 @@ struct ChartPoint: Identifiable {
     var date: Date
     var value: Double
     var id: Date { date }
+}
+
+// MARK: - Past meals
+
+/// Meals from the previous days, to log again in one tap.
+private struct PastMealsSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(NutritionStore.self) private var store
+    @Environment(NutritionSession.self) private var session
+    @State private var search = ""
+
+    var body: some View {
+        let slots = store.settings.slotTargets
+        let slotId = session.slotId ?? slots.first?.id ?? ""
+        let slotLabel = slots.first { $0.id == slotId }?.label ?? "ce repas"
+        let meals = store.pastMeals().filter { meal in
+            search.isEmpty || meal.entries.contains { $0.name.localizedStandardContains(search) }
+        }
+
+        NavigationStack {
+            List {
+                if meals.isEmpty {
+                    ContentUnavailableView(
+                        search.isEmpty ? "Aucun repas noté" : "Aucun résultat",
+                        systemImage: search.isEmpty ? "fork.knife" : "magnifyingglass",
+                        description: Text(search.isEmpty ? "Les repas que tu notes avec « J'ai mangé ça » apparaîtront ici." : "Essaie un autre aliment.")
+                    )
+                    .listRowBackground(Color.clear)
+                } else {
+                    Section {
+                        ForEach(meals) { meal in
+                            Button {
+                                store.repeatMeal(meal, slot: slotId)
+                                UINotificationFeedbackGenerator().notificationOccurred(.success)
+                                session.flash("Ajouté à \(slotLabel.lowercased()) · \(Int(meal.macros.kcal.rounded())) kcal")
+                                dismiss()
+                            } label: {
+                                PastMealRow(meal: meal, slotName: slots.first { $0.id == meal.slot }?.label)
+                            }
+                            .foregroundStyle(.primary)
+                        }
+                    } footer: {
+                        Text("Touche un repas pour le noter à nouveau dans \(slotLabel.lowercased()), avec les mêmes quantités.")
+                    }
+                }
+            }
+            .searchable(text: $search, prompt: "Aliment")
+            .navigationTitle("Repas déjà mangés")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Fermer") { dismiss() }
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+    }
+}
+
+private struct PastMealRow: View {
+    let meal: NutritionStore.PastMeal
+    let slotName: String?
+
+    var body: some View {
+        let m = meal.macros
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(when)
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                Spacer()
+                if meal.times > 1 {
+                    Text("×\(meal.times)")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+            }
+            Text(meal.title)
+                .font(.body)
+                .lineLimit(2)
+            Text("\(Int(m.kcal.rounded())) kcal · P \(Int(m.p.rounded())) · G \(Int(m.c.rounded())) · L \(Int(m.f.rounded())) g")
+                .font(.caption)
+                .monospacedDigit()
+                .foregroundStyle(.secondary)
+        }
+        .padding(.vertical, 2)
+        .accessibilityElement(children: .combine)
+    }
+
+    private var when: String {
+        let date = DayKey.date(meal.day) ?? .now
+        let day = Calendar.current.isDateInYesterday(date) ? "Hier" : date.formatted(.dateTime.weekday(.wide).day().month()).capitalized
+        return [day, slotName].compactMap { $0 }.joined(separator: " · ")
+    }
 }

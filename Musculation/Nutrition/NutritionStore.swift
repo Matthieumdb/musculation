@@ -96,6 +96,52 @@ final class NutritionStore {
         state.cart = []
     }
 
+    /// A meal eaten before: every entry logged in one slot on one day.
+    struct PastMeal: Identifiable {
+        var id: String
+        var day: String
+        var slot: String
+        var entries: [LogEntry]
+        /// How many times this exact meal was eaten.
+        var times: Int
+
+        var macros: Macros { entries.reduce(Macros.zero) { $0 + $1.macros } }
+        var title: String { entries.map(\.name).joined(separator: ", ") }
+    }
+
+    /// Meals of the previous days, newest first, each identical meal listed once.
+    func pastMeals(days: Int = 60) -> [PastMeal] {
+        var seen: [String: Int] = [:]
+        var meals: [PastMeal] = []
+        for n in 1...days {
+            let day = DayKey.offset(n)
+            guard let entries = state.logs[day], !entries.isEmpty else { continue }
+            var slots: [String] = []
+            for e in entries where !slots.contains(e.slot) { slots.append(e.slot) }
+            for slot in slots {
+                let items = entries.filter { $0.slot == slot }
+                let key = items.map { "\($0.name)|\(Int($0.g.rounded()))" }.sorted().joined(separator: ";")
+                if let i = seen[key] {
+                    meals[i].times += 1
+                } else {
+                    seen[key] = meals.count
+                    meals.append(PastMeal(id: "\(day)-\(slot)", day: day, slot: slot, entries: items, times: 1))
+                }
+            }
+        }
+        return meals
+    }
+
+    /// Logs the same foods and quantities again today, in `slot`.
+    func repeatMeal(_ meal: PastMeal, slot: String) {
+        todayLog += meal.entries.map { e in
+            var copy = e
+            copy.id = UUID()
+            copy.slot = slot
+            return copy
+        }
+    }
+
     // MARK: Groceries
 
     func addToList(_ product: Product, aisle: Aisle) {
