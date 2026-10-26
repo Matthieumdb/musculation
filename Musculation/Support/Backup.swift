@@ -9,6 +9,8 @@ struct Backup: Codable {
     var workouts: [WorkoutRecord]
     var templates: [TemplateRecord]
     var bodyWeights: [BodyWeightRecord]
+    /// Nutrition data; missing in backups made before it existed.
+    var nutrition: NutritionState?
 
     struct ExerciseRecord: Codable {
         var name: String
@@ -64,6 +66,7 @@ struct Backup: Codable {
     }
 }
 
+@MainActor
 enum BackupService {
     static func makeBackup(from context: ModelContext) throws -> Backup {
         let exercises = try context.fetch(FetchDescriptor<Exercise>(sortBy: [SortDescriptor(\.name)]))
@@ -117,7 +120,8 @@ enum BackupService {
                     }
                 )
             },
-            bodyWeights: bodyWeights.map { Backup.BodyWeightRecord(date: $0.date, weight: $0.weight) }
+            bodyWeights: bodyWeights.map { Backup.BodyWeightRecord(date: $0.date, weight: $0.weight) },
+            nutrition: NutritionStore.shared.state
         )
     }
 
@@ -206,5 +210,9 @@ enum BackupService {
         }
 
         try context.save()
+
+        if let nutrition = backup.nutrition {
+            NutritionStore.shared.replace(with: nutrition)
+        }
     }
 }

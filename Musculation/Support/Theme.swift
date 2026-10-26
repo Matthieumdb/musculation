@@ -10,30 +10,20 @@ enum Theme {
     static let card = Color(.secondarySystemGroupedBackground)
     static let field = Color(.tertiarySystemFill)
     static let accentRed = Color(red: 0.84, green: 0.13, blue: 0.24)
+    static let cardRadius: CGFloat = 20
+
+    // Macro colors, shared by every nutrition screen
+    static let calories = Color.orange
+    static let protein = Color.blue
+    static let carbs = Color.yellow
+    static let fat = Color.pink
 }
 
-/// Soft colored backdrop, so that glass surfaces have something to refract.
+/// Plain grouped background, as in the system apps: content sits on solid cards
+/// and Liquid Glass is kept for the controls that float above it.
 struct AppBackground: View {
     var body: some View {
-        ZStack {
-            Theme.background
-            Circle()
-                .fill(Color.orange.opacity(0.30))
-                .frame(width: 360, height: 360)
-                .blur(radius: 90)
-                .offset(x: -150, y: -320)
-            Circle()
-                .fill(Theme.accentRed.opacity(0.22))
-                .frame(width: 320, height: 320)
-                .blur(radius: 90)
-                .offset(x: 170, y: -140)
-            Circle()
-                .fill(Color.purple.opacity(0.14))
-                .frame(width: 340, height: 340)
-                .blur(radius: 100)
-                .offset(x: -80, y: 340)
-        }
-        .ignoresSafeArea()
+        Theme.background.ignoresSafeArea()
     }
 }
 
@@ -179,6 +169,7 @@ struct StatTile: View {
                 .foregroundStyle(tint)
             Text(value)
                 .font(.title2.bold())
+                .fontDesign(.rounded)
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)
                 .contentTransition(.numericText())
@@ -190,7 +181,7 @@ struct StatTile: View {
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .glassSurface(in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .background(Theme.card, in: RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous))
     }
 }
 
@@ -199,7 +190,7 @@ struct CardModifier: ViewModifier {
         content
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .glassSurface(in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+            .background(Theme.card, in: RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous))
     }
 }
 
@@ -228,5 +219,124 @@ struct PressableButtonStyle: ButtonStyle {
         configuration.label
             .scaleEffect(configuration.isPressed ? 0.94 : 1)
             .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
+    }
+}
+
+/// Section title in the style of Health and Fitness: bold, with an optional action on the right.
+struct SectionHeader<Trailing: View>: View {
+    let title: String
+    @ViewBuilder var trailing: Trailing
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline) {
+            Text(title).font(.title3.bold())
+            Spacer()
+            trailing
+                .font(.subheadline.weight(.semibold))
+        }
+    }
+}
+
+extension SectionHeader where Trailing == EmptyView {
+    init(_ title: String) {
+        self.title = title
+        self.trailing = EmptyView()
+    }
+}
+
+extension SectionHeader {
+    init(_ title: String, @ViewBuilder trailing: () -> Trailing) {
+        self.title = title
+        self.trailing = trailing()
+    }
+}
+
+/// Activity-style ring: a track and a rounded progress stroke that can go past 100 %.
+struct ProgressRing: View {
+    let progress: Double
+    let tint: Color
+    var lineWidth: CGFloat = 14
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .stroke(tint.opacity(0.18), lineWidth: lineWidth)
+            Circle()
+                .trim(from: 0, to: min(max(progress, 0), 1))
+                .stroke(tint.gradient, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
+                .rotationEffect(.degrees(-90))
+            if progress > 1 {
+                Circle()
+                    .trim(from: 0, to: min(progress - 1, 1))
+                    .stroke(tint, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
+                    .shadow(color: .black.opacity(0.25), radius: 2)
+            }
+        }
+        .animation(.smooth, value: progress)
+    }
+}
+
+/// Thin horizontal bar used for macro progress.
+struct ProgressBar: View {
+    let progress: Double
+    let tint: Color
+    var height: CGFloat = 6
+
+    var body: some View {
+        GeometryReader { proxy in
+            ZStack(alignment: .leading) {
+                Capsule().fill(tint.opacity(0.18))
+                Capsule()
+                    .fill(tint.gradient)
+                    .frame(width: proxy.size.width * min(max(progress, 0), 1))
+            }
+        }
+        .frame(height: height)
+        .animation(.smooth, value: progress)
+    }
+}
+
+extension View {
+    /// Subtitle under the large title on iOS 26, nothing before.
+    @ViewBuilder
+    func navigationSubtitleIfAvailable(_ subtitle: String) -> some View {
+        #if compiler(>=6.2)
+        if #available(iOS 26, *) {
+            navigationSubtitle(subtitle)
+        } else {
+            self
+        }
+        #else
+        self
+        #endif
+    }
+
+    /// Prominent Liquid Glass button on iOS 26, filled bordered button before.
+    @ViewBuilder
+    func glassProminentButton() -> some View {
+        #if compiler(>=6.2)
+        if #available(iOS 26, *) {
+            buttonStyle(.glassProminent)
+        } else {
+            buttonStyle(.borderedProminent)
+        }
+        #else
+        buttonStyle(.borderedProminent)
+        #endif
+    }
+
+    /// Liquid Glass button on iOS 26, bordered button before.
+    @ViewBuilder
+    func glassButton() -> some View {
+        #if compiler(>=6.2)
+        if #available(iOS 26, *) {
+            buttonStyle(.glass)
+        } else {
+            buttonStyle(.bordered)
+        }
+        #else
+        buttonStyle(.bordered)
+        #endif
     }
 }

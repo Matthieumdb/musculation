@@ -1,0 +1,5682 @@
+{
+ "foods": [
+  {
+   "id": "food0",
+   "name": "Blanc de poulet",
+   "fam": "viandes",
+   "tags": [
+    "meat"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 110,
+    "p": 23,
+    "c": 0,
+    "f": 1.8,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food1",
+   "name": "Escalope de dinde",
+   "fam": "viandes",
+   "tags": [
+    "meat"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 105,
+    "p": 23.5,
+    "c": 0,
+    "f": 1.2,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food2",
+   "name": "Haut de cuisse de poulet sans peau",
+   "fam": "viandes",
+   "tags": [
+    "meat"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 120,
+    "p": 19.5,
+    "c": 0,
+    "f": 4.5,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food3",
+   "name": "Steak haché 5 %",
+   "fam": "viandes",
+   "tags": [
+    "meat"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 125,
+    "p": 21,
+    "c": 0,
+    "f": 5,
+    "sugar": null,
+    "sat": 2.2,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food4",
+   "name": "Bœuf haché 10 %",
+   "fam": "viandes",
+   "tags": [
+    "meat"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 170,
+    "p": 20,
+    "c": 0,
+    "f": 10,
+    "sugar": null,
+    "sat": 4.3,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food5",
+   "name": "Rumsteck",
+   "fam": "viandes",
+   "tags": [
+    "meat"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 125,
+    "p": 22,
+    "c": 0,
+    "f": 4,
+    "sugar": null,
+    "sat": 1.7,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food6",
+   "name": "Filet mignon de porc",
+   "fam": "viandes",
+   "tags": [
+    "meat",
+    "pork"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 120,
+    "p": 22,
+    "c": 0,
+    "f": 3.5,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food7",
+   "name": "Jambon blanc découenné",
+   "fam": "viandes",
+   "tags": [
+    "meat",
+    "pork"
+   ],
+   "nova": 3,
+   "n": {
+    "kcal": 110,
+    "p": 20,
+    "c": 1,
+    "f": 3,
+    "sugar": null,
+    "sat": null,
+    "salt": 1.9,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food8",
+   "name": "Thon au naturel",
+   "fam": "viandes",
+   "tags": [
+    "tuna",
+    "fish"
+   ],
+   "nova": 3,
+   "n": {
+    "kcal": 115,
+    "p": 26,
+    "c": 0,
+    "f": 1,
+    "sugar": null,
+    "sat": null,
+    "salt": 0.9,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food9",
+   "name": "Tofu ferme",
+   "fam": "viandes",
+   "tags": [],
+   "nova": 3,
+   "n": {
+    "kcal": 145,
+    "p": 15.5,
+    "c": 2,
+    "f": 8.5,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 2
+   },
+   "unit": null
+  },
+  {
+   "id": "food10",
+   "name": "Œufs",
+   "fam": "oeufs",
+   "tags": [
+    "egg"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 140,
+    "p": 12.5,
+    "c": 0.5,
+    "f": 10,
+    "sugar": null,
+    "sat": 2.8,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": {
+    "kind": "egg",
+    "grams": 55,
+    "step": 55
+   }
+  },
+  {
+   "id": "food11",
+   "name": "Blancs d'œufs liquides",
+   "fam": "oeufs",
+   "tags": [
+    "egg"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 48,
+    "p": 10.5,
+    "c": 0.7,
+    "f": 0.2,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food12",
+   "name": "Skyr nature",
+   "fam": "laitiers",
+   "tags": [
+    "dairy"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 60,
+    "p": 10.5,
+    "c": 4,
+    "f": 0.2,
+    "sugar": 4,
+    "sat": null,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food13",
+   "name": "Yaourt grec 0 %",
+   "fam": "laitiers",
+   "tags": [
+    "dairy"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 59,
+    "p": 10.3,
+    "c": 3.6,
+    "f": 0.4,
+    "sugar": 3.6,
+    "sat": null,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food14",
+   "name": "Fromage blanc 0 %",
+   "fam": "laitiers",
+   "tags": [
+    "dairy"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 47,
+    "p": 7.5,
+    "c": 4,
+    "f": 0.1,
+    "sugar": 4,
+    "sat": null,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food15",
+   "name": "Cottage cheese",
+   "fam": "laitiers",
+   "tags": [
+    "dairy"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 98,
+    "p": 11,
+    "c": 3.4,
+    "f": 4.3,
+    "sugar": 3,
+    "sat": null,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food16",
+   "name": "Yaourt de soja nature",
+   "fam": "laitiers",
+   "tags": [],
+   "nova": 3,
+   "n": {
+    "kcal": 50,
+    "p": 4,
+    "c": 2,
+    "f": 2.3,
+    "sugar": 1,
+    "sat": null,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food17",
+   "name": "Mozzarella allégée",
+   "fam": "fromages",
+   "tags": [
+    "dairy"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 254,
+    "p": 24,
+    "c": 2.8,
+    "f": 16,
+    "sugar": null,
+    "sat": 10,
+    "salt": 1,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food18",
+   "name": "Parmesan",
+   "fam": "fromages",
+   "tags": [
+    "dairy"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 390,
+    "p": 33,
+    "c": 0,
+    "f": 28,
+    "sugar": null,
+    "sat": 18,
+    "salt": 1.6,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food19",
+   "name": "Riz basmati (cru)",
+   "fam": "feculents",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 350,
+    "p": 8,
+    "c": 77,
+    "f": 1,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food20",
+   "name": "Riz complet (cru)",
+   "fam": "feculents",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 350,
+    "p": 7.5,
+    "c": 74,
+    "f": 2.7,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 3.5
+   },
+   "unit": null
+  },
+  {
+   "id": "food21",
+   "name": "Pâtes (crues)",
+   "fam": "feculents",
+   "tags": [
+    "gluten"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 355,
+    "p": 12.5,
+    "c": 71,
+    "f": 1.5,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 3
+   },
+   "unit": null
+  },
+  {
+   "id": "food22",
+   "name": "Pâtes complètes (crues)",
+   "fam": "feculents",
+   "tags": [
+    "gluten"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 345,
+    "p": 13,
+    "c": 64,
+    "f": 2.5,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 8
+   },
+   "unit": null
+  },
+  {
+   "id": "food23",
+   "name": "Pommes de terre",
+   "fam": "feculents",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 80,
+    "p": 2,
+    "c": 17,
+    "f": 0.1,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 1.5
+   },
+   "unit": null
+  },
+  {
+   "id": "food24",
+   "name": "Patate douce",
+   "fam": "feculents",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 86,
+    "p": 1.6,
+    "c": 20,
+    "f": 0.1,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 3
+   },
+   "unit": null
+  },
+  {
+   "id": "food25",
+   "name": "Flocons d'avoine",
+   "fam": "feculents",
+   "tags": [
+    "gluten"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 370,
+    "p": 13.5,
+    "c": 59,
+    "f": 7,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 10
+   },
+   "unit": null
+  },
+  {
+   "id": "food26",
+   "name": "Semoule (crue)",
+   "fam": "feculents",
+   "tags": [
+    "gluten"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 360,
+    "p": 12,
+    "c": 73,
+    "f": 1.5,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food27",
+   "name": "Quinoa (cru)",
+   "fam": "feculents",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 365,
+    "p": 14,
+    "c": 64,
+    "f": 6,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 7
+   },
+   "unit": null
+  },
+  {
+   "id": "food28",
+   "name": "Lentilles (sèches)",
+   "fam": "feculents",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 330,
+    "p": 24,
+    "c": 50,
+    "f": 1.5,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 11
+   },
+   "unit": null
+  },
+  {
+   "id": "food29",
+   "name": "Pain complet",
+   "fam": "feculents",
+   "tags": [
+    "gluten"
+   ],
+   "nova": 3,
+   "n": {
+    "kcal": 240,
+    "p": 9,
+    "c": 45,
+    "f": 2.5,
+    "sugar": null,
+    "sat": null,
+    "salt": 1.1,
+    "fiber": 7
+   },
+   "unit": null
+  },
+  {
+   "id": "food30",
+   "name": "Brocoli",
+   "fam": "legumes",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 34,
+    "p": 2.8,
+    "c": 4,
+    "f": 0.4,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 2.6
+   },
+   "unit": null
+  },
+  {
+   "id": "food31",
+   "name": "Haricots verts",
+   "fam": "legumes",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 31,
+    "p": 1.8,
+    "c": 4.5,
+    "f": 0.2,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 3
+   },
+   "unit": null
+  },
+  {
+   "id": "food32",
+   "name": "Légumes surgelés en mélange",
+   "fam": "legumes",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 50,
+    "p": 2.5,
+    "c": 8,
+    "f": 0.5,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 3
+   },
+   "unit": null
+  },
+  {
+   "id": "food33",
+   "name": "Courgettes",
+   "fam": "legumes",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 17,
+    "p": 1.2,
+    "c": 2,
+    "f": 0.3,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 1
+   },
+   "unit": null
+  },
+  {
+   "id": "food34",
+   "name": "Épinards",
+   "fam": "legumes",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 23,
+    "p": 2.9,
+    "c": 1.4,
+    "f": 0.4,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 2.2
+   },
+   "unit": null
+  },
+  {
+   "id": "food35",
+   "name": "Poivrons",
+   "fam": "legumes",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 30,
+    "p": 1,
+    "c": 5,
+    "f": 0.3,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 2
+   },
+   "unit": null
+  },
+  {
+   "id": "food36",
+   "name": "Champignons",
+   "fam": "legumes",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 22,
+    "p": 3,
+    "c": 1,
+    "f": 0.3,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 1
+   },
+   "unit": null
+  },
+  {
+   "id": "food37",
+   "name": "Bananes",
+   "fam": "fruits",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 90,
+    "p": 1.1,
+    "c": 20,
+    "f": 0.3,
+    "sugar": 15,
+    "sat": null,
+    "salt": null,
+    "fiber": 2.6
+   },
+   "unit": null
+  },
+  {
+   "id": "food38",
+   "name": "Pommes",
+   "fam": "fruits",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 52,
+    "p": 0.3,
+    "c": 12,
+    "f": 0.2,
+    "sugar": 10,
+    "sat": null,
+    "salt": null,
+    "fiber": 2.4
+   },
+   "unit": null
+  },
+  {
+   "id": "food39",
+   "name": "Fruits rouges surgelés",
+   "fam": "fruits",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 45,
+    "p": 1,
+    "c": 8,
+    "f": 0.3,
+    "sugar": 6,
+    "sat": null,
+    "salt": null,
+    "fiber": 4
+   },
+   "unit": null
+  },
+  {
+   "id": "food40",
+   "name": "Kiwis",
+   "fam": "fruits",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 61,
+    "p": 1.1,
+    "c": 11,
+    "f": 0.5,
+    "sugar": 9,
+    "sat": null,
+    "salt": null,
+    "fiber": 3
+   },
+   "unit": null
+  },
+  {
+   "id": "food41",
+   "name": "Huile d'olive",
+   "fam": "graisses",
+   "tags": [],
+   "nova": 2,
+   "n": {
+    "kcal": 900,
+    "p": 0,
+    "c": 0,
+    "f": 100,
+    "sugar": null,
+    "sat": 14,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": {
+    "kind": "tbsp",
+    "grams": 10,
+    "step": 5
+   }
+  },
+  {
+   "id": "food42",
+   "name": "Beurre de cacahuète 100 %",
+   "fam": "graisses",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 600,
+    "p": 25,
+    "c": 15,
+    "f": 50,
+    "sugar": null,
+    "sat": 9,
+    "salt": null,
+    "fiber": 6
+   },
+   "unit": null
+  },
+  {
+   "id": "food43",
+   "name": "Amandes",
+   "fam": "graisses",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 600,
+    "p": 21,
+    "c": 7,
+    "f": 52,
+    "sugar": null,
+    "sat": 4,
+    "salt": null,
+    "fiber": 12
+   },
+   "unit": null
+  },
+  {
+   "id": "food44",
+   "name": "Avocat",
+   "fam": "graisses",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 160,
+    "p": 2,
+    "c": 2,
+    "f": 15,
+    "sugar": null,
+    "sat": 2,
+    "salt": null,
+    "fiber": 7
+   },
+   "unit": null
+  },
+  {
+   "id": "food45",
+   "name": "Sauce tomate sans sucre ajouté",
+   "fam": "sauces",
+   "tags": [],
+   "nova": 3,
+   "n": {
+    "kcal": 45,
+    "p": 1.5,
+    "c": 7,
+    "f": 1.5,
+    "sugar": null,
+    "sat": null,
+    "salt": 0.8,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food46",
+   "name": "Moutarde",
+   "fam": "sauces",
+   "tags": [],
+   "nova": 3,
+   "n": {
+    "kcal": 150,
+    "p": 7,
+    "c": 5,
+    "f": 10,
+    "sugar": null,
+    "sat": null,
+    "salt": 5.5,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food47",
+   "name": "Salsa",
+   "fam": "sauces",
+   "tags": [],
+   "nova": 3,
+   "n": {
+    "kcal": 30,
+    "p": 1.5,
+    "c": 6,
+    "f": 0.2,
+    "sugar": null,
+    "sat": null,
+    "salt": 1.5,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food48",
+   "name": "Whey",
+   "fam": "poudre",
+   "tags": [
+    "dairy"
+   ],
+   "nova": 4,
+   "n": {
+    "kcal": 380,
+    "p": 78,
+    "c": 6,
+    "f": 5,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food49",
+   "name": "Gigot d'agneau",
+   "fam": "viandes",
+   "tags": [
+    "meat"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 200,
+    "p": 20,
+    "c": 0,
+    "f": 13,
+    "sugar": null,
+    "sat": 6,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food50",
+   "name": "Escalope de veau",
+   "fam": "viandes",
+   "tags": [
+    "meat"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 110,
+    "p": 22,
+    "c": 0,
+    "f": 2.5,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food51",
+   "name": "Magret de canard sans peau",
+   "fam": "viandes",
+   "tags": [
+    "meat"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 135,
+    "p": 22,
+    "c": 0,
+    "f": 5,
+    "sugar": null,
+    "sat": 1.6,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food52",
+   "name": "Saucisses de volaille",
+   "fam": "viandes",
+   "tags": [
+    "meat"
+   ],
+   "nova": 4,
+   "n": {
+    "kcal": 190,
+    "p": 14,
+    "c": 2,
+    "f": 14,
+    "sugar": null,
+    "sat": 4,
+    "salt": 1.8,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food53",
+   "name": "Bacon de dinde",
+   "fam": "viandes",
+   "tags": [
+    "meat"
+   ],
+   "nova": 4,
+   "n": {
+    "kcal": 120,
+    "p": 20,
+    "c": 1,
+    "f": 4,
+    "sugar": null,
+    "sat": null,
+    "salt": 2.5,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food54",
+   "name": "Steak haché 15 %",
+   "fam": "viandes",
+   "tags": [
+    "meat"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 215,
+    "p": 18,
+    "c": 0,
+    "f": 15,
+    "sugar": null,
+    "sat": 6.5,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food55",
+   "name": "Côtes de porc",
+   "fam": "viandes",
+   "tags": [
+    "meat",
+    "pork"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 180,
+    "p": 20,
+    "c": 0,
+    "f": 11,
+    "sugar": null,
+    "sat": 4,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food56",
+   "name": "Lardons",
+   "fam": "viandes",
+   "tags": [
+    "meat",
+    "pork"
+   ],
+   "nova": 3,
+   "n": {
+    "kcal": 270,
+    "p": 15,
+    "c": 0,
+    "f": 23,
+    "sugar": null,
+    "sat": 8.5,
+    "salt": 2.4,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food57",
+   "name": "Thon à l'huile égoutté",
+   "fam": "viandes",
+   "tags": [
+    "tuna",
+    "fish"
+   ],
+   "nova": 3,
+   "n": {
+    "kcal": 190,
+    "p": 27,
+    "c": 0,
+    "f": 9,
+    "sugar": null,
+    "sat": null,
+    "salt": 0.9,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food58",
+   "name": "Saumon",
+   "fam": "viandes",
+   "tags": [
+    "fish",
+    "seafood"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 200,
+    "p": 20,
+    "c": 0,
+    "f": 13,
+    "sugar": null,
+    "sat": 2.5,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food59",
+   "name": "Cabillaud",
+   "fam": "viandes",
+   "tags": [
+    "fish",
+    "seafood"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 80,
+    "p": 18,
+    "c": 0,
+    "f": 0.7,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food60",
+   "name": "Crevettes",
+   "fam": "viandes",
+   "tags": [
+    "fish",
+    "seafood"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 90,
+    "p": 20,
+    "c": 0,
+    "f": 1,
+    "sugar": null,
+    "sat": null,
+    "salt": 1,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food61",
+   "name": "Tempeh",
+   "fam": "viandes",
+   "tags": [],
+   "nova": 3,
+   "n": {
+    "kcal": 190,
+    "p": 19,
+    "c": 9,
+    "f": 11,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 5
+   },
+   "unit": null
+  },
+  {
+   "id": "food62",
+   "name": "Seitan",
+   "fam": "viandes",
+   "tags": [
+    "gluten"
+   ],
+   "nova": 3,
+   "n": {
+    "kcal": 120,
+    "p": 24,
+    "c": 4,
+    "f": 1.5,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food63",
+   "name": "Lait demi-écrémé",
+   "fam": "laitiers",
+   "tags": [
+    "dairy"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 46,
+    "p": 3.3,
+    "c": 4.8,
+    "f": 1.6,
+    "sugar": 4.8,
+    "sat": null,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food64",
+   "name": "Lait de soja",
+   "fam": "laitiers",
+   "tags": [],
+   "nova": 3,
+   "n": {
+    "kcal": 40,
+    "p": 3.3,
+    "c": 2,
+    "f": 1.8,
+    "sugar": 1.5,
+    "sat": null,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food65",
+   "name": "Yaourt nature",
+   "fam": "laitiers",
+   "tags": [
+    "dairy"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 50,
+    "p": 4,
+    "c": 5,
+    "f": 1.5,
+    "sugar": 5,
+    "sat": null,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food66",
+   "name": "Ricotta",
+   "fam": "fromages",
+   "tags": [
+    "dairy"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 140,
+    "p": 9,
+    "c": 3,
+    "f": 10,
+    "sugar": null,
+    "sat": 6.5,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food67",
+   "name": "Feta",
+   "fam": "fromages",
+   "tags": [
+    "dairy"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 265,
+    "p": 17,
+    "c": 0.5,
+    "f": 21,
+    "sugar": null,
+    "sat": 14,
+    "salt": 2.7,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food68",
+   "name": "Emmental",
+   "fam": "fromages",
+   "tags": [
+    "dairy"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 370,
+    "p": 28,
+    "c": 0,
+    "f": 29,
+    "sugar": null,
+    "sat": 18,
+    "salt": 0.6,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food69",
+   "name": "Cheddar",
+   "fam": "fromages",
+   "tags": [
+    "dairy"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 400,
+    "p": 25,
+    "c": 0.5,
+    "f": 33,
+    "sugar": null,
+    "sat": 21,
+    "salt": 1.8,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food70",
+   "name": "Fromage frais léger",
+   "fam": "fromages",
+   "tags": [
+    "dairy"
+   ],
+   "nova": 3,
+   "n": {
+    "kcal": 150,
+    "p": 7,
+    "c": 5,
+    "f": 11,
+    "sugar": null,
+    "sat": 7,
+    "salt": 0.8,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food71",
+   "name": "Boulgour (cru)",
+   "fam": "feculents",
+   "tags": [
+    "gluten"
+   ],
+   "nova": 1,
+   "n": {
+    "kcal": 345,
+    "p": 12,
+    "c": 69,
+    "f": 1.5,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 8
+   },
+   "unit": null
+  },
+  {
+   "id": "food72",
+   "name": "Tortillas de blé",
+   "fam": "feculents",
+   "tags": [
+    "gluten"
+   ],
+   "nova": 4,
+   "n": {
+    "kcal": 300,
+    "p": 8,
+    "c": 50,
+    "f": 7,
+    "sugar": null,
+    "sat": null,
+    "salt": 1.2,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food73",
+   "name": "Pain de mie complet",
+   "fam": "feculents",
+   "tags": [
+    "gluten"
+   ],
+   "nova": 4,
+   "n": {
+    "kcal": 250,
+    "p": 9,
+    "c": 43,
+    "f": 4,
+    "sugar": 5,
+    "sat": null,
+    "salt": 1,
+    "fiber": 6
+   },
+   "unit": null
+  },
+  {
+   "id": "food74",
+   "name": "Nouilles de riz (crues)",
+   "fam": "feculents",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 360,
+    "p": 6,
+    "c": 80,
+    "f": 0.6,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food75",
+   "name": "Maïs doux",
+   "fam": "feculents",
+   "tags": [],
+   "nova": 3,
+   "n": {
+    "kcal": 80,
+    "p": 3,
+    "c": 14,
+    "f": 1.5,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 3
+   },
+   "unit": null
+  },
+  {
+   "id": "food76",
+   "name": "Pois chiches (conserve)",
+   "fam": "feculents",
+   "tags": [],
+   "nova": 3,
+   "n": {
+    "kcal": 120,
+    "p": 7,
+    "c": 16,
+    "f": 2.5,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 6
+   },
+   "unit": null
+  },
+  {
+   "id": "food77",
+   "name": "Haricots rouges (conserve)",
+   "fam": "feculents",
+   "tags": [],
+   "nova": 3,
+   "n": {
+    "kcal": 100,
+    "p": 7,
+    "c": 14,
+    "f": 0.5,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 6
+   },
+   "unit": null
+  },
+  {
+   "id": "food78",
+   "name": "Galettes de riz",
+   "fam": "feculents",
+   "tags": [],
+   "nova": 3,
+   "n": {
+    "kcal": 380,
+    "p": 8,
+    "c": 80,
+    "f": 3,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food79",
+   "name": "Carottes",
+   "fam": "legumes",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 36,
+    "p": 0.8,
+    "c": 7,
+    "f": 0.3,
+    "sugar": 5,
+    "sat": null,
+    "salt": null,
+    "fiber": 2.7
+   },
+   "unit": null
+  },
+  {
+   "id": "food80",
+   "name": "Tomates",
+   "fam": "legumes",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 18,
+    "p": 0.9,
+    "c": 3,
+    "f": 0.2,
+    "sugar": 2.6,
+    "sat": null,
+    "salt": null,
+    "fiber": 1.2
+   },
+   "unit": null
+  },
+  {
+   "id": "food81",
+   "name": "Concombre",
+   "fam": "legumes",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 12,
+    "p": 0.6,
+    "c": 2,
+    "f": 0.1,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food82",
+   "name": "Salade verte",
+   "fam": "legumes",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 15,
+    "p": 1.3,
+    "c": 1.5,
+    "f": 0.2,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 1.3
+   },
+   "unit": null
+  },
+  {
+   "id": "food83",
+   "name": "Chou-fleur",
+   "fam": "legumes",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 25,
+    "p": 2,
+    "c": 3,
+    "f": 0.3,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 2.5
+   },
+   "unit": null
+  },
+  {
+   "id": "food84",
+   "name": "Oignons",
+   "fam": "legumes",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 40,
+    "p": 1.2,
+    "c": 8,
+    "f": 0.1,
+    "sugar": 4,
+    "sat": null,
+    "salt": null,
+    "fiber": 1.7
+   },
+   "unit": null
+  },
+  {
+   "id": "food85",
+   "name": "Asperges",
+   "fam": "legumes",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 22,
+    "p": 2.2,
+    "c": 2,
+    "f": 0.1,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 2
+   },
+   "unit": null
+  },
+  {
+   "id": "food86",
+   "name": "Aubergine",
+   "fam": "legumes",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 20,
+    "p": 1,
+    "c": 3,
+    "f": 0.2,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 2.5
+   },
+   "unit": null
+  },
+  {
+   "id": "food87",
+   "name": "Petits pois surgelés",
+   "fam": "legumes",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 70,
+    "p": 5,
+    "c": 10,
+    "f": 0.5,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": 5
+   },
+   "unit": null
+  },
+  {
+   "id": "food88",
+   "name": "Oranges",
+   "fam": "fruits",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 47,
+    "p": 0.9,
+    "c": 9,
+    "f": 0.1,
+    "sugar": 9,
+    "sat": null,
+    "salt": null,
+    "fiber": 2.2
+   },
+   "unit": null
+  },
+  {
+   "id": "food89",
+   "name": "Fraises",
+   "fam": "fruits",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 32,
+    "p": 0.7,
+    "c": 6,
+    "f": 0.3,
+    "sugar": 5,
+    "sat": null,
+    "salt": null,
+    "fiber": 2
+   },
+   "unit": null
+  },
+  {
+   "id": "food90",
+   "name": "Ananas",
+   "fam": "fruits",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 50,
+    "p": 0.5,
+    "c": 11,
+    "f": 0.1,
+    "sugar": 10,
+    "sat": null,
+    "salt": null,
+    "fiber": 1.4
+   },
+   "unit": null
+  },
+  {
+   "id": "food91",
+   "name": "Mangue",
+   "fam": "fruits",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 65,
+    "p": 0.8,
+    "c": 14,
+    "f": 0.4,
+    "sugar": 13,
+    "sat": null,
+    "salt": null,
+    "fiber": 1.6
+   },
+   "unit": null
+  },
+  {
+   "id": "food92",
+   "name": "Myrtilles",
+   "fam": "fruits",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 57,
+    "p": 0.7,
+    "c": 12,
+    "f": 0.3,
+    "sugar": 10,
+    "sat": null,
+    "salt": null,
+    "fiber": 2.4
+   },
+   "unit": null
+  },
+  {
+   "id": "food93",
+   "name": "Raisin",
+   "fam": "fruits",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 70,
+    "p": 0.6,
+    "c": 16,
+    "f": 0.2,
+    "sugar": 15,
+    "sat": null,
+    "salt": null,
+    "fiber": 0.9
+   },
+   "unit": null
+  },
+  {
+   "id": "food94",
+   "name": "Beurre",
+   "fam": "graisses",
+   "tags": [
+    "dairy"
+   ],
+   "nova": 2,
+   "n": {
+    "kcal": 745,
+    "p": 0.7,
+    "c": 0.6,
+    "f": 82,
+    "sugar": null,
+    "sat": 52,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food95",
+   "name": "Noix",
+   "fam": "graisses",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 690,
+    "p": 15,
+    "c": 7,
+    "f": 65,
+    "sugar": null,
+    "sat": 6,
+    "salt": null,
+    "fiber": 6.5
+   },
+   "unit": null
+  },
+  {
+   "id": "food96",
+   "name": "Noix de cajou",
+   "fam": "graisses",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 590,
+    "p": 18,
+    "c": 27,
+    "f": 46,
+    "sugar": null,
+    "sat": 8,
+    "salt": null,
+    "fiber": 3.3
+   },
+   "unit": null
+  },
+  {
+   "id": "food97",
+   "name": "Graines de chia",
+   "fam": "graisses",
+   "tags": [],
+   "nova": 1,
+   "n": {
+    "kcal": 490,
+    "p": 17,
+    "c": 8,
+    "f": 31,
+    "sugar": null,
+    "sat": 3.3,
+    "salt": null,
+    "fiber": 34
+   },
+   "unit": null
+  },
+  {
+   "id": "food98",
+   "name": "Huile de colza",
+   "fam": "graisses",
+   "tags": [],
+   "nova": 2,
+   "n": {
+    "kcal": 900,
+    "p": 0,
+    "c": 0,
+    "f": 100,
+    "sugar": null,
+    "sat": 7,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": {
+    "kind": "tbsp",
+    "grams": 10,
+    "step": 5
+   }
+  },
+  {
+   "id": "food99",
+   "name": "Sauce soja",
+   "fam": "sauces",
+   "tags": [
+    "gluten"
+   ],
+   "nova": 3,
+   "n": {
+    "kcal": 60,
+    "p": 8,
+    "c": 6,
+    "f": 0,
+    "sugar": null,
+    "sat": null,
+    "salt": 14,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food100",
+   "name": "Ketchup",
+   "fam": "sauces",
+   "tags": [],
+   "nova": 4,
+   "n": {
+    "kcal": 110,
+    "p": 1.2,
+    "c": 25,
+    "f": 0.1,
+    "sugar": 22,
+    "sat": null,
+    "salt": 1.8,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food101",
+   "name": "Pesto",
+   "fam": "sauces",
+   "tags": [
+    "dairy"
+   ],
+   "nova": 3,
+   "n": {
+    "kcal": 450,
+    "p": 5,
+    "c": 6,
+    "f": 45,
+    "sugar": null,
+    "sat": 6,
+    "salt": 2.5,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food102",
+   "name": "Mayonnaise allégée",
+   "fam": "sauces",
+   "tags": [
+    "egg"
+   ],
+   "nova": 4,
+   "n": {
+    "kcal": 280,
+    "p": 1,
+    "c": 8,
+    "f": 27,
+    "sugar": null,
+    "sat": 2.5,
+    "salt": 1.5,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food103",
+   "name": "Sriracha",
+   "fam": "sauces",
+   "tags": [],
+   "nova": 4,
+   "n": {
+    "kcal": 95,
+    "p": 2,
+    "c": 19,
+    "f": 1,
+    "sugar": 15,
+    "sat": null,
+    "salt": 5,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food104",
+   "name": "Vinaigre balsamique",
+   "fam": "sauces",
+   "tags": [],
+   "nova": 2,
+   "n": {
+    "kcal": 90,
+    "p": 0.5,
+    "c": 17,
+    "f": 0,
+    "sugar": 15,
+    "sat": null,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  },
+  {
+   "id": "food105",
+   "name": "Houmous",
+   "fam": "sauces",
+   "tags": [],
+   "nova": 3,
+   "n": {
+    "kcal": 300,
+    "p": 7,
+    "c": 12,
+    "f": 24,
+    "sugar": null,
+    "sat": 3,
+    "salt": 1.2,
+    "fiber": 6
+   },
+   "unit": null
+  },
+  {
+   "id": "food106",
+   "name": "Protéine végétale (pois)",
+   "fam": "poudre",
+   "tags": [],
+   "nova": 4,
+   "n": {
+    "kcal": 380,
+    "p": 80,
+    "c": 3,
+    "f": 6,
+    "sugar": null,
+    "sat": null,
+    "salt": null,
+    "fiber": null
+   },
+   "unit": null
+  }
+ ],
+ "recipes": [
+  {
+   "id": "r0",
+   "name": "Curry de volaille au riz",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "b",
+    "w"
+   ],
+   "minutes": 20,
+   "steps": "Fais cuire {C}. Saisis {P} en dés dans {F}, ajoute {V}, 1 c. à café de curry, de l'ail et un fond d'eau. Laisse mijoter 10 min.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food0",
+      "food1",
+      "food2",
+      "food9"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food19",
+      "food20"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food35",
+      "food84"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food87",
+      "food32"
+     ],
+     "grams": null
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41",
+      "food98"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r1",
+   "name": "Bolognaise maison",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "g",
+    "b"
+   ],
+   "minutes": 25,
+   "steps": "Fais revenir {V} dans {F}, ajoute {P} et émiette-le. Verse {X}, des herbes de Provence, et laisse mijoter 15 min. Sers avec {C}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food3",
+      "food4",
+      "food54",
+      "food1",
+      "food61"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food21",
+      "food22"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food84",
+      "food79"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food36",
+      "food79"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food45"
+     ],
+     "grams": 150
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r2",
+   "name": "Chili con carne",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "g",
+    "b",
+    "w"
+   ],
+   "minutes": 30,
+   "steps": "Fais revenir {V} dans {F}, ajoute {P}, puis {X}, 1 c. à café de cumin et de paprika. Laisse mijoter 15 min. Sers avec {C}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food3",
+      "food4",
+      "food54",
+      "food61"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food19",
+      "food20"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food35",
+      "food84"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food75",
+      "food80"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food77"
+     ],
+     "grams": 100
+    },
+    {
+     "role": "X",
+     "options": [
+      "food45"
+     ],
+     "grams": 100
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r3",
+   "name": "Wraps au poulet",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "g",
+    "q"
+   ],
+   "minutes": 15,
+   "steps": "Saisis {P} en lanières dans {F} avec du paprika. Garnis {C} de {P}, {V} et {X}, puis roule.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food0",
+      "food1",
+      "food8",
+      "food57"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food72",
+      "food29"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food82",
+      "food80"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food35",
+      "food81",
+      "food80"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food47",
+      "food102"
+     ],
+     "grams": 40
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r4",
+   "name": "Poulet rôti et pommes de terre au four",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "b"
+   ],
+   "minutes": 40,
+   "steps": "Coupe {C} en quartiers, mélange avec {F}, sel et romarin. Enfourne 35 min à 210 °C avec {P} assaisonné. Sers avec {V} à la vapeur.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food2",
+      "food0",
+      "food1"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food23",
+      "food24"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food31",
+      "food79",
+      "food32"
+     ],
+     "grams": null
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r5",
+   "name": "Steak, frites au four et salade",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "g"
+   ],
+   "minutes": 35,
+   "steps": "Coupe {C} en frites, mélange avec {F} et enfourne 30 min à 220 °C. Saisis {P} 2 à 3 min par face. Sers avec {V}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food5",
+      "food3",
+      "food1"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food23"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food82",
+      "food80",
+      "food31"
+     ],
+     "grams": null
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r6",
+   "name": "Couscous express",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "b",
+    "w"
+   ],
+   "minutes": 30,
+   "steps": "Fais dorer {P} dans {F} avec du ras el hanout. Ajoute {V}, {X} et un verre d'eau, laisse mijoter 15 min. Gonfle {C} à l'eau bouillante.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food2",
+      "food0",
+      "food49",
+      "food9"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food26",
+      "food71"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food79",
+      "food84"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food35",
+      "food87"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food76"
+     ],
+     "grams": 80
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r7",
+   "name": "Taboulé protéiné",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q",
+    "b"
+   ],
+   "minutes": 15,
+   "steps": "Fais cuire {C} et laisse refroidir. Mélange avec {V} en dés, menthe, jus de citron, {F} et {P} grillé.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food0",
+      "food1",
+      "food8",
+      "food57"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food71",
+      "food26",
+      "food27"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food80",
+      "food81"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food84",
+      "food35"
+     ],
+     "grams": null
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r8",
+   "name": "Riz cantonais",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "q",
+    "w"
+   ],
+   "minutes": 15,
+   "steps": "Fais cuire {C} (idéalement la veille). Dans {F}, saisis {P} en dés et {V}, ajoute {C}, puis {X} brouillé et la sauce.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food7",
+      "food0",
+      "food1",
+      "food9"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food19"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food87",
+      "food75",
+      "food32"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food10"
+     ],
+     "grams": 55
+    },
+    {
+     "role": "X",
+     "options": [
+      "food99"
+     ],
+     "grams": 10
+    },
+    {
+     "role": "F",
+     "options": [
+      "food98",
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r9",
+   "name": "Carbonara légère",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "g",
+    "q"
+   ],
+   "minutes": 15,
+   "steps": "Fais cuire {C}. Fais dorer {P} et {V} dans {F}. Hors du feu, mélange {C} avec {X} battus et un peu d'eau de cuisson, puis ajoute {P}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food7",
+      "food56",
+      "food53",
+      "food1"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food21",
+      "food22"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food36",
+      "food84"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food10"
+     ],
+     "grams": 55
+    },
+    {
+     "role": "X",
+     "options": [
+      "food18",
+      "food68"
+     ],
+     "grams": 10
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r10",
+   "name": "Veau aux champignons",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "g"
+   ],
+   "minutes": 20,
+   "steps": "Saisis {P} dans {F}, réserve. Fais revenir {V}, ajoute {X} et un fond d'eau, puis remets {P}. Sers avec {C}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food50",
+      "food1",
+      "food0"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food19",
+      "food21",
+      "food23"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food36"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food84"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food70"
+     ],
+     "grams": 30
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r11",
+   "name": "Magret et pommes de terre sautées",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "g"
+   ],
+   "minutes": 30,
+   "steps": "Fais cuire {C} à l'eau 10 min, puis fais-les dorer dans {F}. Saisis {P} 4 min par face et tranche-le. Sers avec {V}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food51",
+      "food5"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food23"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food31",
+      "food82"
+     ],
+     "grams": null
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r12",
+   "name": "Agneau, boulgour et légumes rôtis",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "w"
+   ],
+   "minutes": 35,
+   "steps": "Rôtis {V} avec {F} 25 min à 200 °C. Saisis {P} au cumin. Fais cuire {C} et sers le tout ensemble.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food49",
+      "food5"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food71",
+      "food26"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food79",
+      "food35"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food84"
+     ],
+     "grams": null
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r13",
+   "name": "Saucisses et lentilles",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "b"
+   ],
+   "minutes": 30,
+   "steps": "Fais cuire {C} 20 min avec {V} et une feuille de laurier. Dore {P} dans {F}, ajoute {X} et mélange avec les lentilles.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food52",
+      "food0"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food28"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food79",
+      "food84"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food45"
+     ],
+     "grams": 80
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r14",
+   "name": "Burger maison",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "g"
+   ],
+   "minutes": 30,
+   "steps": "Fais des frites au four avec {C}. Cuis {P} en steak, ajoute {X} pour fondre. Monte le burger avec {V}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food3",
+      "food5",
+      "food1"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food29",
+      "food73"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food23"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food82",
+      "food80"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food84",
+      "food80"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food69",
+      "food68",
+      "food17"
+     ],
+     "grams": 20
+    },
+    {
+     "role": "X",
+     "options": [
+      "food100",
+      "food46"
+     ],
+     "grams": 15
+    }
+   ]
+  },
+  {
+   "id": "r15",
+   "name": "Bowl quinoa",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q"
+   ],
+   "minutes": 20,
+   "steps": "Fais cuire {C}. Dispose dans un bol avec {P} grillé, {V} et {F}. Assaisonne avec citron, sel et poivre.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food0",
+      "food1",
+      "food8",
+      "food9"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food27",
+      "food20"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food80",
+      "food81"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food75",
+      "food35"
+     ],
+     "grams": null
+    },
+    {
+     "role": "F",
+     "options": [
+      "food44",
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r16",
+   "name": "Salade de pâtes protéinée",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q",
+    "b"
+   ],
+   "minutes": 15,
+   "steps": "Fais cuire {C} et refroidis-les. Mélange avec {P}, {V} et {F}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food8",
+      "food57",
+      "food0"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food21",
+      "food22"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food80",
+      "food75"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food81",
+      "food35"
+     ],
+     "grams": null
+    },
+    {
+     "role": "F",
+     "options": [
+      "food102",
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r17",
+   "name": "Hachis parmentier",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "g",
+    "b"
+   ],
+   "minutes": 45,
+   "steps": "Fais une purée avec {C} et {X}. Fais revenir {P} et {V} dans {F}. Mets en plat, couvre de purée et de fromage, gratine 15 min.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food3",
+      "food4",
+      "food1"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food23"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food79",
+      "food84"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food63",
+      "food64"
+     ],
+     "grams": 80
+    },
+    {
+     "role": "X",
+     "options": [
+      "food68",
+      "food17"
+     ],
+     "grams": 20
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r18",
+   "name": "Fajitas",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "g",
+    "q",
+    "w"
+   ],
+   "minutes": 15,
+   "steps": "Saisis {P} en lanières avec {V} dans {F} et des épices fajitas. Sers dans {C} avec {X}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food0",
+      "food5",
+      "food1",
+      "food9"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food72"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food35"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food84"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food47"
+     ],
+     "grams": 40
+    },
+    {
+     "role": "X",
+     "options": [
+      "food70",
+      "food65"
+     ],
+     "grams": 20
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r19",
+   "name": "Omelette et pommes de terre",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "q"
+   ],
+   "minutes": 20,
+   "steps": "Fais dorer {C} en dés dans {F}. Ajoute {V} et {P}, puis verse {X} battus. Cuis à feu doux.",
+   "parts": [
+    {
+     "role": "X",
+     "options": [
+      "food10"
+     ],
+     "grams": 165
+    },
+    {
+     "role": "P",
+     "options": [
+      "food7",
+      "food53",
+      "food11"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food23"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food36",
+      "food80"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food82"
+     ],
+     "grams": null
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r20",
+   "name": "Poulet basquaise",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "b"
+   ],
+   "minutes": 30,
+   "steps": "Dore {P} dans {F}. Ajoute {V}, de l'ail et du piment d'Espelette, laisse mijoter 20 min. Sers avec {C}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food2",
+      "food0",
+      "food1"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food19",
+      "food20"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food35",
+      "food80"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food84"
+     ],
+     "grams": null
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r21",
+   "name": "Pâtes au poulet et champignons",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "g",
+    "q"
+   ],
+   "minutes": 15,
+   "steps": "Fais cuire {C}. Saisis {P} et {V} dans {F}, ajoute {X} et un peu d'eau de cuisson. Mélange avec {C}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food0",
+      "food1"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food21",
+      "food22"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food36"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food70"
+     ],
+     "grams": 40
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r22",
+   "name": "Filet mignon à la moutarde",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h"
+   ],
+   "minutes": 30,
+   "steps": "Badigeonne {P} de {X}, saisis-le dans {F} puis enfourne 20 min à 180 °C. Sers avec {C} et {V}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food6",
+      "food1"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food23",
+      "food19"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food31",
+      "food79"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food46"
+     ],
+     "grams": 15
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r23",
+   "name": "Poulet teriyaki",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "q",
+    "w"
+   ],
+   "minutes": 15,
+   "steps": "Saisis {P} dans {F}, ajoute {X}, un peu de miel et d'ail, laisse caraméliser. Sers avec {C} et {V}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food0",
+      "food2",
+      "food9"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food19"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food32",
+      "food87"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food99"
+     ],
+     "grams": 15
+    },
+    {
+     "role": "F",
+     "options": [
+      "food98",
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r24",
+   "name": "Tofu sauté aux légumes",
+   "kinds": [
+    "meal"
+   ],
+   "veg": true,
+   "tags": [
+    "h",
+    "q",
+    "w"
+   ],
+   "minutes": 15,
+   "steps": "Fais dorer {P} en cubes dans {F}. Ajoute {V} et {X}. Sers avec {C}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food9",
+      "food61",
+      "food62"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food19",
+      "food74"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food32",
+      "food35"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food99"
+     ],
+     "grams": 15
+    },
+    {
+     "role": "F",
+     "options": [
+      "food98"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r25",
+   "name": "Chili végétarien",
+   "kinds": [
+    "meal"
+   ],
+   "veg": true,
+   "tags": [
+    "h",
+    "b"
+   ],
+   "minutes": 30,
+   "steps": "Fais revenir {V} dans {F}, ajoute {P} émietté, {X}, cumin et paprika. Laisse mijoter 15 min. Sers avec {C}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food61",
+      "food9"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food19",
+      "food20"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food35",
+      "food84"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food75"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food77"
+     ],
+     "grams": 150
+    },
+    {
+     "role": "X",
+     "options": [
+      "food45"
+     ],
+     "grams": 100
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r26",
+   "name": "Bol skyr, fruits et avoine",
+   "kinds": [
+    "snack",
+    "breakfast"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q"
+   ],
+   "minutes": 2,
+   "steps": "Verse {P} dans un bol, ajoute {R} et {C}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food12",
+      "food13",
+      "food14",
+      "food16"
+     ],
+     "grams": null
+    },
+    {
+     "role": "R",
+     "options": [
+      "food39",
+      "food37",
+      "food89",
+      "food92",
+      "food40"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food25"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r27",
+   "name": "Shake protéiné à la banane",
+   "kinds": [
+    "snack",
+    "breakfast"
+   ],
+   "veg": false,
+   "tags": [
+    "q"
+   ],
+   "minutes": 2,
+   "steps": "Mixe {P}, {C} et {X} avec quelques glaçons.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food48",
+      "food106"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food37"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food63",
+      "food64"
+     ],
+     "grams": 250
+    }
+   ]
+  },
+  {
+   "id": "r28",
+   "name": "Tartines jambon et fromage frais",
+   "kinds": [
+    "snack",
+    "breakfast"
+   ],
+   "veg": false,
+   "tags": [
+    "q"
+   ],
+   "minutes": 5,
+   "steps": "Toaste {C}, tartine {X}, ajoute {P} et {V} en rondelles.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food7",
+      "food53"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food29",
+      "food73"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food70"
+     ],
+     "grams": 20
+    },
+    {
+     "role": "V",
+     "options": [
+      "food81",
+      "food80"
+     ],
+     "grams": 60
+    }
+   ]
+  },
+  {
+   "id": "r29",
+   "name": "Œufs durs et fruit",
+   "kinds": [
+    "snack"
+   ],
+   "veg": false,
+   "tags": [
+    "h"
+   ],
+   "minutes": 10,
+   "steps": "Fais cuire {P} 9 min, écale-les. Sers avec {R}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food10"
+     ],
+     "grams": null
+    },
+    {
+     "role": "R",
+     "options": [
+      "food38",
+      "food88",
+      "food40",
+      "food37"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r30",
+   "name": "Cottage cheese et fruits",
+   "kinds": [
+    "snack",
+    "breakfast"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q"
+   ],
+   "minutes": 2,
+   "steps": "Mélange {P} avec {R} coupé en morceaux.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food15",
+      "food12",
+      "food14"
+     ],
+     "grams": null
+    },
+    {
+     "role": "R",
+     "options": [
+      "food90",
+      "food91",
+      "food89",
+      "food92"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r31",
+   "name": "Wrap express",
+   "kinds": [
+    "snack"
+   ],
+   "veg": false,
+   "tags": [
+    "q"
+   ],
+   "minutes": 5,
+   "steps": "Mélange {P} avec {X}, garnis {C} avec {V} et roule.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food8",
+      "food57",
+      "food0"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food72"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food82",
+      "food80"
+     ],
+     "grams": 50
+    },
+    {
+     "role": "X",
+     "options": [
+      "food102",
+      "food46"
+     ],
+     "grams": 10
+    }
+   ]
+  },
+  {
+   "id": "r32",
+   "name": "Fromage blanc, banane et cacahuète",
+   "kinds": [
+    "snack",
+    "breakfast"
+   ],
+   "veg": false,
+   "tags": [
+    "g",
+    "q"
+   ],
+   "minutes": 2,
+   "steps": "Ajoute {R} en rondelles et {X} sur {P}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food14",
+      "food12",
+      "food13"
+     ],
+     "grams": null
+    },
+    {
+     "role": "R",
+     "options": [
+      "food37"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food42"
+     ],
+     "grams": 15
+    }
+   ]
+  },
+  {
+   "id": "r33",
+   "name": "Crudités, houmous et poulet",
+   "kinds": [
+    "snack"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q"
+   ],
+   "minutes": 5,
+   "steps": "Coupe {V} en bâtonnets, trempe-les dans {X}, avec {P} en lamelles.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food0",
+      "food7",
+      "food8"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food79",
+      "food81",
+      "food35"
+     ],
+     "grams": 120
+    },
+    {
+     "role": "X",
+     "options": [
+      "food105"
+     ],
+     "grams": 40
+    }
+   ]
+  },
+  {
+   "id": "r34",
+   "name": "Pizza tortilla protéinée",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "g",
+    "q"
+   ],
+   "minutes": 15,
+   "steps": "Étale {X} sur {C}, ajoute {P} en morceaux et {V}. Enfourne 8 min à 220 °C.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food0",
+      "food7",
+      "food1",
+      "food8"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food72"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food45"
+     ],
+     "grams": 60
+    },
+    {
+     "role": "X",
+     "options": [
+      "food17",
+      "food68"
+     ],
+     "grams": 40
+    },
+    {
+     "role": "V",
+     "options": [
+      "food36",
+      "food35"
+     ],
+     "grams": 80
+    }
+   ]
+  },
+  {
+   "id": "r35",
+   "name": "Croque-monsieur protéiné et salade",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "g",
+    "q"
+   ],
+   "minutes": 10,
+   "steps": "Monte {C} avec {P} et {X}, dore 5 min à la poêle ou au four. Sers avec {V}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food7",
+      "food1"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food73",
+      "food29"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food68",
+      "food17"
+     ],
+     "grams": 25
+    },
+    {
+     "role": "V",
+     "options": [
+      "food82",
+      "food80"
+     ],
+     "grams": 80
+    }
+   ]
+  },
+  {
+   "id": "r36",
+   "name": "Gratin de pâtes au poulet",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "g",
+    "b"
+   ],
+   "minutes": 35,
+   "steps": "Fais cuire {C}. Saisis {P} et {V} dans {F}. Mélange tout avec {X} dans un plat et gratine 15 min à 200 °C.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food0",
+      "food1",
+      "food7"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food21",
+      "food22"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food36",
+      "food84"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food63",
+      "food64"
+     ],
+     "grams": 100
+    },
+    {
+     "role": "X",
+     "options": [
+      "food68",
+      "food17"
+     ],
+     "grams": 25
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r37",
+   "name": "Tacos de bœuf",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "g",
+    "q",
+    "w"
+   ],
+   "minutes": 20,
+   "steps": "Fais revenir {P} avec cumin et paprika. Garnis {C} de {P}, {V} et {X}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food3",
+      "food5",
+      "food1"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food72"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food80",
+      "food84"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food82",
+      "food75"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food69",
+      "food68"
+     ],
+     "grams": 20
+    },
+    {
+     "role": "X",
+     "options": [
+      "food47"
+     ],
+     "grams": 30
+    }
+   ]
+  },
+  {
+   "id": "r38",
+   "name": "Poulet croustillant au four",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "g"
+   ],
+   "minutes": 30,
+   "steps": "Trempe {P} dans l'œuf battu puis dans les flocons mixés avec paprika. Enfourne 20 min à 210 °C avec {C} en frites et {F}. Sers avec {V}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food0",
+      "food1"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food23"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food25"
+     ],
+     "grams": 20
+    },
+    {
+     "role": "X",
+     "options": [
+      "food10"
+     ],
+     "grams": 55
+    },
+    {
+     "role": "V",
+     "options": [
+      "food82",
+      "food31"
+     ],
+     "grams": null
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r39",
+   "name": "Pancakes protéinés",
+   "kinds": [
+    "snack",
+    "breakfast"
+   ],
+   "veg": false,
+   "tags": [
+    "g",
+    "q"
+   ],
+   "minutes": 10,
+   "steps": "Mixe {C}, {P} et {X} avec un peu d'eau. Cuis 3 petits pancakes à la poêle et garnis de {R}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food48",
+      "food12",
+      "food106"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food25"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food10"
+     ],
+     "grams": 55
+    },
+    {
+     "role": "R",
+     "options": [
+      "food39",
+      "food37",
+      "food92"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r40",
+   "name": "Porridge protéiné",
+   "kinds": [
+    "breakfast"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q"
+   ],
+   "minutes": 5,
+   "steps": "Fais cuire {C} 3 min dans {X}, ajoute {P} hors du feu, puis {R}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food48",
+      "food12",
+      "food14",
+      "food106"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food25"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food63",
+      "food64"
+     ],
+     "grams": 200
+    },
+    {
+     "role": "R",
+     "options": [
+      "food37",
+      "food39",
+      "food92"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r41",
+   "name": "Œufs brouillés, jambon et toasts",
+   "kinds": [
+    "breakfast"
+   ],
+   "veg": false,
+   "tags": [
+    "g",
+    "q"
+   ],
+   "minutes": 10,
+   "steps": "Brouille {P} à feu doux dans {F} avec {X} en dés. Sers sur {C} grillé avec {V}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food10",
+      "food11"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food29",
+      "food73"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food7",
+      "food53"
+     ],
+     "grams": 40
+    },
+    {
+     "role": "V",
+     "options": [
+      "food80",
+      "food36"
+     ],
+     "grams": 80
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41",
+      "food94"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r42",
+   "name": "Overnight oats aux fruits rouges",
+   "kinds": [
+    "breakfast"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "b"
+   ],
+   "minutes": 5,
+   "steps": "La veille, mélange {C}, {P}, {X} et un peu d'eau ou de lait. Le matin, ajoute {R}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food12",
+      "food13",
+      "food14",
+      "food16"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food25"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food97"
+     ],
+     "grams": 10
+    },
+    {
+     "role": "R",
+     "options": [
+      "food39",
+      "food89",
+      "food92"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r43",
+   "name": "Tartines avocat et œufs",
+   "kinds": [
+    "breakfast"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q"
+   ],
+   "minutes": 10,
+   "steps": "Fais cuire {P} au plat ou mollets. Écrase {X} sur {C} grillé, ajoute {P} et {V}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food10"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food29",
+      "food73"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food44"
+     ],
+     "grams": 50
+    },
+    {
+     "role": "V",
+     "options": [
+      "food80"
+     ],
+     "grams": 60
+    }
+   ]
+  },
+  {
+   "id": "r44",
+   "name": "Muffins œufs-jambon",
+   "kinds": [
+    "breakfast"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "b"
+   ],
+   "minutes": 20,
+   "steps": "Bats {P}, ajoute {X} en dés et {V}. Verse dans des moules et enfourne 15 min à 190 °C. Sers avec {C}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food10",
+      "food11"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food7",
+      "food53"
+     ],
+     "grams": 50
+    },
+    {
+     "role": "V",
+     "options": [
+      "food35",
+      "food36",
+      "food80"
+     ],
+     "grams": 80
+    },
+    {
+     "role": "X",
+     "options": [
+      "food68",
+      "food17"
+     ],
+     "grams": 20
+    },
+    {
+     "role": "C",
+     "options": [
+      "food29",
+      "food73"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r45",
+   "name": "Poulet, riz et légumes surgelés",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q"
+   ],
+   "minutes": 20,
+   "steps": "Cuis {C}. Poêle {P} dans {F} et ajoute {V} 5 min. Sers ensemble.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food0",
+      "food1"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food19",
+      "food20"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food32",
+      "food87"
+     ],
+     "grams": null
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r46",
+   "name": "Poulet citron, riz complet et haricots verts",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "b"
+   ],
+   "minutes": 25,
+   "steps": "Saisis {P} dans {F} avec le jus d'un citron et de l'ail. Sers avec {C} et {V} à la vapeur.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food0",
+      "food2"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food20",
+      "food19"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food31"
+     ],
+     "grams": null
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r47",
+   "name": "Dinde, pâtes et haricots verts",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q"
+   ],
+   "minutes": 15,
+   "steps": "Cuis {C} et {V} dans la même casserole. Poêle {P} dans {F}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food1",
+      "food0"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food21",
+      "food22"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food31"
+     ],
+     "grams": null
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r48",
+   "name": "Steak haché, riz et maïs",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q"
+   ],
+   "minutes": 15,
+   "steps": "Cuis {C}. Poêle {P} 3 min par face. Sers avec {V} chaud et {X}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food3",
+      "food5"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food19",
+      "food20"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food75",
+      "food87"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food47",
+      "food100"
+     ],
+     "grams": 30
+    }
+   ]
+  },
+  {
+   "id": "r49",
+   "name": "Wok de dinde aux légumes",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q",
+    "w"
+   ],
+   "minutes": 20,
+   "steps": "Saisis {P} en lanières dans {F} bien chaude, ajoute {V} puis {X}. Sers avec {C}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food1",
+      "food0"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food19",
+      "food20"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food32",
+      "food35"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food99"
+     ],
+     "grams": 15
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41",
+      "food98"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r50",
+   "name": "Steak, pommes vapeur et haricots verts",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q"
+   ],
+   "minutes": 25,
+   "steps": "Cuis {C} et {V} à la vapeur. Saisis {P} à la poêle et arrose de {F} et d'herbes.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food3",
+      "food5"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food23"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food31"
+     ],
+     "grams": null
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r51",
+   "name": "Taboulé au poulet",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "b",
+    "w"
+   ],
+   "minutes": 20,
+   "steps": "Réhydrate {C} à l'eau bouillante, mélange avec {V} en dés, menthe, citron et {F}. Ajoute {P} grillé.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food0",
+      "food1"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food71",
+      "food26"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food80",
+      "food81"
+     ],
+     "grams": null
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r52",
+   "name": "Bœuf sauté aux champignons et riz",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q",
+    "w"
+   ],
+   "minutes": 20,
+   "steps": "Saisis {P} en lamelles dans {F}, ajoute {V} et {X}. Sers avec {C}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food5",
+      "food3"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food19"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food36",
+      "food84"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food99"
+     ],
+     "grams": 15
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r53",
+   "name": "Poulet paprika et pommes de terre",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q"
+   ],
+   "minutes": 15,
+   "steps": "Cuis {C} 8 min au micro-ondes. Poêle {P} saupoudré de paprika dans {F}. Sers avec {V}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food0",
+      "food2"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food23"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food82",
+      "food80"
+     ],
+     "grams": null
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r54",
+   "name": "Salade de pâtes complètes au thon",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q",
+    "b"
+   ],
+   "minutes": 15,
+   "steps": "Cuis {C} et refroidis-les. Mélange avec {P}, {V} et {F}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food8",
+      "food0"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food22",
+      "food21"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food80",
+      "food75"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food81",
+      "food35"
+     ],
+     "grams": null
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r55",
+   "name": "Agneau grillé, semoule et tomates",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q"
+   ],
+   "minutes": 15,
+   "steps": "Verse de l'eau bouillante sur {C} et couvre 5 min. Grille {P} dans {F}. Sers avec {V}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food49",
+      "food50"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food26"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food80",
+      "food81"
+     ],
+     "grams": null
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r56",
+   "name": "Escalope de veau, purée et petits pois",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h"
+   ],
+   "minutes": 30,
+   "steps": "Écrase {C} cuites avec {X}. Poêle {P} 3 min par face. Sers avec {V}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food50",
+      "food1"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food23"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food87"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food63",
+      "food64"
+     ],
+     "grams": 50
+    }
+   ]
+  },
+  {
+   "id": "r57",
+   "name": "Burrito bowl au poulet",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "b",
+    "w"
+   ],
+   "minutes": 25,
+   "steps": "Assemble {C}, {P} grillé aux épices mexicaines, {V} et {X}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food0",
+      "food3"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food19",
+      "food20"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food77"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food75"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food80",
+      "food35"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food47"
+     ],
+     "grams": 40
+    }
+   ]
+  },
+  {
+   "id": "r58",
+   "name": "Poulet, quinoa et poivrons poêlés",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q"
+   ],
+   "minutes": 20,
+   "steps": "Cuis {C}. Poêle {P} et {V} dans {F} 10 min.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food0",
+      "food1"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food27",
+      "food19"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food35",
+      "food36"
+     ],
+     "grams": null
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r59",
+   "name": "Jambon, pommes de terre et salade",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q"
+   ],
+   "minutes": 15,
+   "steps": "Cuis {C} à l'eau ou au micro-ondes. Sers avec {P}, {V} et {X}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food7",
+      "food53"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food23"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food82",
+      "food80"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food46"
+     ],
+     "grams": 10
+    }
+   ]
+  },
+  {
+   "id": "r60",
+   "name": "Omelette aux champignons et salade",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q"
+   ],
+   "minutes": 15,
+   "steps": "Fais revenir {V} dans {F}, verse {P} battus et cuis à feu doux. Sers avec {C}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food10",
+      "food11"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food36"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food82"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food29"
+     ],
+     "grams": null
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r61",
+   "name": "Salade poulet, pois chiches et tomates",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q"
+   ],
+   "minutes": 15,
+   "steps": "Poêle {P}. Mélange avec {C} rincés, {V} en dés et {F}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food0",
+      "food1"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food76"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food29"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food80",
+      "food81"
+     ],
+     "grams": null
+    },
+    {
+     "role": "F",
+     "options": [
+      "food41"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r62",
+   "name": "Saucisses de volaille, pâtes et petits pois",
+   "kinds": [
+    "meal"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q"
+   ],
+   "minutes": 15,
+   "steps": "Cuis {C} et {V} dans la même eau. Dore {P} à la poêle. Sers avec {X}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food52",
+      "food1"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food21",
+      "food22"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food87"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food46"
+     ],
+     "grams": 10
+    }
+   ]
+  },
+  {
+   "id": "r63",
+   "name": "Skyr, pomme et amandes",
+   "kinds": [
+    "snack"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q"
+   ],
+   "minutes": 2,
+   "steps": "Coupe {R} en dés sur {P} et parsème de {X}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food12",
+      "food13",
+      "food14"
+     ],
+     "grams": null
+    },
+    {
+     "role": "R",
+     "options": [
+      "food38",
+      "food40"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food43"
+     ],
+     "grams": 15
+    }
+   ]
+  },
+  {
+   "id": "r64",
+   "name": "Tartine cottage et concombre",
+   "kinds": [
+    "snack"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q"
+   ],
+   "minutes": 5,
+   "steps": "Étale {P} sur {C} et ajoute {V} en rondelles, poivre et herbes.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food15",
+      "food14"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food29"
+     ],
+     "grams": null
+    },
+    {
+     "role": "V",
+     "options": [
+      "food81",
+      "food80"
+     ],
+     "grams": 80
+    }
+   ]
+  },
+  {
+   "id": "r65",
+   "name": "Smoothie protéiné aux fruits rouges",
+   "kinds": [
+    "snack"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q"
+   ],
+   "minutes": 5,
+   "steps": "Mixe {P}, {R} et {X}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food48",
+      "food12"
+     ],
+     "grams": null
+    },
+    {
+     "role": "R",
+     "options": [
+      "food39",
+      "food92"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food63",
+      "food64"
+     ],
+     "grams": 200
+    }
+   ]
+  },
+  {
+   "id": "r66",
+   "name": "Yaourt grec, kiwi et chia",
+   "kinds": [
+    "breakfast",
+    "snack"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q"
+   ],
+   "minutes": 5,
+   "steps": "Verse {P} dans un bol, ajoute {C}, {R} en morceaux et {X}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food13",
+      "food12"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food25"
+     ],
+     "grams": null
+    },
+    {
+     "role": "R",
+     "options": [
+      "food40",
+      "food89"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food97"
+     ],
+     "grams": 10
+    }
+   ]
+  },
+  {
+   "id": "r67",
+   "name": "Omelette blanche, jambon et pain complet",
+   "kinds": [
+    "breakfast"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q"
+   ],
+   "minutes": 10,
+   "steps": "Cuis {P} à la poêle avec {X} et {V}. Sers avec {C}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food11",
+      "food10"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food7"
+     ],
+     "grams": 40
+    },
+    {
+     "role": "V",
+     "options": [
+      "food80",
+      "food36"
+     ],
+     "grams": 80
+    },
+    {
+     "role": "C",
+     "options": [
+      "food29",
+      "food73"
+     ],
+     "grams": null
+    }
+   ]
+  },
+  {
+   "id": "r68",
+   "name": "Crêpes d'avoine aux fruits",
+   "kinds": [
+    "breakfast"
+   ],
+   "veg": false,
+   "tags": [
+    "h",
+    "q"
+   ],
+   "minutes": 15,
+   "steps": "Mixe {C}, {X} et un peu de lait, cuis 2 crêpes fines. Garnis de {P} et {R}.",
+   "parts": [
+    {
+     "role": "P",
+     "options": [
+      "food12",
+      "food14",
+      "food48"
+     ],
+     "grams": null
+    },
+    {
+     "role": "C",
+     "options": [
+      "food25"
+     ],
+     "grams": null
+    },
+    {
+     "role": "X",
+     "options": [
+      "food10"
+     ],
+     "grams": 55
+    },
+    {
+     "role": "R",
+     "options": [
+      "food89",
+      "food92",
+      "food37"
+     ],
+     "grams": null
+    }
+   ]
+  }
+ ],
+ "quick": [
+  "food0",
+  "food3",
+  "food19",
+  "food21",
+  "food23",
+  "food10",
+  "food8",
+  "food12",
+  "food41",
+  "food32"
+ ]
+}

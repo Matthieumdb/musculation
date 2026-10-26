@@ -11,79 +11,78 @@ struct ExerciseListView: View {
 
     var body: some View {
         let sections = ExerciseSection.make(from: exercises, matching: search)
-        NavigationStack {
-            List {
-                if search.isEmpty {
-                    Section {
-                        NavigationLink {
-                            LibraryView()
-                        } label: {
-                            HStack(spacing: 12) {
-                                Image(systemName: "books.vertical.fill")
-                                    .font(.system(size: 16, weight: .semibold))
-                                    .foregroundStyle(.white)
-                                    .frame(width: 44, height: 44)
-                                    .background(Theme.gradient, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text("Bibliothèque").font(.headline)
-                                    Text("\(ExerciseLibrary.all.count) exercices illustrés et animés")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                }
+        // Pushed from Réglages, inside its navigation stack
+        List {
+            if search.isEmpty {
+                Section {
+                    NavigationLink {
+                        LibraryView()
+                    } label: {
+                        HStack(spacing: 12) {
+                            Image(systemName: "books.vertical.fill")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundStyle(.white)
+                                .frame(width: 44, height: 44)
+                                .background(Theme.gradient, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Bibliothèque").font(.headline)
+                                Text("\(ExerciseLibrary.all.count) exercices illustrés et animés")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
                             }
-                            .padding(.vertical, 4)
                         }
+                        .padding(.vertical, 4)
                     }
                 }
-                ForEach(sections) { section in
-                    Section(section.group.label) {
-                        ForEach(section.exercises) { exercise in
-                            Button {
-                                editingExercise = exercise
-                            } label: {
-                                HStack(spacing: 12) {
-                                    ExerciseIcon(exercise: exercise, size: 32)
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text(exercise.name)
-                                        if !exercise.notes.isEmpty {
-                                            Text(exercise.notes)
-                                                .font(.caption)
-                                                .foregroundStyle(.secondary)
-                                                .lineLimit(1)
-                                        }
+            }
+            ForEach(sections) { section in
+                Section(section.group.label) {
+                    ForEach(section.exercises) { exercise in
+                        Button {
+                            editingExercise = exercise
+                        } label: {
+                            HStack(spacing: 12) {
+                                ExerciseIcon(exercise: exercise, size: 32)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(exercise.name)
+                                    if !exercise.notes.isEmpty {
+                                        Text(exercise.notes)
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                            .lineLimit(1)
                                     }
                                 }
                             }
-                            .foregroundStyle(.primary)
                         }
-                        .onDelete { offsets in
-                            offsets.map { section.exercises[$0] }.forEach { context.delete($0) }
-                            try? context.save()
-                        }
+                        .foregroundStyle(.primary)
+                    }
+                    .onDelete { offsets in
+                        offsets.map { section.exercises[$0] }.forEach { context.delete($0) }
+                        try? context.save()
                     }
                 }
             }
-            .overlay {
-                if sections.isEmpty && !search.isEmpty {
-                    ContentUnavailableView.search(text: search)
-                }
-            }
-            .searchable(text: $search, prompt: "Rechercher")
-            .navigationTitle("Exercices")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Menu {
-                        Button("Depuis la bibliothèque", systemImage: "books.vertical") { isBrowsingLibrary = true }
-                        Button("Exercice personnalisé", systemImage: "square.and.pencil") { isAdding = true }
-                    } label: {
-                        Label("Ajouter", systemImage: "plus")
-                    }
-                }
-            }
-            .sheet(item: $editingExercise) { ExerciseEditView(exercise: $0) }
-            .sheet(isPresented: $isAdding) { ExerciseEditView(exercise: nil) }
-            .navigationDestination(isPresented: $isBrowsingLibrary) { LibraryView() }
         }
+        .overlay {
+            if sections.isEmpty && !search.isEmpty {
+                ContentUnavailableView.search(text: search)
+            }
+        }
+        .searchable(text: $search, prompt: "Rechercher")
+        .navigationTitle("Exercices")
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Menu {
+                    Button("Depuis la bibliothèque", systemImage: "books.vertical") { isBrowsingLibrary = true }
+                    Button("Exercice personnalisé", systemImage: "square.and.pencil") { isAdding = true }
+                } label: {
+                    Label("Ajouter", systemImage: "plus")
+                }
+            }
+        }
+        .sheet(item: $editingExercise) { ExerciseEditView(exercise: $0) }
+        .sheet(isPresented: $isAdding) { ExerciseEditView(exercise: nil) }
+        .navigationDestination(isPresented: $isBrowsingLibrary) { LibraryView() }
     }
 }
 

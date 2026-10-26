@@ -56,7 +56,6 @@ struct StartWorkoutView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                header
                 stats
 
                 if !finishedWorkouts.isEmpty {
@@ -79,7 +78,7 @@ struct StartWorkoutView: View {
 
                 if let last = finishedWorkouts.first {
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Dernière séance").font(.title2.bold())
+                        SectionHeader("Dernière séance")
                         LastWorkoutCard(workout: last)
                     }
                 }
@@ -87,7 +86,8 @@ struct StartWorkoutView: View {
             .padding()
         }
         .background { AppBackground() }
-        .toolbar(.hidden, for: .navigationBar)
+        .navigationTitle(greeting)
+        .navigationSubtitleIfAvailable(Date.now.formatted(.dateTime.weekday(.wide).day().month(.wide)).capitalized)
         .sheet(item: $editingTemplate) { TemplateEditView(template: $0, isNew: false) }
         .sheet(item: $newTemplate) { TemplateEditView(template: $0, isNew: true) }
         .sheet(isPresented: $isShowingCoach) { CoachView() }
@@ -103,11 +103,8 @@ struct StartWorkoutView: View {
         if let next = nextProgramTemplate {
             let phase = TrainingProgram.phase(startedAt: Date(timeIntervalSince1970: programStart))
             VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Text("Mon programme").font(.title2.bold())
-                    Spacer()
+                SectionHeader("Mon programme") {
                     Button("Détails") { isShowingProgram = true }
-                        .font(.subheadline.weight(.semibold))
                 }
 
                 VStack(alignment: .leading, spacing: 14) {
@@ -185,7 +182,7 @@ struct StartWorkoutView: View {
             }
         } else {
             VStack(alignment: .leading, spacing: 12) {
-                Text("Programmes").font(.title2.bold())
+                SectionHeader("Programmes")
                 ForEach(TrainingProgram.all, id: \.name) { program in
                     VStack(alignment: .leading, spacing: 10) {
                         HStack(spacing: 8) {
@@ -222,17 +219,6 @@ struct StartWorkoutView: View {
         }
     }
 
-    private var header: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(Date.now.formatted(.dateTime.weekday(.wide).day().month(.wide)).uppercased())
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
-            Text("\(greeting) 💪")
-                .font(.largeTitle.bold())
-        }
-        .padding(.top, 8)
-    }
-
     private var stats: some View {
         HStack(spacing: 12) {
             StatTile(value: "\(workoutsThisWeek)", label: "cette semaine", symbol: "calendar", tint: .orange)
@@ -248,16 +234,13 @@ struct StartWorkoutView: View {
 
     private var templatesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("Mes modèles").font(.title2.bold())
-                Spacer()
+            SectionHeader("Mes modèles") {
                 Button {
                     let template = WorkoutTemplate(name: "")
                     context.insert(template)
                     newTemplate = template
                 } label: {
                     Label("Nouveau", systemImage: "plus")
-                        .font(.subheadline.weight(.semibold))
                 }
             }
 

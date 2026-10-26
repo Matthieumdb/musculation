@@ -18,6 +18,19 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 Section {
+                    NavigationLink {
+                        ExerciseListView()
+                    } label: {
+                        Label("Exercices", systemImage: "list.bullet")
+                    }
+                    NavigationLink {
+                        LibraryView()
+                    } label: {
+                        Label("Bibliothèque d'exercices", systemImage: "books.vertical")
+                    }
+                }
+
+                Section {
                     Picker("Temps de repos", selection: $restDuration) {
                         ForEach(AppSettings.restOptions, id: \.self) { seconds in
                             Text(AppSettings.restLabel(seconds)).tag(seconds)
@@ -53,7 +66,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Sauvegarde")
                 } footer: {
-                    Text("Tes données sont uniquement sur cet iPhone. Exporte-les de temps en temps vers Fichiers ou iCloud Drive, surtout avant de réinstaller l'app.")
+                    Text("Tes séances, tes pesées et ta nutrition sont uniquement sur cet iPhone. Exporte-les de temps en temps vers Fichiers ou iCloud Drive, surtout avant de réinstaller l'app.")
                 }
 
                 Section {
