@@ -107,7 +107,17 @@ struct ProgressionView: View {
                     Text("Repère courant pour progresser : 10 à 20 séries par muscle et par semaine.")
                 }
 
-                Section("Poids de corps") {
+                Section("Corps") {
+                    NavigationLink {
+                        MeasurementsView()
+                    } label: {
+                        Label("Mensurations", systemImage: "ruler")
+                    }
+                    NavigationLink {
+                        CheckInHistoryView()
+                    } label: {
+                        Label("Journal et récupération", systemImage: "heart.text.square")
+                    }
                     NavigationLink {
                         BodyWeightView()
                     } label: {

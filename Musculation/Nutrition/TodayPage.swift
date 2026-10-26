@@ -391,6 +391,8 @@ private struct JournalCard: View {
             }
 
             Divider()
+            WaterRow(goal: min(14, max(6, Int((store.settings.profile.weight * 0.035 / 0.25).rounded()))))
+            Divider()
 
             DisclosureGroup(isExpanded: $showsLog) {
                 VStack(spacing: 0) {
@@ -578,5 +580,51 @@ private struct PastMealRow: View {
         let date = DayKey.date(meal.day) ?? .now
         let day = Calendar.current.isDateInYesterday(date) ? "Hier" : date.formatted(.dateTime.weekday(.wide).day().month()).capitalized
         return [day, slotName].compactMap { $0 }.joined(separator: " · ")
+    }
+}
+
+// MARK: - Water
+
+/// Glasses of water today (25 cl), shared with the morning check-in.
+private struct WaterRow: View {
+    @Environment(\.modelContext) private var context
+    @Query private var checkIns: [DailyCheckIn]
+    let goal: Int
+
+    var body: some View {
+        let water = checkIns.first { $0.day == DayKey.today }?.water ?? 0
+        HStack(spacing: 12) {
+            CardTitle("Eau", symbol: "drop.fill", tint: .cyan)
+            HStack(spacing: 3) {
+                ForEach(0..<goal, id: \.self) { i in
+                    Capsule()
+                        .fill(i < water ? AnyShapeStyle(Color.cyan) : AnyShapeStyle(Color.cyan.opacity(0.18)))
+                        .frame(width: 6, height: 16)
+                }
+            }
+            .animation(.appSpring, value: water)
+            Spacer()
+            Text("\(water)/\(goal)")
+                .font(.subheadline.weight(.semibold).monospacedDigit())
+                .foregroundStyle(water >= goal ? Color.cyan : Color.secondary)
+                .contentTransition(.numericText())
+            Button {
+                withAnimation(.appSpring) { DailyCheckIn.today(in: context).water += 1 }
+            } label: {
+                Image(systemName: "plus")
+                    .font(.subheadline.weight(.bold))
+                    .frame(width: 30, height: 30)
+            }
+            .glassButton()
+            .buttonBorderShape(.circle)
+            .accessibilityLabel("Ajouter un verre d'eau")
+            .contextMenu {
+                Button("Retirer un verre", systemImage: "minus") {
+                    let entry = DailyCheckIn.today(in: context)
+                    entry.water = max(0, entry.water - 1)
+                }
+            }
+        }
+        .sensoryFeedback(.increase, trigger: water)
     }
 }

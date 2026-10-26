@@ -60,6 +60,8 @@ struct StartWorkoutView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
+                RecoveryCard()
+
                 stats
 
                 if !finishedWorkouts.isEmpty {
