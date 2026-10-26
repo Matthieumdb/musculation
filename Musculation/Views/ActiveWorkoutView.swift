@@ -131,7 +131,7 @@ struct ActiveWorkoutView: View {
                         isConfirmingDiscard = true
                     }
                 } label: {
-                    Image(systemName: "ellipsis.circle")
+                    Label("Options de la séance", systemImage: "ellipsis.circle")
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
@@ -249,7 +249,7 @@ private enum SetColumns {
     static let weight: CGFloat = 72
     static let reps: CGFloat = 54
     static let rpe: CGFloat = 38
-    static let check: CGFloat = 36
+    static let check: CGFloat = 44
 }
 
 struct WorkoutExerciseSection: View {
@@ -388,7 +388,10 @@ struct WorkoutExerciseSection: View {
                         .font(.title3)
                         .symbolRenderingMode(.hierarchical)
                         .padding(.vertical, 4)
+                        .frame(minWidth: 44, minHeight: 44)
+                        .contentShape(Rectangle())
                 }
+                .accessibilityLabel("Options de l'exercice")
             }
             .textCase(nil)
             .padding(.bottom, 4)
@@ -589,6 +592,7 @@ struct SetRow: View {
             }
             .buttonStyle(.plain)
             .frame(width: SetColumns.check)
+            .accessibilityLabel(set.isCompleted ? "Série validée" : "Valider la série")
             .sensoryFeedback(.selection, trigger: set.isCompleted)
         }
         .padding(.vertical, 2)

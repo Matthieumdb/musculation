@@ -142,7 +142,6 @@ struct LibraryDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 ExerciseAnimationView(entry: entry)
-                    .shadow(color: .black.opacity(0.08), radius: 10, y: 4)
 
                 VStack(alignment: .leading, spacing: 6) {
                     Text(entry.nameFR)

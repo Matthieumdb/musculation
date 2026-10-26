@@ -169,7 +169,6 @@ struct StartWorkoutView: View {
             .padding(18)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Theme.gradient, in: RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous))
-            .shadow(color: Color(red: 0.84, green: 0.13, blue: 0.24).opacity(0.25), radius: 12, y: 6)
         } else {
             VStack(alignment: .leading, spacing: 0) {
                 CardTitle("Programmes", symbol: "sparkles")
@@ -375,6 +374,7 @@ private struct TemplateRow: View {
         .padding(.vertical, 10)
         .contentShape(Rectangle())
         .onTapGesture(perform: onEdit)
+        .accessibilityAction(named: "Modifier", onEdit)
     }
 }
 

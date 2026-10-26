@@ -177,7 +177,7 @@ struct WorkoutDetailView: View {
                         }
                     }
                 } label: {
-                    Image(systemName: "ellipsis.circle")
+                    Label("Options", systemImage: "ellipsis.circle")
                 }
             }
         }

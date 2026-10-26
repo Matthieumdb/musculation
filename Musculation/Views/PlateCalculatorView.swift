@@ -3,7 +3,12 @@ import SwiftUI
 struct PlateCalculatorView: View {
     @Environment(\.dismiss) private var dismiss
     @AppStorage(AppSettings.barWeightKey) private var barWeight = AppSettings.defaultBarWeight
-    @State var target: Double
+    /// Seeded once from the set's weight, then adjusted freely in the sheet.
+    @State private var target: Double
+
+    init(target: Double) {
+        _target = State(initialValue: target)
+    }
 
     private static let plates: [Double] = [25, 20, 15, 10, 5, 2.5, 1.25]
 
