@@ -7,6 +7,7 @@ struct SettingsView: View {
     @AppStorage(AppSettings.restDurationKey) private var restDuration = AppSettings.defaultRestDuration
     @AppStorage(AppSettings.progressionPercentKey) private var progressionPercent = AppSettings.defaultProgressionPercent
     @AppStorage(AppSettings.barWeightKey) private var barWeight = AppSettings.defaultBarWeight
+    @AppStorage(AppSettings.appearanceKey) private var appearance = Appearance.light
 
     @State private var exportURL: URL?
     @State private var isImporting = false
@@ -27,6 +28,12 @@ struct SettingsView: View {
                         LibraryView()
                     } label: {
                         Label("Bibliothèque d'exercices", systemImage: "books.vertical")
+                    }
+                }
+
+                Section("Affichage") {
+                    Picker("Apparence", selection: $appearance) {
+                        ForEach(Appearance.allCases) { Text($0.label).tag($0) }
                     }
                 }
 

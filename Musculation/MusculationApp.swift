@@ -3,6 +3,8 @@ import SwiftData
 
 @main
 struct MusculationApp: App {
+    @AppStorage(AppSettings.appearanceKey) private var appearance = Appearance.light
+
     init() {
         WorkoutLiveSync.shared.activate()
     }
@@ -10,6 +12,7 @@ struct MusculationApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .preferredColorScheme(appearance.colorScheme)
         }
         .modelContainer(for: [
             Exercise.self,
@@ -19,6 +22,8 @@ struct MusculationApp: App {
             WorkoutTemplate.self,
             TemplateExercise.self,
             BodyWeightEntry.self,
+            BodyMeasurement.self,
+            DailyCheckIn.self,
         ])
     }
 }

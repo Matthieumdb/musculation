@@ -13,6 +13,7 @@ struct ActiveWorkoutView: View {
     @State private var isConfirmingFinish = false
     @State private var isConfirmingDiscard = false
     @State private var plateTarget: PlateTarget?
+    @State private var recordBanner: String?
 
     var body: some View {
         let entries = workout.orderedExercises
@@ -50,8 +51,11 @@ struct ActiveWorkoutView: View {
                     canMoveUp: entry.persistentModelID != entries.first?.persistentModelID,
                     canMoveDown: entry.persistentModelID != entries.last?.persistentModelID,
                     onMove: { offset in withAnimation(.appSpring) { workout.move(entry, by: offset) } },
-                    onSetCompleted: { startRest(seconds: entry.restSeconds) },
-                    onShowPlates: { plateTarget = PlateTarget(weight: $0) }
+                    onSetCompleted: { completed($0, in: entry) },
+                    onShowPlates: { plateTarget = PlateTarget(weight: $0) },
+                    supersetLetter: entry.supersetGroup.map { workout.supersetLetter($0) },
+                    onToggleSuperset: entry.supersetGroup != nil || entry.persistentModelID != entries.last?.persistentModelID
+                        ? { workout.toggleSuperset(entry) } : nil
                 )
             }
 
@@ -67,6 +71,24 @@ struct ActiveWorkoutView: View {
             }
         }
         .scrollDismissesKeyboard(.interactively)
+        .overlay(alignment: .top) {
+            if let recordBanner {
+                Label {
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("Nouveau record !").font(.subheadline.bold())
+                        Text(recordBanner).font(.caption).foregroundStyle(.secondary)
+                    }
+                } icon: {
+                    Image(systemName: "trophy.fill").foregroundStyle(.yellow).font(.title3)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+                .glassSurface(in: Capsule(), fallback: .regularMaterial)
+                .padding(.top, 8)
+                .transition(.move(edge: .top).combined(with: .opacity))
+                .sensoryFeedback(.success, trigger: recordBanner)
+            }
+        }
         .safeAreaInset(edge: .bottom) {
             if let restEndDate {
                 RestTimerBar(
@@ -169,6 +191,22 @@ struct ActiveWorkoutView: View {
         }
     }
 
+    /// After a set: rest (after the last exercise of a superset) and a banner for a new record.
+    private func completed(_ set: WorkoutSet, in entry: WorkoutExercise) {
+        if workout.restsAfter(entry) { startRest(seconds: entry.restSeconds) }
+        guard set.kind != .warmup, set.weight > 0, let previous = entry.previousBestOneRepMax else { return }
+        let others = entry.sets.filter { $0.isCompleted && $0.persistentModelID != set.persistentModelID }.map(\.estimatedOneRepMax).max() ?? 0
+        let estimate = set.estimatedOneRepMax
+        guard estimate > max(previous, others) else { return }
+        withAnimation(.appSpring) {
+            recordBanner = "\(entry.exercise?.name ?? "Record") · 1RM estimé \(estimate.kgText)"
+        }
+        Task {
+            try? await Task.sleep(for: .seconds(3.5))
+            withAnimation(.appSpring) { recordBanner = nil }
+        }
+    }
+
     /// A tap made on the Apple Watch.
     private func apply(_ command: WatchCommand) {
         switch command {
@@ -178,7 +216,7 @@ struct ActiveWorkoutView: View {
             let sets = entries[e].orderedSets
             guard sets.indices.contains(s), !sets[s].isCompleted else { return }
             withAnimation(.appSpring) { sets[s].isCompleted = true }
-            startRest(seconds: entries[e].restSeconds)
+            completed(sets[s], in: entries[e])
         case .addRest:
             guard let restEndDate else { return }
             restTotal += 30
@@ -220,8 +258,10 @@ struct WorkoutExerciseSection: View {
     var canMoveUp: Bool
     var canMoveDown: Bool
     var onMove: (Int) -> Void
-    var onSetCompleted: () -> Void
+    var onSetCompleted: (WorkoutSet) -> Void
     var onShowPlates: (Double) -> Void
+    var supersetLetter: String? = nil
+    var onToggleSuperset: (() -> Void)? = nil
 
     @State private var demoEntry: LibraryExercise?
     @State private var isReplacing = false
@@ -244,15 +284,17 @@ struct WorkoutExerciseSection: View {
             .foregroundStyle(.secondary)
             .listRowSeparator(.hidden)
 
-            ForEach(Array(entry.orderedSets.enumerated()), id: \.element.id) { pair in
+            let ordered = entry.orderedSets
+            ForEach(Array(ordered.enumerated()), id: \.element.id) { pair in
                 let set = pair.element
                 SetRow(
-                    number: pair.offset + 1,
+                    // Warm-ups have a letter, working sets are numbered from 1
+                    number: ordered.prefix(pair.offset + 1).filter { $0.kind != .warmup }.count,
                     set: set,
                     previous: pair.offset < previousSets.count ? previousSets[pair.offset] : nil,
                     isRecord: set.isCompleted && previousBest.map { set.estimatedOneRepMax > $0 } == true,
                     referenceOneRepMax: previousBest,
-                    onCompleted: onSetCompleted
+                    onCompleted: { onSetCompleted(set) }
                 )
                 .listRowBackground(set.isCompleted ? Color.green.opacity(0.14) : nil)
                 .contextMenu {
@@ -292,11 +334,30 @@ struct WorkoutExerciseSection: View {
                         MuscleIcon(group: exercise.muscleGroup, size: 28)
                     }
                 }
-                Text(entry.exercise?.name ?? "Exercice supprimé")
-                    .font(.headline)
-                    .foregroundStyle(.primary)
+                VStack(alignment: .leading, spacing: 1) {
+                    if let supersetLetter {
+                        Label("Superset \(supersetLetter)", systemImage: "link")
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(.purple)
+                    }
+                    Text(entry.exercise?.name ?? "Exercice supprimé")
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                }
                 Spacer()
                 Menu {
+                    Button("Ajouter l'échauffement", systemImage: "flame") {
+                        withAnimation(.appSpring) {
+                            entry.addWarmUp(barWeight: UserDefaults.standard.object(forKey: AppSettings.barWeightKey) as? Double ?? AppSettings.defaultBarWeight, in: context)
+                        }
+                    }
+                    .disabled(!entry.sets.contains { $0.kind != .warmup && $0.weight > 0 })
+                    if let onToggleSuperset {
+                        Button(entry.supersetGroup == nil ? "Superset avec le suivant" : "Retirer du superset",
+                               systemImage: entry.supersetGroup == nil ? "link" : "link.badge.plus") {
+                            withAnimation(.appSpring) { onToggleSuperset() }
+                        }
+                    }
                     if let demo = entry.exercise?.libraryEntry {
                         Button("Voir l'exécution", systemImage: "figure.strengthtraining.traditional") {
                             demoEntry = demo
@@ -419,22 +480,35 @@ struct SetRow: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            ZStack {
-                Circle()
-                    .fill(set.isCompleted ? AnyShapeStyle(Color.green) : AnyShapeStyle(Theme.field))
-                if isRecord {
-                    Image(systemName: "trophy.fill")
-                        .font(.caption.bold())
-                        .foregroundStyle(.yellow)
-                        .transition(.scale.combined(with: .opacity))
-                } else {
-                    Text("\(number)")
-                        .font(.subheadline.bold().monospacedDigit())
-                        .foregroundStyle(set.isCompleted ? Color.white : Color.secondary)
+            Menu {
+                Picker("Type de série", selection: Binding(get: { set.kind }, set: { set.kind = $0 })) {
+                    ForEach(SetKind.allCases) { kind in
+                        Label(kind.label, systemImage: kind.symbol).tag(kind)
+                    }
                 }
+            } label: {
+                ZStack {
+                    Circle()
+                        .fill(set.isCompleted ? AnyShapeStyle(Color.green) : AnyShapeStyle(Theme.field))
+                    if isRecord {
+                        Image(systemName: "trophy.fill")
+                            .font(.caption.bold())
+                            .foregroundStyle(.yellow)
+                            .transition(.scale.combined(with: .opacity))
+                    } else if let letter = set.kind.letter {
+                        Text(letter)
+                            .font(.subheadline.bold())
+                            .foregroundStyle(set.isCompleted ? Color.white : kindColor)
+                    } else {
+                        Text("\(number)")
+                            .font(.subheadline.bold().monospacedDigit())
+                            .foregroundStyle(set.isCompleted ? Color.white : Color.secondary)
+                    }
+                }
+                .frame(width: 28, height: 28)
             }
-            .frame(width: 28, height: 28)
             .frame(width: SetColumns.number, alignment: .leading)
+            .accessibilityLabel("Série \(number), \(set.kind.label)")
 
             Button {
                 if let targetReps = set.targetReps {
@@ -525,6 +599,15 @@ struct SetRow: View {
         weight > 0
             ? "\(weight.formatted(.number.precision(.fractionLength(0...2)))) × \(reps)"
             : "\(reps) reps"
+    }
+
+    private var kindColor: Color {
+        switch set.kind {
+        case .normal: .secondary
+        case .warmup: .orange
+        case .drop: .purple
+        case .failure: .red
+        }
     }
 
     private func rpeColor(_ rpe: Double) -> Color {

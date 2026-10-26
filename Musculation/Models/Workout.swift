@@ -161,6 +161,8 @@ final class WorkoutExercise {
     var note: String?
     /// Weight added because the target reps were all reached last time.
     var progressionIncrement: Double?
+    /// Exercises sharing this number are done back to back, resting after the last one.
+    var supersetGroup: Int?
     var workout: Workout?
     var exercise: Exercise?
 
@@ -226,6 +228,13 @@ final class WorkoutSet {
     /// Goal for this set, computed from the same set last time.
     var targetWeight: Double?
     var targetReps: Int?
+    /// Nil for a normal set.
+    var kindRaw: String?
+
+    var kind: SetKind {
+        get { kindRaw.flatMap(SetKind.init(rawValue:)) ?? .normal }
+        set { kindRaw = newValue == .normal ? nil : newValue.rawValue }
+    }
 
     var reachedTarget: Bool {
         guard let targetReps else { return false }
@@ -240,8 +249,102 @@ final class WorkoutSet {
         self.isCompleted = false
     }
 
-    var volume: Double { Double(reps) * weight }
-    var estimatedOneRepMax: Double { OneRepMax.epley(weight: weight, reps: reps) }
+    /// Warm-up sets count neither in the volume nor in the records.
+    var volume: Double { kind == .warmup ? 0 : Double(reps) * weight }
+    var estimatedOneRepMax: Double { kind == .warmup ? 0 : OneRepMax.epley(weight: weight, reps: reps) }
+}
+
+/// Set types, as in Hevy: warm-up, drop set and failure.
+enum SetKind: String, CaseIterable, Identifiable {
+    case normal, warmup, drop, failure
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .normal: "Série normale"
+        case .warmup: "Échauffement"
+        case .drop: "Série dégressive"
+        case .failure: "Jusqu'à l'échec"
+        }
+    }
+
+    /// Letter shown in place of the set number.
+    var letter: String? {
+        switch self {
+        case .normal: nil
+        case .warmup: "É"
+        case .drop: "D"
+        case .failure: "X"
+        }
+    }
+
+    var symbol: String {
+        switch self {
+        case .normal: "number"
+        case .warmup: "flame"
+        case .drop: "arrow.down.right"
+        case .failure: "bolt.fill"
+        }
+    }
+}
+
+extension Workout {
+    /// Links an exercise with the next one in a superset, or takes it out of its superset.
+    func toggleSuperset(_ entry: WorkoutExercise) {
+        if entry.supersetGroup != nil {
+            let group = entry.supersetGroup
+            entry.supersetGroup = nil
+            // A superset of one is no superset
+            let left = exercises.filter { $0.supersetGroup == group }
+            if left.count == 1 { left[0].supersetGroup = nil }
+            return
+        }
+        let ordered = orderedExercises
+        guard let index = ordered.firstIndex(where: { $0.persistentModelID == entry.persistentModelID }),
+              ordered.indices.contains(index + 1) else { return }
+        let next = ordered[index + 1]
+        let group = next.supersetGroup ?? ((exercises.compactMap(\.supersetGroup).max() ?? 0) + 1)
+        entry.supersetGroup = group
+        next.supersetGroup = group
+    }
+
+    /// Rest comes after the last exercise of a superset only.
+    func restsAfter(_ entry: WorkoutExercise) -> Bool {
+        guard let group = entry.supersetGroup else { return true }
+        return orderedExercises.last { $0.supersetGroup == group }?.persistentModelID == entry.persistentModelID
+    }
+
+    /// Letter of a superset (A, B…) in workout order.
+    func supersetLetter(_ group: Int) -> String {
+        var groups: [Int] = []
+        for e in orderedExercises { if let g = e.supersetGroup, !groups.contains(g) { groups.append(g) } }
+        let index = groups.firstIndex(of: group) ?? 0
+        return String(UnicodeScalar(UInt8(65 + index % 26)))
+    }
+}
+
+extension WorkoutExercise {
+    /// Inserts warm-up sets before the first working set: the bar, then about 50, 70 and 85 %.
+    func addWarmUp(barWeight: Double, in context: ModelContext) {
+        let working = orderedSets.first { $0.kind != .warmup && $0.weight > 0 }
+        guard let top = working?.weight else { return }
+        let step = exercise?.progressionIncrement(from: top) ?? 2.5
+        func round(_ w: Double) -> Double { max(0, (w / step).rounded() * step) }
+        var plan: [(Double, Int)] = []
+        if barWeight > 0 && barWeight < top * 0.5 { plan.append((barWeight, 10)) }
+        for (share, reps) in [(0.5, 8), (0.7, 5), (0.85, 3)] {
+            let w = round(top * share)
+            if w > (plan.last?.0 ?? 0) && w < top { plan.append((w, reps)) }
+        }
+        guard !plan.isEmpty else { return }
+        for set in sets { set.order += plan.count }
+        for (index, item) in plan.enumerated() {
+            let set = WorkoutSet(order: index, reps: item.1, weight: item.0)
+            context.insert(set)
+            set.workoutExercise = self
+            set.kind = .warmup
+        }
+    }
 }
 
 /// Per-set double progression: add reps up to the top of the range, then add weight and
