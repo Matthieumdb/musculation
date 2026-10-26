@@ -74,6 +74,14 @@ struct ProgressionView: View {
                     .listRowInsets(EdgeInsets())
                 }
 
+                Section {
+                    NavigationLink {
+                        WeeklyRecapView()
+                    } label: {
+                        Label("Bilan de la semaine", systemImage: "calendar.badge.checkmark")
+                    }
+                }
+
                 Section("Séances par semaine") {
                     Chart(weeklyCounts) { week in
                         BarMark(
@@ -112,6 +120,11 @@ struct ProgressionView: View {
                         MeasurementsView()
                     } label: {
                         Label("Mensurations", systemImage: "ruler")
+                    }
+                    NavigationLink {
+                        ProgressPhotosView()
+                    } label: {
+                        Label("Photos de progression", systemImage: "person.crop.rectangle.stack")
                     }
                     NavigationLink {
                         CheckInHistoryView()

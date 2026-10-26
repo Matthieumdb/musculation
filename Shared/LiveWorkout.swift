@@ -43,12 +43,15 @@ enum WatchCommand: Codable, Hashable {
     case complete(exercise: Int, set: Int)
     case addRest
     case skipRest
+    /// Starts a workout from a template, or a free one.
+    case start(template: String?)
 }
 
 /// Keys of the WatchConnectivity payloads.
 enum WatchKeys {
     static let workout = "workout"
     static let command = "command"
+    static let templates = "templates"
 }
 
 extension Double {

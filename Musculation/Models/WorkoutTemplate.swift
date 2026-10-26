@@ -38,8 +38,9 @@ final class WorkoutTemplate {
         }
     }
 
-    /// Starts a workout from this template. A deload halves the sets and skips the weight increase.
-    func startWorkout(in context: ModelContext, deload: Bool = false) {
+    /// Starts a workout from this template. A deload halves the sets and skips the weight increase;
+    /// it applies by default on a light day or a deload week asked by the recovery coach.
+    func startWorkout(in context: ModelContext, deload: Bool = TrainingMode.isReduced) {
         let workout = Workout(title: name)
         context.insert(workout)
         for item in orderedItems {

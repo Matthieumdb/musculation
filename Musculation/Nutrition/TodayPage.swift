@@ -391,7 +391,7 @@ private struct JournalCard: View {
             }
 
             Divider()
-            WaterRow(goal: min(14, max(6, Int((store.settings.profile.weight * 0.035 / 0.25).rounded()))))
+            WaterRow(goal: store.settings.waterGoal)
             Divider()
 
             DisclosureGroup(isExpanded: $showsLog) {

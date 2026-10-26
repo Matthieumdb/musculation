@@ -8,6 +8,8 @@ struct RecoveryCard: View {
     private var workouts: [Workout]
     @Query private var checkIns: [DailyCheckIn]
     @State private var isCheckingIn = false
+    @AppStorage(TrainingMode.lightDayKey) private var lightDay = ""
+    @AppStorage(TrainingMode.deloadUntilKey) private var deloadUntil: Double = 0
 
     var body: some View {
         let today = checkIns.first { $0.day == DayKey.today }
@@ -41,6 +43,8 @@ struct RecoveryCard: View {
                 }
             }
 
+            coach(score: score)
+
             if tired.isEmpty {
                 Label("Tous tes muscles sont reposés", systemImage: "checkmark.circle.fill")
                     .font(.footnote)
@@ -72,6 +76,67 @@ struct RecoveryCard: View {
         .sheet(isPresented: $isCheckingIn) {
             CheckInSheet(entry: DailyCheckIn.today(in: context))
         }
+    }
+
+    /// What the coach suggests from the score: a light day, a deload week, or what is already on.
+    @ViewBuilder
+    private func coach(score: Recovery.Score) -> some View {
+        let deloadEnd = deloadUntil > Date.now.timeIntervalSince1970 ? Date(timeIntervalSince1970: deloadUntil) : nil
+        if let deloadEnd {
+            advice(
+                symbol: "battery.50",
+                tint: .blue,
+                title: "Semaine de décharge",
+                message: "Jusqu'au \(deloadEnd.formatted(.dateTime.weekday(.wide).day().month(.wide))) : moitié des séries, charges stables.",
+                action: "Arrêter"
+            ) { deloadUntil = 0 }
+        } else if lightDay == DayKey.today {
+            advice(
+                symbol: "leaf.fill",
+                tint: .green,
+                title: "Séance allégée aujourd'hui",
+                message: "Tes modèles démarrent avec moitié moins de séries, sans hausse de charge.",
+                action: "Annuler"
+            ) { lightDay = "" }
+        } else if let reason = Recovery.deloadReason(workouts: Array(workouts.prefix(80)), checkIns: checkIns) {
+            advice(
+                symbol: "battery.25",
+                tint: .orange,
+                title: "Une semaine de décharge t'aiderait",
+                message: reason + " Une semaine plus légère et tu reviendras plus fort.",
+                action: "Commencer"
+            ) { deloadUntil = Date.now.addingTimeInterval(7 * 86_400).timeIntervalSince1970 }
+        } else if score.value < 50 {
+            advice(
+                symbol: "leaf.fill",
+                tint: .orange,
+                title: "Allège ta séance du jour",
+                message: "Ta récupération est basse : moitié moins de séries et pas de hausse de charge aujourd'hui.",
+                action: "Alléger"
+            ) { lightDay = DayKey.today }
+        }
+    }
+
+    private func advice(symbol: String, tint: Color, title: String, message: String, action: String, perform: @escaping () -> Void) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: symbol)
+                .font(.title3)
+                .foregroundStyle(tint)
+                .frame(width: 28)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title).font(.subheadline.weight(.semibold))
+                Text(message).font(.footnote).foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 0)
+            Button(action, action: { withAnimation(.appSpring) { perform() } })
+                .font(.subheadline.weight(.semibold))
+                .buttonStyle(.bordered)
+                .buttonBorderShape(.capsule)
+                .tint(tint)
+        }
+        .padding(12)
+        .background(tint.opacity(0.1), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 }
 

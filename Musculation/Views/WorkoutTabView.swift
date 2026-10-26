@@ -62,6 +62,10 @@ struct StartWorkoutView: View {
             VStack(alignment: .leading, spacing: 16) {
                 RecoveryCard()
 
+                if WeeklyRecapCard.isRecapTime && !finishedWorkouts.isEmpty {
+                    WeeklyRecapCard()
+                }
+
                 stats
 
                 if !finishedWorkouts.isEmpty {
@@ -128,7 +132,7 @@ struct StartWorkoutView: View {
                     }
                     Spacer()
                     Button {
-                        next.startWorkout(in: context, deload: phase.isDeload)
+                        next.startWorkout(in: context, deload: phase.isDeload || TrainingMode.isReduced)
                     } label: {
                         Image(systemName: "play.fill")
                             .font(.title2)
@@ -144,7 +148,7 @@ struct StartWorkoutView: View {
                     HStack(spacing: 8) {
                         ForEach(programTemplates) { template in
                             Button {
-                                template.startWorkout(in: context, deload: phase.isDeload)
+                                template.startWorkout(in: context, deload: phase.isDeload || TrainingMode.isReduced)
                             } label: {
                                 Text(template.name)
                                     .font(.caption.bold())

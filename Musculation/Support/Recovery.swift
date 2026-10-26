@@ -94,6 +94,39 @@ enum Recovery {
     }
 }
 
+extension Recovery {
+    /// Why a deload week would help now, nil when it is not needed.
+    static func deloadReason(workouts: [Workout], checkIns: [DailyCheckIn], now: Date = .now) -> String? {
+        let finished = workouts.filter { $0.endedAt != nil }
+        let calendar = Calendar.current
+
+        // Weeks in a row with at least 3 workouts, before this one
+        var streak = 0
+        var week = calendar.dateInterval(of: .weekOfYear, for: now)?.start ?? now
+        while let previous = calendar.date(byAdding: .weekOfYear, value: -1, to: week) {
+            guard finished.filter({ $0.startedAt >= previous && $0.startedAt < week }).count >= 3 else { break }
+            streak += 1
+            week = previous
+        }
+
+        // Recovery over the last week, when there are enough check-ins to tell
+        let recent = checkIns.filter { $0.hasFeelings && DayKey.daysBetween($0.day, DayKey.of(now)) < 7 }
+        let scores = recent.map { entry in
+            let morning = (DayKey.date(entry.day) ?? now).addingTimeInterval(9 * 3600)
+            return score(entry, muscles: freshness(finished, now: morning)).value
+        }
+        let average = scores.isEmpty ? nil : scores.reduce(0, +) / scores.count
+
+        if let average, scores.count >= 3, average < 55, streak >= 3 {
+            return "Récupération moyenne de \(average) sur 7 jours après \(streak) semaines chargées."
+        }
+        if streak >= 6 {
+            return "\(streak) semaines d'affilée à 3 séances ou plus."
+        }
+        return nil
+    }
+}
+
 extension DailyCheckIn {
     /// Today's entry, created on first use.
     @MainActor

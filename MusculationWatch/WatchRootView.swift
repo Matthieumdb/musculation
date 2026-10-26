@@ -1,5 +1,45 @@
 import SwiftUI
 
+/// Templates sent by the iPhone, to start a workout from the wrist.
+private struct StartListView: View {
+    @Environment(WatchSession.self) private var session
+    @State private var startedAt: Date?
+
+    var body: some View {
+        List {
+            if let startedAt, Date.now.timeIntervalSince(startedAt) < 15 {
+                HStack(spacing: 8) {
+                    ProgressView()
+                    Text("Démarrage sur l'iPhone…").font(.footnote)
+                }
+            }
+            ForEach(session.templates, id: \.self) { name in
+                Button {
+                    start(name)
+                } label: {
+                    Label(name, systemImage: "play.fill")
+                }
+            }
+            Button {
+                start(nil)
+            } label: {
+                Label("Séance libre", systemImage: "bolt.fill")
+            }
+            if session.templates.isEmpty {
+                Text("Tes modèles apparaîtront ici après avoir ouvert l'app sur l'iPhone.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .listRowBackground(Color.clear)
+            }
+        }
+    }
+
+    private func start(_ template: String?) {
+        startedAt = .now
+        session.send(.start(template: template))
+    }
+}
+
 struct WatchRootView: View {
     @Environment(WatchSession.self) private var session
 
@@ -14,18 +54,8 @@ struct WatchRootView: View {
                 .navigationTitle(workout.title)
                 .navigationBarTitleDisplayMode(.inline)
             } else {
-                VStack(spacing: 8) {
-                    Image(systemName: "dumbbell.fill")
-                        .font(.title)
-                        .foregroundStyle(.tint)
-                    Text("Aucune séance")
-                        .font(.headline)
-                    Text("Démarre une séance sur ton iPhone, elle s'affichera ici.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                }
-                .navigationTitle("Musculation")
+                StartListView()
+                    .navigationTitle("Musculation")
             }
         }
     }

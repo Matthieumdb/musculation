@@ -223,6 +223,8 @@ struct ActiveWorkoutView: View {
             withAnimation(.appSpring) { self.restEndDate = max(restEndDate, .now).addingTimeInterval(30) }
         case .skipRest:
             withAnimation(.appSpring) { restEndDate = nil }
+        case .start:
+            break // A workout is already running
         }
     }
 

@@ -8,6 +8,7 @@ struct SettingsView: View {
     @AppStorage(AppSettings.progressionPercentKey) private var progressionPercent = AppSettings.defaultProgressionPercent
     @AppStorage(AppSettings.barWeightKey) private var barWeight = AppSettings.defaultBarWeight
     @AppStorage(AppSettings.appearanceKey) private var appearance = Appearance.light
+    @AppStorage(WeeklyRecapNotifier.enabledKey) private var weeklyRecap = true
 
     @State private var exportURL: URL?
     @State private var isImporting = false
@@ -35,6 +36,11 @@ struct SettingsView: View {
                     Picker("Apparence", selection: $appearance) {
                         ForEach(Appearance.allCases) { Text($0.label).tag($0) }
                     }
+                    Toggle("Bilan du dimanche soir", isOn: $weeklyRecap)
+                        .onChange(of: weeklyRecap) {
+                            if weeklyRecap { RestNotifier.requestAuthorization() }
+                            WeeklyRecapNotifier.schedule()
+                        }
                 }
 
                 Section {

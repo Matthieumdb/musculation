@@ -94,6 +94,11 @@ extension NutritionSettings {
         manual.on ? manual.macros : computedTargets().targets
     }
 
+    /// Glasses of water (25 cl) a day: about 35 ml per kilo.
+    var waterGoal: Int {
+        min(14, max(6, Int((profile.weight * 0.035 / 0.25).rounded())))
+    }
+
     /// Today's targets: the training adjustment goes to carbs, protein and fat stay put.
     var dayTargets: Macros {
         var t = baseTargets

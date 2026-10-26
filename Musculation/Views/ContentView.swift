@@ -7,6 +7,8 @@ struct ContentView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var nutrition = NutritionStore.shared
     @Query(sort: \Workout.startedAt, order: .reverse) private var workouts: [Workout]
+    @Query(sort: \WorkoutTemplate.createdAt) private var templates: [WorkoutTemplate]
+    @Query private var checkIns: [DailyCheckIn]
 
     /// Changes whenever a recent workout starts or ends.
     private var workoutsKey: String {
@@ -32,7 +34,18 @@ struct ContentView: View {
             SeedData.insertDefaultExercisesIfNeeded(in: context)
         }
         .onChange(of: workoutsKey, initial: true) { updateTraining() }
-        .onChange(of: scenePhase) { if scenePhase == .active { updateTraining() } }
+        .onChange(of: scenePhase, initial: true) {
+            if scenePhase == .active {
+                updateTraining()
+                QuickActionHandler.applyPending(in: context)
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: QuickActionQueue.didPush)) { _ in
+            QuickActionHandler.applyPending(in: context)
+        }
+        .onChange(of: templates.map(\.name), initial: true) {
+            QuickActionHandler.shareTemplates(templates)
+        }
         .onChange(of: widgetSnapshot, initial: true) { _, snapshot in
             snapshot.save()
             WidgetCenter.shared.reloadAllTimelines()
@@ -58,6 +71,7 @@ struct ContentView: View {
             }
         }
         let t = nutrition.settings.dayTargets, e = nutrition.eaten()
+        let water = checkIns.first { $0.day == DayKey.today }?.water ?? 0
         return WidgetSnapshot(
             day: DayKey.today,
             workoutsThisWeek: finished.filter { week?.contains($0.startedAt) == true }.count,
@@ -65,7 +79,15 @@ struct ContentView: View {
             kcalLeft: Int((t.kcal - e.kcal).rounded()),
             kcalTarget: Int(t.kcal),
             proteinLeft: max(0, Int((t.p - e.p).rounded())),
-            trainingBonus: nutrition.training.map { Int($0.kcal) }
+            trainingBonus: nutrition.training.map { Int($0.kcal) },
+            proteinTarget: Int(t.p.rounded()),
+            carbsLeft: max(0, Int((t.c - e.c).rounded())),
+            carbsTarget: Int(t.c.rounded()),
+            fatLeft: max(0, Int((t.f - e.f).rounded())),
+            fatTarget: Int(t.f.rounded()),
+            water: water,
+            waterGoal: nutrition.settings.waterGoal,
+            waterDay: DayKey.today
         )
     }
 }

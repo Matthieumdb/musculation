@@ -1,6 +1,7 @@
 import ActivityKit
 import Combine
 import Foundation
+import SwiftData
 import WatchConnectivity
 
 /// Publishes the running workout to the Apple Watch and to the Live Activity,
@@ -11,6 +12,14 @@ final class WorkoutLiveSync: NSObject {
 
     /// Taps made on the watch, applied by `ActiveWorkoutView`.
     let commands = PassthroughSubject<WatchCommand, Never>()
+
+    /// The app's store, to start a workout asked from the watch while no screen is open.
+    var container: ModelContainer?
+
+    /// Template names offered by the watch when no workout is running.
+    var templates: [String] = [] {
+        didSet { if templates != oldValue { sendToWatch(last) } }
+    }
 
     private var activity: Activity<WorkoutActivityAttributes>?
     private var last: LiveWorkout?
@@ -46,7 +55,7 @@ final class WorkoutLiveSync: NSObject {
         guard WCSession.isSupported(), WCSession.default.activationState == .activated,
               WCSession.default.isPaired, WCSession.default.isWatchAppInstalled else { return }
         let data = workout.flatMap { try? JSONEncoder().encode($0) } ?? Data()
-        try? WCSession.default.updateApplicationContext([WatchKeys.workout: data])
+        try? WCSession.default.updateApplicationContext([WatchKeys.workout: data, WatchKeys.templates: templates])
         if WCSession.default.isReachable {
             WCSession.default.sendMessage([WatchKeys.workout: data], replyHandler: nil, errorHandler: nil)
         }
@@ -113,7 +122,22 @@ extension WorkoutLiveSync: WCSessionDelegate {
     nonisolated func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
         guard let data = message[WatchKeys.command] as? Data,
               let command = try? JSONDecoder().decode(WatchCommand.self, from: data) else { return }
-        Task { @MainActor in self.commands.send(command) }
+        Task { @MainActor in self.handle(command) }
+    }
+
+    /// Commands queued by the watch while the iPhone was out of reach.
+    nonisolated func session(_ session: WCSession, didReceiveUserInfo userInfo: [String: Any] = [:]) {
+        self.session(session, didReceiveMessage: userInfo)
+    }
+
+    private func handle(_ command: WatchCommand) {
+        guard case .start(let template) = command else {
+            commands.send(command)
+            return
+        }
+        guard let container,
+              let workout = QuickActionHandler.startWorkout(template: template, in: container.mainContext) else { return }
+        publish(workout.live(restEnd: nil, restTotal: 0))
     }
 }
 
