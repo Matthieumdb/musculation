@@ -16,7 +16,10 @@ enum Theme {
     // Macro colors, shared by every nutrition screen
     static let calories = Color.orange
     static let protein = Color.blue
-    static let carbs = Color.yellow
+    /// Amber in light mode: system yellow is too pale on white.
+    static let carbs = Color(UIColor { $0.userInterfaceStyle == .dark
+        ? .systemYellow
+        : UIColor(red: 0.86, green: 0.58, blue: 0, alpha: 1) })
     static let fat = Color.pink
 }
 
@@ -254,6 +257,7 @@ extension SectionHeader {
 
 /// Activity-style ring: a track and a rounded progress stroke that can go past 100 %.
 struct ProgressRing: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let progress: Double
     let tint: Color
     var lineWidth: CGFloat = 14
@@ -274,12 +278,13 @@ struct ProgressRing: View {
                     .shadow(color: .black.opacity(0.25), radius: 2)
             }
         }
-        .animation(.appEaseSlow, value: progress)
+        .animation(reduceMotion ? nil : .appEaseSlow, value: progress)
     }
 }
 
 /// Thin horizontal bar used for macro progress.
 struct ProgressBar: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let progress: Double
     let tint: Color
     var height: CGFloat = 6
@@ -294,7 +299,7 @@ struct ProgressBar: View {
             }
         }
         .frame(height: height)
-        .animation(.appEaseSlow, value: progress)
+        .animation(reduceMotion ? nil : .appEaseSlow, value: progress)
     }
 }
 

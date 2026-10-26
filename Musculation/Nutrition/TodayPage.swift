@@ -379,7 +379,7 @@ private struct JournalCard: View {
                 } label: {
                     Image(systemName: "plus")
                         .font(.headline)
-                        .frame(width: 36, height: 36)
+                        .frame(width: 44, height: 44)
                 }
                 .glassButton()
                 .buttonBorderShape(.circle)
@@ -613,7 +613,7 @@ private struct WaterRow: View {
             } label: {
                 Image(systemName: "plus")
                     .font(.subheadline.weight(.bold))
-                    .frame(width: 30, height: 30)
+                    .frame(width: 44, height: 44)
             }
             .glassButton()
             .buttonBorderShape(.circle)

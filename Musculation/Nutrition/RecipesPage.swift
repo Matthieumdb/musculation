@@ -484,22 +484,22 @@ private struct MiniCounter: View {
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
-            HStack(spacing: 10) {
-                Button { value -= 1 } label: { Image(systemName: "minus") }
+            HStack(spacing: 0) {
+                Button { value -= 1 } label: { Image(systemName: "minus").frame(width: 44, height: 44).contentShape(Rectangle()) }
                     .disabled(value <= 0)
                 Text("\(value)")
                     .font(.display(20))
                     .monospacedDigit()
                     .contentTransition(.numericText())
                     .frame(minWidth: 24)
-                Button { value += 1 } label: { Image(systemName: "plus") }
+                Button { value += 1 } label: { Image(systemName: "plus").frame(width: 44, height: 44).contentShape(Rectangle()) }
                     .disabled(value >= 14)
             }
             .font(.subheadline.weight(.semibold))
             .buttonStyle(.borderless)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 10)
+        .padding(.vertical, 6)
         .background(Theme.field, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         .sensoryFeedback(.selection, trigger: value)
         .accessibilityElement(children: .combine)

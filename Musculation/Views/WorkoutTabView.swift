@@ -366,6 +366,8 @@ private struct TemplateRow: View {
                     .foregroundStyle(.white)
                     .frame(width: 36, height: 36)
                     .background(Theme.gradient, in: Circle())
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
             }
             .buttonStyle(PressableButtonStyle())
             .accessibilityLabel("Démarrer \(template.name)")

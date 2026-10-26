@@ -81,7 +81,7 @@ struct CheckInSheet: View {
     @Environment(\.modelContext) private var context
     @Bindable var entry: DailyCheckIn
 
-    private static let faces = ["😫", "😕", "😐", "🙂", "😄"]
+    private static let ratings = ["Très mauvaise", "Mauvaise", "Correcte", "Bonne", "Excellente"]
     private static let levels = ["Aucun", "Léger", "Moyen", "Fort", "Très fort"]
 
     var body: some View {
@@ -91,10 +91,10 @@ struct CheckInSheet: View {
                     Stepper(value: Binding(get: { entry.sleepHours ?? 7.5 }, set: { entry.sleepHours = $0 }), in: 2...12, step: 0.5) {
                         LabeledContent("Durée", value: (entry.sleepHours ?? 7.5).formatted(.number.precision(.fractionLength(0...1))) + " h")
                     }
-                    faces("Qualité", value: $entry.sleepQuality)
+                    rating("Qualité", value: $entry.sleepQuality)
                 }
                 Section("Ce matin") {
-                    faces("Énergie", value: $entry.energy)
+                    rating("Énergie", value: $entry.energy)
                     level("Courbatures", value: $entry.soreness)
                     level("Stress", value: $entry.stress)
                 }
@@ -126,11 +126,11 @@ struct CheckInSheet: View {
         }
     }
 
-    private func faces(_ title: String, value: Binding<Int?>) -> some View {
+    private func rating(_ title: String, value: Binding<Int?>) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(title)
+            LabeledContent(title, value: value.wrappedValue.map { Self.ratings[$0 - 1] } ?? "Non noté")
             Picker(title, selection: value) {
-                ForEach(1...5, id: \.self) { Text(Self.faces[$0 - 1]).tag(Int?.some($0)) }
+                ForEach(1...5, id: \.self) { Text("\($0)").tag(Int?.some($0)) }
             }
             .pickerStyle(.segmented)
             .labelsHidden()
