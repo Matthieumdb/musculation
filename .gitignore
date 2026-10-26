@@ -7,3 +7,6 @@ xcuserdata/
 *.xccheckout
 .swiftpm/
 .DS_Store
+
+# Fetched by scripts/fetch-fonts.sh
+Musculation/Resources/Fonts/

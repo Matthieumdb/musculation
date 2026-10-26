@@ -165,7 +165,7 @@ struct ReplaceExerciseView: View {
 
     private func chip(_ title: String, isOn: Bool, action: @escaping () -> Void) -> some View {
         Button {
-            withAnimation(.snappy) { action() }
+            withAnimation(.appSpring) { action() }
         } label: {
             Text(title)
                 .font(.subheadline.weight(.medium))

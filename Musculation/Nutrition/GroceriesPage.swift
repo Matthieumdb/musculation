@@ -4,11 +4,12 @@ struct GroceriesPage: View {
     @Environment(NutritionSession.self) private var session
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 24) {
+        VStack(alignment: .leading, spacing: 16) {
             if session.groceryItem != nil {
                 ScannedProductSection()
-            } else {
-                ScanIntro()
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            } else if let error = session.groceryError {
+                InlineError(text: error).card()
             }
             ShoppingListSection()
             GoodChoicesSection()
@@ -18,37 +19,7 @@ struct GroceriesPage: View {
 
 // MARK: - Scan
 
-private struct ScanIntro: View {
-    @Environment(NutritionStore.self) private var store
-    @Environment(NutritionSession.self) private var session
-    @State private var code = ""
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            EmptyCardContent(
-                symbol: "cart.fill",
-                title: "Scanne un produit en magasin",
-                message: "Je te dis s'il est bon pour toi et combien en prendre pour la semaine, en tenant compte des autres produits du même rayon."
-            )
-            if let error = session.groceryError { InlineError(text: error) }
-            HStack {
-                TextField("Code-barres à la main", text: $code)
-                    .keyboardType(.numberPad)
-                    .textFieldStyle(.roundedBorder)
-                Button("Chercher") {
-                    let value = code
-                    code = ""
-                    hideKeyboard()
-                    Task { await session.lookup(value, for: .groceries, store: store) }
-                }
-                .glassButton()
-                .disabled(code.isEmpty || session.isLookingUp)
-            }
-        }
-        .card()
-    }
-}
-
+/// Everything about the scanned product in one card: verdict, what it is for, how much to take.
 private struct ScannedProductSection: View {
     @Environment(NutritionStore.self) private var store
     @Environment(NutritionSession.self) private var session
@@ -64,68 +35,83 @@ private struct ScannedProductSection: View {
             let excluded = score.excludedBy != nil
             let row = !excluded ? session.groceryMatch.flatMap { store.state.shopList.indices.contains($0) ? $0 : nil } : nil
 
-            VStack(alignment: .leading, spacing: 12) {
-                SectionHeader("Produit scanné") {
-                    Button("Fermer") { close() }
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(alignment: .top, spacing: 12) {
+                    ProductThumb(product: product, size: 52)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(product.name).font(.headline).lineLimit(2)
+                        Text([product.brand, product.packG > 0 ? NutritionFormat.weight(product.packG) : ""].filter { !$0.isEmpty }.joined(separator: " · "))
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer(minLength: 0)
+                    Button { close() } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.title2)
+                            .symbolRenderingMode(.hierarchical)
+                            .foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Fermer")
                 }
 
-                VStack(alignment: .leading, spacing: 14) {
-                    HStack(spacing: 12) {
-                        ProductThumb(product: product, size: 56)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(product.name).font(.headline)
-                            Text([product.brand, product.packG > 0 ? NutritionFormat.weight(product.packG) : ""].filter { !$0.isEmpty }.joined(separator: " · "))
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
+                HStack(spacing: 12) {
+                    ZStack {
+                        ProgressRing(progress: Double(score.value) / 100, tint: grade.color, lineWidth: 5)
+                        Text(grade.rawValue).font(.display(18)).foregroundStyle(grade.color)
                     }
-                    HStack(spacing: 16) {
-                        ZStack {
-                            ProgressRing(progress: Double(score.value) / 100, tint: grade.color, lineWidth: 8)
-                            VStack(spacing: 0) {
-                                Text(grade.rawValue).font(.title2.bold()).fontDesign(.rounded).foregroundStyle(grade.color)
-                                Text("\(score.value)/100").font(.caption2).foregroundStyle(.secondary)
-                            }
-                        }
-                        .frame(width: 72, height: 72)
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(grade.verdict).font(.headline).foregroundStyle(grade.color)
-                            Text(NutritionFormat.macroLine(product.n)).font(.caption).foregroundStyle(.secondary)
-                        }
+                    .frame(width: 46, height: 46)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(grade.verdict).font(.headline).foregroundStyle(grade.color)
+                        Text("\(score.value)/100 · \(NutritionFormat.macroLine(product.n))")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
-                    if !score.reasons.isEmpty {
-                        VStack(alignment: .leading, spacing: 6) {
-                            ForEach(score.reasons, id: \.self) { reason in
-                                Label(reason.text, systemImage: reason.bad ? "minus.circle.fill" : "plus.circle.fill")
-                                    .font(.subheadline)
-                                    .foregroundStyle(reason.bad ? Color.orange : Color.green)
-                            }
+                }
+
+                if !score.reasons.isEmpty {
+                    FlowLayout(spacing: 6) {
+                        ForEach(score.reasons, id: \.self) { reason in
+                            let tint: Color = reason.bad ? .orange : .green
+                            Label(reason.text, systemImage: reason.bad ? "minus" : "plus")
+                                .font(.caption.weight(.medium))
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .foregroundStyle(tint)
+                                .background(tint.opacity(0.12), in: Capsule())
                         }
                     }
                 }
-                .card()
 
                 if !excluded && !openRows.isEmpty {
-                    Picker("C'est pour", selection: Binding(
-                        get: { session.groceryMatch ?? -1 },
-                        set: { session.groceryMatch = $0 < 0 ? nil : $0; session.groceryTake = nil }
-                    )) {
-                        Text("Rien de ma liste").tag(-1)
-                        ForEach(openRows, id: \.self) { i in
-                            let r = store.state.shopList[i]
-                            Text("\(r.title) · \(NutritionFormat.weight(settings.need(r, variety: store.state.variety)))").tag(i)
+                    Divider()
+                    HStack {
+                        Text("C'est pour").foregroundStyle(.secondary)
+                        Spacer()
+                        Picker("C'est pour", selection: Binding(
+                            get: { session.groceryMatch ?? -1 },
+                            set: { session.groceryMatch = $0 < 0 ? nil : $0; session.groceryTake = nil }
+                        )) {
+                            Text("Rien de ma liste").tag(-1)
+                            ForEach(openRows, id: \.self) { i in
+                                let r = store.state.shopList[i]
+                                Text("\(r.title) · \(NutritionFormat.weight(settings.need(r, variety: store.state.variety)))").tag(i)
+                            }
                         }
+                        .pickerStyle(.menu)
+                        .labelsHidden()
                     }
-                    .pickerStyle(.menu)
-                    .card()
+                    .font(.subheadline)
                 }
 
+                Divider()
                 if let row {
                     listMatch(product: product, rowIndex: row)
                 } else {
-                    planCard(product: product, quantity: quantity, excluded: excluded)
+                    planContent(product: product, quantity: quantity, excluded: excluded)
                 }
             }
+            .card()
         }
     }
 
@@ -134,7 +120,7 @@ private struct ScannedProductSection: View {
     }
 
     private func close() {
-        withAnimation(.snappy) {
+        withAnimation(.appSpring) {
             session.groceryItem = nil
             session.groceryMatch = nil
             session.groceryTake = nil
@@ -142,7 +128,7 @@ private struct ScannedProductSection: View {
     }
 
     @ViewBuilder
-    private func planCard(product: Product, quantity: WeeklyQuantity, excluded: Bool) -> some View {
+    private func planContent(product: Product, quantity: WeeklyQuantity, excluded: Bool) -> some View {
         VStack(alignment: .leading, spacing: 14) {
             Menu {
                 Picker("Rayon", selection: Binding(
@@ -161,7 +147,7 @@ private struct ScannedProductSection: View {
 
             VStack(spacing: 2) {
                 Text(excluded ? "0 g" : product.fam == .extras ? (quantity.grams > 0 ? "≤ \(NutritionFormat.weight(quantity.grams))" : "0 g") : NutritionFormat.weight(quantity.grams))
-                    .font(.system(size: 44, weight: .bold, design: .rounded))
+                    .font(.display(40, relativeTo: .largeTitle))
                     .contentTransition(.numericText())
                 Text(excluded ? "tu as exclu ce type de produit dans tes réglages"
                      : product.fam == .extras ? "maximum pour la semaine"
@@ -199,7 +185,6 @@ private struct ScannedProductSection: View {
                 .controlSize(.large)
             }
         }
-        .card()
     }
 
     @ViewBuilder
@@ -210,10 +195,9 @@ private struct ScannedProductSection: View {
         let takeCount = session.groceryTake ?? (product.packG > 0 ? max(1, Int((left / product.packG).rounded(.up))) : Int(left.rounded()))
 
         VStack(alignment: .leading, spacing: 14) {
-            Text("Sur ta liste de courses").font(.subheadline.weight(.semibold)).foregroundStyle(.secondary)
             VStack(spacing: 2) {
                 Text(left > 0 ? NutritionFormat.weight(left) : "✓")
-                    .font(.system(size: 44, weight: .bold, design: .rounded))
+                    .font(.display(40, relativeTo: .largeTitle))
                 Text("\(left > 0 ? "encore à prendre" : "Tu as déjà tout ce qu'il faut") · il en faut \(NutritionFormat.weight(need)), \(NutritionFormat.weight(row.got)) déjà dans le caddie")
                     .font(.footnote)
                     .multilineTextAlignment(.center)
@@ -254,7 +238,6 @@ private struct ScannedProductSection: View {
             .glassProminentButton()
             .controlSize(.large)
         }
-        .card()
     }
 
     private func take(product: Product, rowIndex: Int, count: Int) {
@@ -290,41 +273,36 @@ private struct ShoppingListSection: View {
         // What is left to take first, crossed-off rows at the bottom
         let order = list.indices.sorted { (list[$0].done ? 1 : 0, $0) < (list[$1].done ? 1 : 0, $1) }
 
-        VStack(alignment: .leading, spacing: 12) {
-            SectionHeader("Ma liste de la semaine") {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("Ma liste").font(.display(20, relativeTo: .title3))
+                Spacer()
                 if !list.isEmpty {
-                    Text("\(list.filter(\.done).count)/\(list.count) dans le caddie").foregroundStyle(.secondary)
+                    Text("≈ \(NutritionFormat.money(total, currency: settings.currency))")
+                        .font(.display(17, relativeTo: .headline))
+                    Menu {
+                        Button("Vider la liste", systemImage: "trash", role: .destructive) { isConfirmingClear = true }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                            .font(.title3)
+                            .symbolRenderingMode(.hierarchical)
+                    }
+                    .accessibilityLabel("Options de la liste")
                 }
             }
-            VStack(spacing: 0) {
-                if list.isEmpty {
-                    EmptyCardContent(symbol: "list.bullet.clipboard", title: "Liste vide",
-                                     message: "Scanne un produit ou pioche dans les bons choix ci-dessous.")
-                } else {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Estimation de la liste").font(.subheadline.weight(.semibold))
-                            Text("reste ≈ \(NutritionFormat.money(left, currency: settings.currency))").font(.caption).foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                        Text("≈ \(NutritionFormat.money(total, currency: settings.currency))")
-                            .font(.title3.bold())
-                            .fontDesign(.rounded)
-                    }
-                    .padding(.bottom, 10)
-                    ForEach(order, id: \.self) { i in
-                        Divider()
-                        ShopRowView(index: i)
-                    }
-                    Divider()
-                    Button("Vider la liste", role: .destructive) { isConfirmingClear = true }
-                        .font(.subheadline.weight(.semibold))
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.top, 12)
-                }
+            Text(list.isEmpty
+                 ? "Scanne un produit ou pioche dans les bons choix."
+                 : "\(list.filter(\.done).count)/\(list.count) dans le caddie · reste ≈ \(NutritionFormat.money(left, currency: settings.currency))")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .padding(.top, 2)
+                .padding(.bottom, list.isEmpty ? 0 : 6)
+            ForEach(order, id: \.self) { i in
+                Divider()
+                ShopRowView(index: i)
             }
-            .card()
         }
+        .card()
         .confirmationDialog("Vider la liste de courses ?", isPresented: $isConfirmingClear, titleVisibility: .visible) {
             Button("Vider", role: .destructive) { withAnimation { store.state.shopList = [] } }
         }
@@ -345,7 +323,7 @@ private struct ShopRowView: View {
 
             HStack(spacing: 12) {
                 Button {
-                    withAnimation(.snappy) { store.state.shopList[index].done.toggle() }
+                    withAnimation(.appSpring) { store.state.shopList[index].done.toggle() }
                 } label: {
                     Image(systemName: row.done ? "checkmark.circle.fill" : "circle")
                         .font(.title2)
@@ -391,17 +369,18 @@ private struct ShopRowView: View {
 private struct GoodChoicesSection: View {
     @Environment(NutritionStore.self) private var store
     @Environment(NutritionSession.self) private var session
-    @State private var expanded: Set<Aisle> = [.viandes]
+    @State private var expanded: Set<Aisle> = []
 
     private let order: [Aisle] = [.viandes, .oeufs, .laitiers, .feculents, .legumes, .fruits, .fromages, .graisses, .sauces, .poudre]
 
     var body: some View {
         let settings = store.settings
-        VStack(alignment: .leading, spacing: 12) {
-            SectionHeader("Bons choix pour toi")
-            Text("Les aliments qui collent à ton objectif, rayon par rayon, avec la quantité à prévoir pour la semaine.")
-                .font(.subheadline)
+        VStack(alignment: .leading, spacing: 4) {
+            Text("Bons choix pour toi").font(.display(20, relativeTo: .title3))
+            Text("Rayon par rayon, avec la quantité pour la semaine.")
+                .font(.caption)
                 .foregroundStyle(.secondary)
+                .padding(.bottom, 4)
             VStack(spacing: 0) {
                 ForEach(order) { aisle in
                     let foods = NutritionData.foods
@@ -420,17 +399,17 @@ private struct GoodChoicesSection: View {
                             }
                         } label: {
                             Label(aisle.label, systemImage: aisle.symbol)
-                                .font(.headline)
+                                .font(.subheadline.weight(.semibold))
                                 .foregroundStyle(.primary)
                         }
                         .tint(.secondary)
-                        .padding(.vertical, 8)
+                        .padding(.vertical, 6)
                         if aisle != order.last { Divider() }
                     }
                 }
             }
-            .card()
         }
+        .card()
     }
 
     private func idea(_ food: Food, score: Int) -> some View {

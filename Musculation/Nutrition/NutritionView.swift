@@ -43,12 +43,12 @@ final class NutritionSession {
     @ObservationIgnored private var toastTask: Task<Void, Never>?
 
     func flash(_ text: String) {
-        withAnimation(.snappy) { toast = text }
+        withAnimation(.appSpring) { toast = text }
         toastTask?.cancel()
         toastTask = Task { [weak self] in
             try? await Task.sleep(for: .seconds(2.4))
             guard !Task.isCancelled else { return }
-            withAnimation(.snappy) { self?.toast = nil }
+            withAnimation(.appSpring) { self?.toast = nil }
         }
     }
 
@@ -155,7 +155,7 @@ struct NutritionView: View {
 
                     Button {
                         hideKeyboard()
-                        withAnimation(.snappy) {
+                        withAnimation(.appSpring) {
                             session.doses = PortionSolver.solve(store.state.cart, target: store.remaining(for: session.slotId))
                         }
                     } label: {
@@ -166,7 +166,7 @@ struct NutritionView: View {
                     .disabled(store.state.cart.isEmpty)
                 } else {
                     Button {
-                        withAnimation(.snappy) { session.doses = nil }
+                        withAnimation(.appSpring) { session.doses = nil }
                     } label: {
                         Text("Modifier").padding(.horizontal, 6)
                     }
@@ -174,7 +174,7 @@ struct NutritionView: View {
 
                     Button {
                         if let doses = session.doses, let slot = session.slotId ?? store.settings.slotTargets.first?.id {
-                            withAnimation(.snappy) {
+                            withAnimation(.appSpring) {
                                 store.logMeal(grams: doses, slot: slot)
                                 session.doses = nil
                             }

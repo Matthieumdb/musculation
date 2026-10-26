@@ -3,6 +3,10 @@ import SwiftData
 
 @main
 struct MusculationApp: App {
+    init() {
+        AppFont.setUp()
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()

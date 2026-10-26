@@ -39,7 +39,7 @@ struct ActiveWorkoutView: View {
 
                     ProgressView(value: Double(doneSets.count), total: Double(max(allSets.count, 1)))
                         .tint(Color.accentColor)
-                        .animation(.snappy, value: doneSets.count)
+                        .animation(.appSpring, value: doneSets.count)
                 }
                 .padding(.vertical, 6)
             }
@@ -49,7 +49,7 @@ struct ActiveWorkoutView: View {
                     entry: entry,
                     canMoveUp: entry.persistentModelID != entries.first?.persistentModelID,
                     canMoveDown: entry.persistentModelID != entries.last?.persistentModelID,
-                    onMove: { offset in withAnimation(.snappy) { workout.move(entry, by: offset) } },
+                    onMove: { offset in withAnimation(.appSpring) { workout.move(entry, by: offset) } },
                     onSetCompleted: { startRest(seconds: entry.restSeconds) },
                     onShowPlates: { plateTarget = PlateTarget(weight: $0) }
                 )
@@ -74,9 +74,9 @@ struct ActiveWorkoutView: View {
                     total: restTotal,
                     onAddTime: {
                         restTotal += 30
-                        withAnimation(.snappy) { self.restEndDate = max(restEndDate, .now).addingTimeInterval(30) }
+                        withAnimation(.appSpring) { self.restEndDate = max(restEndDate, .now).addingTimeInterval(30) }
                     },
-                    onDismiss: { withAnimation(.snappy) { self.restEndDate = nil } }
+                    onDismiss: { withAnimation(.appSpring) { self.restEndDate = nil } }
                 )
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
@@ -119,7 +119,7 @@ struct ActiveWorkoutView: View {
         }
         .sheet(isPresented: $isPickingExercise) {
             ExercisePickerView { exercise in
-                withAnimation(.snappy) {
+                withAnimation(.appSpring) {
                     _ = workout.addExercise(exercise, in: context)
                 }
             }
@@ -159,7 +159,7 @@ struct ActiveWorkoutView: View {
     private func startRest(seconds: Int?) {
         RestNotifier.requestAuthorization()
         restTotal = TimeInterval(seconds ?? restDuration)
-        withAnimation(.snappy) {
+        withAnimation(.appSpring) {
             restEndDate = .now.addingTimeInterval(restTotal)
         }
     }
@@ -238,7 +238,7 @@ struct WorkoutExerciseSection: View {
             }
             .onDelete { offsets in
                 let sets = entry.orderedSets
-                withAnimation(.snappy) {
+                withAnimation(.appSpring) {
                     offsets.map { sets[$0] }.forEach { context.delete($0) }
                     try? context.save()
                 }
@@ -246,7 +246,7 @@ struct WorkoutExerciseSection: View {
 
             Button {
                 let last = entry.orderedSets.last
-                withAnimation(.snappy) {
+                withAnimation(.appSpring) {
                     _ = entry.addSet(reps: last?.reps ?? 10, weight: last?.weight ?? 0, in: context)
                 }
             } label: {
@@ -292,7 +292,7 @@ struct WorkoutExerciseSection: View {
                         onShowPlates(entry.orderedSets.last?.weight ?? 0)
                     }
                     Button("Retirer l'exercice", systemImage: "trash", role: .destructive) {
-                        withAnimation(.snappy) {
+                        withAnimation(.appSpring) {
                             context.delete(entry)
                             try? context.save()
                         }
@@ -370,7 +370,7 @@ struct PendingSwap {
 extension WorkoutExerciseSection {
     func swap(_ old: Exercise, for new: Exercise) {
         guard let workout = entry.workout else { return }
-        withAnimation(.snappy) {
+        withAnimation(.appSpring) {
             workout.replace(entry, with: new)
         }
         try? context.save()
@@ -477,7 +477,7 @@ struct SetRow: View {
             .accessibilityLabel("RPE")
 
             Button {
-                withAnimation(.snappy) {
+                withAnimation(.appSpring) {
                     set.isCompleted.toggle()
                 }
                 if set.isCompleted { onCompleted() }

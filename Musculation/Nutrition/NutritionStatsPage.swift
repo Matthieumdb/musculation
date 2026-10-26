@@ -23,6 +23,9 @@ struct NutritionStatsPage: View {
         var id: String { from }
     }
 
+    @State private var showsProtein = false
+    @State private var showsWeeks = false
+
     var body: some View {
         @Bindable var store = store
         let n = store.state.statPeriod
@@ -33,7 +36,7 @@ struct NutritionStatsPage: View {
         let all = store.dayStats(n, weights: weights)
         let logged = all.filter(\.logged)
 
-        VStack(alignment: .leading, spacing: 24) {
+        VStack(alignment: .leading, spacing: 16) {
             Picker("Période", selection: $store.state.statPeriod) {
                 Text("7 jours").tag(7)
                 Text("30 jours").tag(30)
@@ -67,30 +70,51 @@ struct NutritionStatsPage: View {
         let long = store.dayStats(98, weights: weights)
         let streaks = Self.streaks(long, t: t)
 
-        LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
-            StatTile(value: logged.isEmpty ? "—" : "\(Int(avg.kcal.rounded()))", label: "kcal / jour · cible \(Int(t.kcal))", symbol: "flame.fill", tint: Theme.calories)
-            StatTile(value: logged.isEmpty ? "—" : "\(Int(avg.p.rounded())) g", label: "protéines / jour · cible \(Int(t.p)) g", symbol: "bolt.fill", tint: Theme.protein)
-            StatTile(value: "\(on)", label: "jours dans la cible sur \(logged.count) notés", symbol: "target", tint: .green)
-            StatTile(value: "\(logged.count)", label: "jours notés sur \(n)", symbol: "calendar", tint: .teal)
-            StatTile(value: deficit.map { ($0 >= 0 ? "−" : "+") + "\(Int(abs($0).rounded()))" } ?? "—",
-                     label: deficit.map { $0 > 0 ? "kcal / j · ≈ \(fatKg.kgText) de gras" : "kcal / j · surplus" } ?? "déficit moyen",
-                     symbol: "chart.line.downtrend.xyaxis", tint: .purple)
-            StatTile(value: dW.map { ($0 > 0 ? "+" : "") + $0.kgText } ?? "—",
-                     label: dW == nil ? "pas assez de pesées" : (ws.last?.weight).map { "poids · \($0.kgText)" } ?? "poids",
-                     symbol: "scalemass.fill", tint: .indigo)
-        }
-
-        Label("Série en cours : \(streaks.current) jour\(streaks.current > 1 ? "s" : "") dans la cible · record \(streaks.best)", systemImage: "flame")
+        VStack(alignment: .leading, spacing: 14) {
+            Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 14) {
+                GridRow {
+                    metric(logged.isEmpty ? "—" : "\(Int(avg.kcal.rounded()))", "kcal / jour · cible \(Int(t.kcal))", Theme.calories)
+                    metric(logged.isEmpty ? "—" : "\(Int(avg.p.rounded())) g", "protéines / jour · cible \(Int(t.p)) g", Theme.protein)
+                }
+                GridRow {
+                    metric("\(on)/\(logged.count)", "jours dans la cible · \(logged.count) notés sur \(n)", .green)
+                    metric(dW.map { ($0 > 0 ? "+" : "") + $0.kgText } ?? "—",
+                           dW == nil ? "pas assez de pesées" : (ws.last?.weight).map { "poids · \($0.kgText)" } ?? "poids", .indigo)
+                }
+            }
+            Divider()
+            VStack(alignment: .leading, spacing: 4) {
+                if let deficit {
+                    Label(deficit > 0
+                          ? "Déficit moyen \(Int(deficit.rounded())) kcal / j · ≈ \(fatKg.kgText) de gras"
+                          : "Surplus moyen \(Int((-deficit).rounded())) kcal / j",
+                          systemImage: "chart.line.downtrend.xyaxis")
+                }
+                Label("Série : \(streaks.current) jour\(streaks.current > 1 ? "s" : "") dans la cible · record \(streaks.best)", systemImage: "flame")
+            }
             .font(.footnote)
             .foregroundStyle(.secondary)
+        }
+        .card()
 
-        chartSection(n > 30 ? "Calories par semaine (moyenne / jour)" : "Calories par jour",
-                     bars: bars(all, n: n, t: t) { $0.kcal }, target: t.kcal, tint: Theme.calories, unit: "kcal")
-        chartSection(n > 30 ? "Protéines par semaine (moyenne / jour)" : "Protéines par jour",
-                     bars: bars(all, n: n, t: t) { $0.p }, target: t.p, tint: Theme.protein, unit: "g")
+        chartCard(n: n, all: all, t: t)
+        splitAndWeeks(avg, long: long, n: n, t: t)
+    }
 
-        macroSplit(avg)
-        weekTable(long: long, n: n, t: t)
+    private func metric(_ value: String, _ label: String, _ tint: Color) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(value)
+                .font(.display(24))
+                .foregroundStyle(tint)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .contentTransition(.numericText())
+            Text(label)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(2)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private func bars(_ all: [DayStat], n: Int, t: Macros, value: (Macros) -> Double) -> [Bar] {
@@ -105,61 +129,47 @@ struct NutritionStatsPage: View {
         return all.map { Bar(date: $0.date, value: value($0.macros), highlighted: $0.onTarget(t)) }
     }
 
-    private func chartSection(_ title: String, bars: [Bar], target: Double, tint: Color, unit: String) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            SectionHeader(title)
-            VStack(alignment: .leading, spacing: 8) {
-                Chart {
-                    ForEach(bars) { bar in
-                        BarMark(x: .value("Jour", bar.date, unit: .day), y: .value(unit, bar.value))
-                            .foregroundStyle(tint.opacity(bar.highlighted ? 1 : 0.35))
-                            .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
-                    }
-                    RuleMark(y: .value("Cible", target))
-                        .foregroundStyle(Color.primary.opacity(0.6))
-                        .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [4, 4]))
-                        .annotation(position: .top, alignment: .leading) {
-                            Text("cible \(Int(target)) \(unit)").font(.caption2).foregroundStyle(.secondary)
-                        }
+    private func chartCard(n: Int, all: [DayStat], t: Macros) -> some View {
+        let target = showsProtein ? t.p : t.kcal
+        let tint = showsProtein ? Theme.protein : Theme.calories
+        let unit = showsProtein ? "g" : "kcal"
+        let data = bars(all, n: n, t: t) { showsProtein ? $0.p : $0.kcal }
+        return VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text(n > 30 ? "Par semaine" : "Par jour").font(.display(20, relativeTo: .title3))
+                Spacer()
+                Picker("Mesure", selection: $showsProtein.animation(.appEase)) {
+                    Text("kcal").tag(false)
+                    Text("Protéines").tag(true)
                 }
-                .chartYScale(domain: 0...max(target * 1.25, bars.map(\.value).max() ?? 0, 1))
-                .frame(height: 170)
-                Text("Pointillés = ta cible · barre foncée = jour dans la cible.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                .pickerStyle(.segmented)
+                .fixedSize()
             }
-            .card()
+            Chart {
+                ForEach(data) { bar in
+                    BarMark(x: .value("Jour", bar.date, unit: .day), y: .value(unit, bar.value))
+                        .foregroundStyle(tint.opacity(bar.highlighted ? 1 : 0.35))
+                        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+                }
+                RuleMark(y: .value("Cible", target))
+                    .foregroundStyle(Color.primary.opacity(0.6))
+                    .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [4, 4]))
+                    .annotation(position: .top, alignment: .leading) {
+                        Text("cible \(Int(target)) \(unit)").font(.caption2).foregroundStyle(.secondary)
+                    }
+            }
+            .chartYScale(domain: 0...max(target * 1.25, data.map(\.value).max() ?? 0, 1))
+            .frame(height: 170)
+            Text(n > 30 ? "Moyenne par jour, semaine par semaine. Barre foncée = semaine notée." : "Barre foncée = jour dans la cible.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
+        .card()
     }
 
-    private func macroSplit(_ avg: Macros) -> some View {
+    private func splitAndWeeks(_ avg: Macros, long: [DayStat], n: Int, t: Macros) -> some View {
         let parts: [(String, Double, Color)] = [("Prot.", avg.p * 4, Theme.protein), ("Gluc.", avg.c * 4, Theme.carbs), ("Lip.", avg.f * 9, Theme.fat)]
         let sum = max(parts.reduce(0) { $0 + $1.1 }, 1)
-        return VStack(alignment: .leading, spacing: 12) {
-            SectionHeader("Répartition moyenne des calories")
-            VStack(alignment: .leading, spacing: 12) {
-                GeometryReader { proxy in
-                    HStack(spacing: 3) {
-                        ForEach(parts, id: \.0) { part in
-                            Capsule().fill(part.2.gradient).frame(width: max(0, proxy.size.width * part.1 / sum - 3))
-                        }
-                    }
-                }
-                .frame(height: 14)
-                HStack(spacing: 16) {
-                    ForEach(parts, id: \.0) { part in
-                        HStack(spacing: 6) {
-                            Circle().fill(part.2).frame(width: 8, height: 8)
-                            Text("\(part.0) \(Int((part.1 / sum * 100).rounded())) %").font(.subheadline)
-                        }
-                    }
-                }
-            }
-            .card()
-        }
-    }
-
-    private func weekTable(long: [DayStat], n: Int, t: Macros) -> some View {
         let count = max(1, Int((Double(n) / 7).rounded()))
         let rows: [WeekRow] = (0..<count).map { k in
             let chunk = Array(long[(long.count - 7 * (k + 1))..<(long.count - 7 * k)])
@@ -174,33 +184,58 @@ struct NutritionStatsPage: View {
             )
         }
         return VStack(alignment: .leading, spacing: 12) {
-            SectionHeader("Bilan semaine par semaine")
-            VStack(alignment: .leading, spacing: 10) {
-                Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 8) {
-                    GridRow {
-                        ForEach(["Semaine", "kcal", "Prot.", "Cible", "Poids"], id: \.self) {
-                            Text($0).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
-                        }
-                    }
-                    Divider()
-                    ForEach(rows) { row in
-                        GridRow {
-                            Text("du \(shortDate(row.from))")
-                            Text(row.kcal.map { "\(Int($0.rounded()))" } ?? "—")
-                            Text(row.p.map { "\(Int($0.rounded())) g" } ?? "—")
-                            Text("\(row.onTarget)/7")
-                            Text(row.weight.map(\.kgText) ?? "—")
-                        }
-                        .font(.subheadline)
-                        .monospacedDigit()
+            Text("Répartition des calories").font(.display(20, relativeTo: .title3))
+            GeometryReader { proxy in
+                HStack(spacing: 3) {
+                    ForEach(parts, id: \.0) { part in
+                        Capsule().fill(part.2.gradient).frame(width: max(0, proxy.size.width * part.1 / sum - 3))
                     }
                 }
-                Text("Dans la cible = calories entre 90 et 105 % de ta cible et protéines ≥ 90 %.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
             }
-            .card()
+            .frame(height: 12)
+            HStack(spacing: 16) {
+                ForEach(parts, id: \.0) { part in
+                    HStack(spacing: 6) {
+                        Circle().fill(part.2).frame(width: 8, height: 8)
+                        Text("\(part.0) \(Int((part.1 / sum * 100).rounded())) %").font(.subheadline)
+                    }
+                }
+            }
+            Divider()
+            DisclosureGroup(isExpanded: $showsWeeks) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 8) {
+                        GridRow {
+                            ForEach(["Semaine", "kcal", "Prot.", "Cible", "Poids"], id: \.self) {
+                                Text($0).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                            }
+                        }
+                        Divider()
+                        ForEach(rows) { row in
+                            GridRow {
+                                Text("du \(shortDate(row.from))")
+                                Text(row.kcal.map { "\(Int($0.rounded()))" } ?? "—")
+                                Text(row.p.map { "\(Int($0.rounded())) g" } ?? "—")
+                                Text("\(row.onTarget)/7")
+                                Text(row.weight.map(\.kgText) ?? "—")
+                            }
+                            .font(.subheadline)
+                            .monospacedDigit()
+                        }
+                    }
+                    Text("Dans la cible = calories entre 90 et 105 % de ta cible et protéines ≥ 90 %.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.top, 8)
+            } label: {
+                Label("Semaine par semaine", systemImage: "tablecells")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.primary)
+            }
+            .tint(.secondary)
         }
+        .card()
     }
 
     private func shortDate(_ day: String) -> String {

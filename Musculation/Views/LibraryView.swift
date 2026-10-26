@@ -44,7 +44,7 @@ struct LibraryView: View {
                         )
                         if muscle != nil || equipment != nil {
                             Button("Effacer") {
-                                withAnimation(.snappy) {
+                                withAnimation(.appSpring) {
                                     muscle = nil
                                     equipment = nil
                                 }
@@ -234,7 +234,7 @@ struct LibraryDetailView: View {
                 .glassSurface(in: Capsule(), fallback: .regularMaterial)
         } else {
             Button {
-                withAnimation(.snappy) {
+                withAnimation(.appSpring) {
                     _ = addToMyExercises()
                     justAdded = true
                 }

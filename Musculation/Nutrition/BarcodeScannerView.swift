@@ -8,6 +8,8 @@ struct BarcodeScannerSheet: View {
     var onCode: (String) -> Void
 
     @State private var cameraAllowed: Bool?
+    @State private var typing = false
+    @State private var typed = ""
 
     var body: some View {
         NavigationStack {
@@ -49,6 +51,23 @@ struct BarcodeScannerSheet: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Annuler") { dismiss() }
                 }
+                ToolbarItem(placement: .primaryAction) {
+                    Button("Saisir le code", systemImage: "keyboard") { typing = true }
+                }
+            }
+            .alert("Code-barres", isPresented: $typing) {
+                TextField("3017620422003", text: $typed)
+                    .keyboardType(.numberPad)
+                Button("Annuler", role: .cancel) { typed = "" }
+                Button("Chercher") {
+                    let code = typed.filter(\.isNumber)
+                    typed = ""
+                    guard !code.isEmpty else { return }
+                    dismiss()
+                    onCode(code)
+                }
+            } message: {
+                Text("Les chiffres sous le code-barres.")
             }
             .task {
                 if AVCaptureDevice.authorizationStatus(for: .video) == .notDetermined {

@@ -2,199 +2,149 @@ import SwiftUI
 import SwiftData
 import Charts
 
+/// Three blocks: the day and the meal at the top, what you eat, then weight and log.
 struct TodayPage: View {
     @Environment(NutritionStore.self) private var store
     @Environment(NutritionSession.self) private var session
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            DaySummaryCard()
-            SlotPicker()
+        VStack(alignment: .leading, spacing: 16) {
+            DayCard()
             if let doses = session.doses, doses.count == store.state.cart.count {
-                DosesSection(doses: doses)
+                DosesCard(doses: doses)
             } else {
-                MealBuilder()
+                MealCard()
             }
-            WeightCard()
-            TodayLog()
+            JournalCard()
         }
     }
 }
 
-// MARK: - Day summary
+// MARK: - Day and meal
 
-private struct DaySummaryCard: View {
+private struct DayCard: View {
     @Environment(NutritionStore.self) private var store
+    @Environment(NutritionSession.self) private var session
 
     var body: some View {
         let t = store.settings.dayTargets, e = store.eaten()
         let left = Int((t.kcal - e.kcal).rounded())
         let protLeft = max(0, Int((t.p - e.p).rounded()))
-        let evening = Calendar.current.component(.hour, from: .now) >= 18
-        let alert = evening && protLeft > 40
+        let alert = Calendar.current.component(.hour, from: .now) >= 18 && protLeft > 40
+        let slots = store.settings.slotTargets
+        let selected = slots.first { $0.id == session.slotId } ?? slots.first
 
         VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 20) {
                 ZStack {
-                    ProgressRing(progress: t.kcal > 0 ? e.kcal / t.kcal : 0, tint: left < 0 ? .red : Theme.calories, lineWidth: 16)
+                    ProgressRing(progress: t.kcal > 0 ? e.kcal / t.kcal : 0, tint: left < 0 ? Color.red : Theme.calories, lineWidth: 14)
                     VStack(spacing: 0) {
                         Text("\(abs(left))")
-                            .font(.title.bold())
-                            .fontDesign(.rounded)
+                            .font(.display(26))
                             .contentTransition(.numericText())
                         Text(left >= 0 ? "kcal restantes" : "kcal en trop")
-                            .font(.caption2.weight(.semibold))
+                            .font(.caption2)
                             .foregroundStyle(.secondary)
                     }
                 }
-                .frame(width: 118, height: 118)
+                .frame(width: 104, height: 104)
 
-                VStack(spacing: 12) {
+                VStack(spacing: 10) {
                     ForEach([MacroKey.p, .c, .f]) { key in
-                        VStack(alignment: .leading, spacing: 5) {
+                        VStack(alignment: .leading, spacing: 4) {
                             HStack {
-                                Text(key.label).font(.subheadline.weight(.semibold))
+                                Text(key.label).font(.subheadline)
                                 Spacer()
-                                Text("\(Int(e[key].rounded())) / \(Int(t[key])) g")
-                                    .font(.subheadline)
+                                Text("\(Int(e[key].rounded()))/\(Int(t[key])) g")
+                                    .font(.caption)
                                     .monospacedDigit()
                                     .foregroundStyle(.secondary)
                             }
-                            ProgressBar(progress: t[key] > 0 ? e[key] / t[key] : 0, tint: key.color)
+                            ProgressBar(progress: t[key] > 0 ? e[key] / t[key] : 0, tint: key.color, height: 5)
                         }
                     }
                 }
             }
 
-            Label {
-                Text(protLeft == 0
-                     ? "Objectif protéines atteint."
-                     : alert
-                     ? "Il te manque \(protLeft) g de protéines ce soir : un skyr (≈ 15 g par pot), du blanc de poulet (≈ 31 g pour 100 g) ou une dose de whey (≈ 24 g)."
-                     : "Encore \(protLeft) g de protéines à manger aujourd'hui.")
-            } icon: {
-                Image(systemName: protLeft == 0 ? "checkmark.seal.fill" : alert ? "exclamationmark.circle.fill" : "bolt.heart.fill")
-                    .foregroundStyle(protLeft == 0 ? Color.green : alert ? Color.orange : Theme.protein)
+            if slots.count > 1 {
+                Picker("Repas", selection: Binding(
+                    get: { selected?.id ?? "" },
+                    set: { id in
+                        withAnimation(.appEase) {
+                            session.slotId = id
+                            if session.doses != nil {
+                                session.doses = PortionSolver.solve(store.state.cart, target: store.remaining(for: id))
+                            }
+                        }
+                    }
+                )) {
+                    ForEach(slots) { Text($0.label).tag($0.id) }
+                }
+                .pickerStyle(.segmented)
             }
-            .font(.footnote)
-            .foregroundStyle(.secondary)
+
+            if let selected {
+                let rem = store.remaining(for: selected.id)
+                Text("Reste pour \(selected.label.lowercased()) : **\(Int(rem.kcal)) kcal** · P \(Int(rem.p)) · G \(Int(rem.c)) · L \(Int(rem.f)) g")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .contentTransition(.numericText())
+            }
+
+            if alert {
+                Label("Il te manque \(protLeft) g de protéines ce soir : un skyr, du poulet ou une dose de whey.", systemImage: "exclamationmark.circle.fill")
+                    .font(.footnote)
+                    .foregroundStyle(.orange)
+            }
         }
         .card()
     }
 }
 
-// MARK: - Meal slot
+// MARK: - Meal
 
-private struct SlotPicker: View {
+private struct MealCard: View {
     @Environment(NutritionStore.self) private var store
     @Environment(NutritionSession.self) private var session
 
     var body: some View {
-        let slots = store.settings.slotTargets
-        let selected = slots.first { $0.id == session.slotId } ?? slots.first
+        let cart = store.state.cart
 
         VStack(alignment: .leading, spacing: 12) {
-            SectionHeader("Quel repas ?")
-            HStack(spacing: 8) {
-                ForEach(slots) { slot in
-                    let isOn = slot.id == selected?.id
-                    Button {
-                        withAnimation(.snappy) {
-                            session.slotId = slot.id
-                            if session.doses != nil {
-                                session.doses = PortionSolver.solve(store.state.cart, target: store.remaining(for: slot.id))
-                            }
-                        }
-                    } label: {
-                        VStack(spacing: 4) {
-                            Image(systemName: slot.type.symbol).font(.subheadline)
-                            Text(slot.name).font(.caption.weight(.semibold)).lineLimit(1).minimumScaleFactor(0.7)
-                            Text("\(Int(store.remaining(for: slot.id).kcal)) kcal")
-                                .font(.caption2)
-                                .monospacedDigit()
-                                .opacity(0.8)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 10)
-                        .foregroundStyle(isOn ? Color.white : Color.primary)
-                        .background(isOn ? AnyShapeStyle(Color.accentColor.gradient) : AnyShapeStyle(Theme.card),
-                                    in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-                    }
-                    .buttonStyle(PressableButtonStyle())
-                    .accessibilityAddTraits(isOn ? .isSelected : [])
-                }
-            }
-
-            if let selected {
-                let rem = store.remaining(for: selected.id)
-                let done = store.eaten(slot: selected.id).kcal
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack(spacing: 14) {
-                        ForEach(MacroKey.allCases) { key in
-                            MacroGauge(key: key, value: rem[key], total: selected.target[key])
-                        }
-                    }
-                    Text(done > 0
-                         ? "Il te reste ça pour \(selected.label.lowercased()) (déjà \(Int(done)) kcal notées sur ce créneau)."
-                         : "Ton objectif pour \(selected.label.lowercased()).")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
-                .card()
-            }
-        }
-    }
-}
-
-// MARK: - Building the meal
-
-private struct MealBuilder: View {
-    @Environment(NutritionStore.self) private var store
-    @Environment(NutritionSession.self) private var session
-    @State private var code = ""
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            SectionHeader("Ce que tu manges") {
-                if !store.state.cart.isEmpty {
-                    Text("\(store.state.cart.count) produit\(store.state.cart.count > 1 ? "s" : "")")
-                        .foregroundStyle(.secondary)
+            HStack(alignment: .firstTextBaseline) {
+                Text("Ce que tu manges").font(.display(18, relativeTo: .headline))
+                Spacer()
+                if !cart.isEmpty {
+                    Text("\(cart.count) produit\(cart.count > 1 ? "s" : "")").font(.subheadline).foregroundStyle(.secondary)
                 }
             }
 
             if let error = session.mealError { InlineError(text: error) }
 
-            VStack(spacing: 0) {
-                if store.state.cart.isEmpty {
-                    EmptyCardContent(
-                        symbol: "barcode.viewfinder",
-                        title: "Qu'est-ce qu'on mange ?",
-                        message: "Scanne chaque produit, ou touche un aliment ci-dessous. Quand tout y est, appuie sur Calculer."
-                    )
-                } else {
-                    ForEach(Array(store.state.cart.enumerated()), id: \.element.id) { index, item in
-                        if index > 0 { Divider().padding(.leading, 60) }
+            if cart.isEmpty {
+                Text("Scanne tes produits ou touche un aliment, puis Calculer.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            } else {
+                VStack(spacing: 0) {
+                    ForEach(Array(cart.enumerated()), id: \.element.id) { index, _ in
+                        if index > 0 { Divider().padding(.leading, 52) }
                         CartRow(index: index)
                     }
                 }
             }
-            .card()
 
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Sans code-barres ? Touche un aliment (poids cru)")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                FlowLayout {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
                     ForEach(quickFoods) { food in
                         Button {
-                            withAnimation(.snappy) {
+                            withAnimation(.appSpring) {
                                 session.doses = nil
                                 store.addToCart(Product(food: food))
                             }
-                            session.flash("\(food.shortName) ajouté · note \(store.settings.score(food).grade.rawValue)")
                         } label: {
                             Label(food.shortName, systemImage: "plus")
-                                .font(.subheadline.weight(.medium))
+                                .font(.footnote.weight(.medium))
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 6)
                                 .background(Theme.field, in: Capsule())
@@ -202,22 +152,10 @@ private struct MealBuilder: View {
                         .buttonStyle(PressableButtonStyle())
                     }
                 }
-                HStack {
-                    TextField("Code-barres à la main", text: $code)
-                        .keyboardType(.numberPad)
-                        .textFieldStyle(.roundedBorder)
-                    Button("Ajouter") {
-                        let value = code
-                        code = ""
-                        hideKeyboard()
-                        Task { await session.lookup(value, for: .meal, store: store) }
-                    }
-                    .glassButton()
-                    .disabled(code.isEmpty || session.isLookingUp)
-                }
             }
-            .card()
+            .scrollClipDisabled()
         }
+        .card()
     }
 
     private var quickFoods: [Food] {
@@ -232,65 +170,63 @@ private struct CartRow: View {
     @Environment(NutritionSession.self) private var session
     let index: Int
 
-    var body: some View {
-        @Bindable var store = store
-        if index < store.state.cart.count {
-            let item = store.state.cart[index]
-            HStack(alignment: .top, spacing: 12) {
-                ProductThumb(product: item, grade: store.settings.score(item).grade)
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(item.name).font(.body.weight(.semibold)).lineLimit(2)
-                    MacroMixBar(n: item.n)
-                    Text(NutritionFormat.macroLine(item.n))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    HStack(spacing: 8) {
-                        Toggle(isOn: Binding(
-                            get: { item.fixed != nil },
-                            set: { on in
-                                session.doses = nil
-                                store.state.cart[index].fixed = on ? (item.unit?.grams ?? 100) : nil
-                            }
-                        )) {
-                            Text("Quantité fixe").font(.caption.weight(.semibold))
-                        }
-                        .toggleStyle(.button)
-                        .buttonStyle(.bordered)
-                        .controlSize(.mini)
+    @State private var isEditingGrams = false
+    @State private var grams: Double?
 
-                        if item.fixed != nil {
-                            TextField("g", value: $store.state.cart[index].fixed, format: .number)
-                                .keyboardType(.numberPad)
-                                .textFieldStyle(.roundedBorder)
-                                .frame(width: 70)
-                                .font(.caption)
-                            Text("g").font(.caption).foregroundStyle(.secondary)
-                        }
-                    }
+    var body: some View {
+        if store.state.cart.indices.contains(index) {
+            let item = store.state.cart[index]
+            HStack(spacing: 12) {
+                ProductThumb(product: item, grade: store.settings.score(item).grade, size: 40)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(item.name).font(.subheadline.weight(.semibold)).lineLimit(1)
+                    MacroMixBar(n: item.n)
                 }
-                Spacer(minLength: 0)
-                Button {
-                    withAnimation(.snappy) {
-                        session.doses = nil
-                        _ = store.state.cart.remove(at: index)
+                Spacer(minLength: 8)
+                Menu {
+                    Button("Quantité calculée", systemImage: "wand.and.stars") { setFixed(nil) }
+                    Button("Fixer la quantité…", systemImage: "scalemass") {
+                        grams = item.fixed ?? item.unit?.grams ?? 100
+                        isEditingGrams = true
+                    }
+                    Divider()
+                    Button("Retirer", systemImage: "trash", role: .destructive) {
+                        withAnimation(.appSpring) {
+                            session.doses = nil
+                            _ = store.state.cart.remove(at: index)
+                        }
                     }
                 } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.title3)
-                        .symbolRenderingMode(.hierarchical)
-                        .foregroundStyle(.secondary)
+                    Text(item.fixed.map { "\(Int($0)) g" } ?? "auto")
+                        .font(.footnote.weight(.semibold))
+                        .monospacedDigit()
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(Theme.field, in: Capsule())
                 }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Retirer \(item.name)")
+                .foregroundStyle(item.fixed == nil ? Color.secondary : Color.primary)
             }
-            .padding(.vertical, 10)
+            .padding(.vertical, 8)
+            .alert("Quantité fixe", isPresented: $isEditingGrams) {
+                TextField("Grammes", value: $grams, format: .number).keyboardType(.numberPad)
+                Button("Annuler", role: .cancel) {}
+                Button("OK") { setFixed(max(0, grams ?? 0)) }
+            } message: {
+                Text(item.name)
+            }
         }
+    }
+
+    private func setFixed(_ value: Double?) {
+        guard store.state.cart.indices.contains(index) else { return }
+        session.doses = nil
+        store.state.cart[index].fixed = value
     }
 }
 
 // MARK: - Result
 
-private struct DosesSection: View {
+private struct DosesCard: View {
     @Environment(NutritionStore.self) private var store
     @Environment(NutritionSession.self) private var session
     let doses: [Double]
@@ -304,177 +240,202 @@ private struct DosesSection: View {
         let onTarget = abs(worst.1) <= 0.1
 
         VStack(alignment: .leading, spacing: 12) {
-            SectionHeader("Tes doses à peser")
+            Text("Tes doses à peser").font(.display(18, relativeTo: .headline))
+            Label(onTarget ? "Pile dans tes objectifs"
+                  : worst.1 < 0 ? "Il manque des \(worst.0.label.lowercased())"
+                  : "Trop de \(worst.0.label.lowercased()) : fixe une quantité plus bas",
+                  systemImage: onTarget ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(onTarget ? Color.green : Color.orange)
+
             VStack(spacing: 0) {
                 ForEach(Array(cart.enumerated()), id: \.element.id) { i, item in
-                    if i > 0 { Divider().padding(.leading, 60) }
+                    if i > 0 { Divider().padding(.leading, 52) }
                     let g = doses[i]
                     HStack(spacing: 12) {
-                        ProductThumb(product: item, grade: store.settings.score(item).grade)
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text(item.name).font(.body.weight(.semibold)).lineLimit(2)
-                            Text("\(Int((item.n.kcal * g / 100).rounded())) kcal · \(NutritionFormat.number(item.n.p * g / 100)) g de protéines")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                        ProductThumb(product: item, size: 40)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(item.name).font(.subheadline.weight(.semibold)).lineLimit(1)
                             if let note = note(item, g) {
                                 Text(note).font(.caption).foregroundStyle(.secondary)
                             }
                         }
-                        Spacer(minLength: 0)
-                        HStack(alignment: .firstTextBaseline, spacing: 2) {
-                            Text("\(Int(g))")
-                                .font(.title.bold())
-                                .fontDesign(.rounded)
-                                .monospacedDigit()
-                                .contentTransition(.numericText())
-                            Text("g").font(.headline).foregroundStyle(.secondary)
-                        }
-                        .foregroundStyle(g == 0 ? AnyShapeStyle(HierarchicalShapeStyle.tertiary) : AnyShapeStyle(Color.accentColor))
-                    }
-                    .padding(.vertical, 10)
-                }
-            }
-            .card()
-
-            VStack(alignment: .leading, spacing: 12) {
-                Label(onTarget ? "Repas pile dans tes objectifs"
-                      : worst.1 < 0 ? "Il manque des \(worst.0.label.lowercased()) : ajoute un produit qui en contient plus"
-                      : "Trop de \(worst.0.label.lowercased()) : retire un produit ou fixe sa quantité plus bas",
-                      systemImage: onTarget ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(onTarget ? Color.green : Color.orange)
-                ForEach(MacroKey.allCases) { key in
-                    HStack(spacing: 10) {
-                        Text(key.label).font(.subheadline).frame(width: 80, alignment: .leading)
-                        ProgressBar(progress: target[key] > 0 ? total[key] / target[key] : 0, tint: key.color)
-                        Text("\(Int(total[key].rounded())) / \(Int(target[key].rounded()))\(key == .kcal ? "" : " g")")
-                            .font(.caption)
+                        Spacer(minLength: 8)
+                        Text("\(Int(g)) g")
+                            .font(.display(22))
                             .monospacedDigit()
-                            .foregroundStyle(.secondary)
-                            .frame(width: 86, alignment: .trailing)
+                            .contentTransition(.numericText())
+                            .foregroundStyle(g == 0 ? Color.secondary : Color.accentColor)
                     }
+                    .padding(.vertical, 8)
                 }
             }
-            .card()
+
+            HStack(spacing: 0) {
+                ForEach(MacroKey.allCases) { key in
+                    VStack(spacing: 2) {
+                        Text("\(Int(total[key].rounded()))").font(.subheadline.weight(.semibold)).foregroundStyle(key.color)
+                        Text("/ \(Int(target[key].rounded())) \(key.short)").font(.caption2).foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+            }
+            .padding(.vertical, 8)
+            .background(Theme.field, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
+        .card()
     }
 
     private func note(_ item: Product, _ g: Double) -> String? {
-        if g == 0 { return "Pas besoin : le reste du repas couvre déjà tout" }
+        if g == 0 { return "Pas besoin pour ce repas" }
         var parts: [String] = []
         if let unit = item.unit {
             let count = g / unit.grams
             parts.append("\(NutritionFormat.number(count)) \(unit.label(count: count))")
         }
-        if isWeighedRaw(item.name) { parts.append("pesé cru / sec") }
-        if item.fixed != nil { parts.append("quantité fixe") }
+        if isWeighedRaw(item.name) { parts.append("pesé cru") }
+        if item.fixed != nil { parts.append("fixé") }
         return parts.isEmpty ? nil : parts.joined(separator: " · ")
     }
 }
 
-// MARK: - Weight
+// MARK: - Weight and log
 
-private struct WeightCard: View {
+private struct JournalCard: View {
     @Environment(\.modelContext) private var context
     @Environment(NutritionStore.self) private var store
     @Query(sort: \BodyWeightEntry.date) private var entries: [BodyWeightEntry]
+    @State private var isAddingWeight = false
     @State private var input: Double?
+    @State private var showsLog = false
 
     var body: some View {
         let weights = NutritionStore.weightsByDay(entries)
         let now = WeightTrend.average(weights, from: 0, to: 6), prev = WeightTrend.average(weights, from: 7, to: 13)
         let trend: Double? = now.count >= 3 && prev.count >= 3 ? (now.avg ?? 0) - (prev.avg ?? 0) : nil
         let losing = NutritionData.goalOffsets[min(max(store.settings.profile.goal, 0), 4)] <= 0
+        let log = store.todayLog
+        let eaten = store.eaten()
 
         VStack(alignment: .leading, spacing: 12) {
-            SectionHeader("Mon poids") {
-                NavigationLink("Historique") { BodyWeightView() }
+            HStack(alignment: .center) {
+                NavigationLink {
+                    BodyWeightView()
+                } label: {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Poids").font(.subheadline).foregroundStyle(.secondary)
+                        HStack(alignment: .firstTextBaseline, spacing: 6) {
+                            Text(now.avg.map(\.kgText) ?? weights[DayKey.today].map(\.kgText) ?? "—")
+                                .font(.display(22))
+                                .foregroundStyle(.primary)
+                            if let trend {
+                                Text((trend > 0 ? "+" : "") + trend.kgText)
+                                    .font(.footnote.weight(.semibold))
+                                    .foregroundStyle((losing ? trend <= 0 : trend >= 0) ? Color.green : Color.orange)
+                            }
+                        }
+                        Text(now.avg == nil ? "pèse-toi le matin à jeun" : "moyenne sur 7 jours")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .buttonStyle(.plain)
+
+                Spacer(minLength: 12)
+                if weights.count > 1 {
+                    sparkline(weights).frame(width: 96, height: 36)
+                }
+                Button {
+                    input = nil
+                    isAddingWeight = true
+                } label: {
+                    Image(systemName: "plus")
+                        .font(.headline)
+                        .frame(width: 36, height: 36)
+                }
+                .glassButton()
+                .buttonBorderShape(.circle)
+                .accessibilityLabel("Noter mon poids")
             }
-            VStack(alignment: .leading, spacing: 14) {
-                HStack {
-                    stat(weights[DayKey.today].map(\.kgText) ?? "—", "Aujourd'hui")
-                    stat(now.avg.map(\.kgText) ?? "—", "Moy. 7 jours")
-                    stat(trend.map { ($0 > 0 ? "+" : "") + $0.kgText } ?? "—", "Sur 7 jours",
-                         tint: trend.map { (losing ? $0 <= 0 : $0 >= 0) ? Color.green : Color.orange })
+
+            if let message = adjustmentNote {
+                Text(message).font(.caption).foregroundStyle(.secondary)
+            }
+
+            Divider()
+
+            DisclosureGroup(isExpanded: $showsLog) {
+                VStack(spacing: 0) {
+                    if log.isEmpty {
+                        Text("Rien de noté aujourd'hui.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.top, 8)
+                    }
+                    ForEach(log) { entry in
+                        HStack {
+                            Text(entry.name).font(.subheadline).lineLimit(1)
+                            Spacer()
+                            Text("\(Int(entry.kcal.rounded())) kcal · \(Int(entry.g)) g")
+                                .font(.caption)
+                                .monospacedDigit()
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.vertical, 6)
+                        .contextMenu {
+                            Button("Supprimer", systemImage: "trash", role: .destructive) {
+                                withAnimation(.appSpring) { store.todayLog.removeAll { $0.id == entry.id } }
+                            }
+                        }
+                    }
                 }
-
-                if weights.count > 1 { chart(weights) }
-
-                if let note = note(weights, now: now.count, prev: prev.count) {
-                    Text(note).font(.footnote).foregroundStyle(.secondary)
-                }
-
+            } label: {
                 HStack {
-                    TextField("Poids du jour (kg)", value: $input, format: .number.precision(.fractionLength(0...1)))
-                        .keyboardType(.decimalPad)
-                        .textFieldStyle(.roundedBorder)
-                    Button("Noter") { save() }
-                        .glassProminentButton()
-                        .disabled(!((input ?? 0) > 20 && (input ?? 0) < 400))
+                    Text("Mangé aujourd'hui").font(.subheadline)
+                    Spacer()
+                    Text("\(Int(eaten.kcal.rounded())) kcal · \(Int(eaten.p.rounded())) g P")
+                        .font(.caption)
+                        .monospacedDigit()
+                        .foregroundStyle(.secondary)
                 }
             }
-            .card()
+            .tint(.secondary)
+        }
+        .card()
+        .alert("Poids du jour", isPresented: $isAddingWeight) {
+            TextField("kg", value: $input, format: .number.precision(.fractionLength(0...1)))
+                .keyboardType(.decimalPad)
+            Button("Annuler", role: .cancel) {}
+            Button("Noter") { save() }
+        } message: {
+            Text("Le matin à jeun, c'est le plus fiable.")
         }
     }
 
-    private func stat(_ value: String, _ label: String, tint: Color? = nil) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(value)
-                .font(.headline)
-                .fontDesign(.rounded)
-                .foregroundStyle(tint ?? Color.primary)
-            Text(label).font(.caption).foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
+    private var adjustmentNote: String? {
+        let adj = store.settings.adj
+        guard let message = adj.message, let last = adj.last, DayKey.daysBetween(last, DayKey.today) < 7 else { return nil }
+        return message
     }
 
-    /// Last 30 days: dots for weigh-ins, line for the 7-day moving average.
-    private func chart(_ weights: [String: Double]) -> some View {
+    /// Last 30 days, 7-day moving average.
+    private func sparkline(_ weights: [String: Double]) -> some View {
         let days = (0..<30).reversed().map { DayKey.offset($0) }
-        let points = days.compactMap { d in weights[d].map { ChartPoint(date: DayKey.date(d) ?? .now, value: $0) } }
-        let average: [ChartPoint] = days.enumerated().compactMap { i, d in
-            let window = (0..<7).compactMap { k -> Double? in
-                let j = i - k
-                return j >= 0 ? weights[days[j]] : nil
-            }
+        let points: [ChartPoint] = days.enumerated().compactMap { i, d in
+            let window = (0..<7).compactMap { k -> Double? in i - k >= 0 ? weights[days[i - k]] : nil }
             guard !window.isEmpty, let date = DayKey.date(d) else { return nil }
             return ChartPoint(date: date, value: window.reduce(0, +) / Double(window.count))
         }
-        return Chart {
-            ForEach(average) { p in
-                LineMark(x: .value("Jour", p.date), y: .value("Moyenne", p.value))
-                    .interpolationMethod(.monotone)
-                    .foregroundStyle(Color.accentColor)
-                    .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round))
-            }
-            ForEach(points) { p in
-                PointMark(x: .value("Jour", p.date), y: .value("Poids", p.value))
-                    .foregroundStyle(.secondary)
-                    .symbolSize(18)
-            }
+        return Chart(points) { p in
+            LineMark(x: .value("Jour", p.date), y: .value("Poids", p.value))
+                .interpolationMethod(.monotone)
+                .foregroundStyle(Color.accentColor)
+                .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round))
         }
         .chartYScale(domain: .automatic(includesZero: false))
-        .chartXAxis { AxisMarks(values: .stride(by: .day, count: 7)) { _ in AxisValueLabel(format: .dateTime.day().month(.abbreviated)) } }
-        .frame(height: 120)
-    }
-
-    private func note(_ weights: [String: Double], now: Int, prev: Int) -> String? {
-        if weights.isEmpty {
-            return "Pèse-toi le matin à jeun. Note-le chaque jour : je fais la moyenne sur 7 jours pour lisser l'eau et le sel."
-        }
-        let adj = store.settings.adj
-        if let message = adj.message, let last = adj.last {
-            let days = DayKey.daysBetween(last, DayKey.today)
-            if days < 7 {
-                let wait = 7 - days
-                return message + (wait > 0 && wait < 7 ? " Prochain bilan dans \(wait) jour\(wait > 1 ? "s" : "")." : "")
-            }
-        }
-        if now < 3 || prev < 3 {
-            let n = max(1, max(0, 3 - now) + max(0, 3 - prev))
-            return "Encore \(n) pesée\(n > 1 ? "s" : "") et je pourrai juger ta tendance."
-        }
-        return nil
+        .chartXAxis(.hidden)
+        .chartYAxis(.hidden)
     }
 
     private func save() {
@@ -487,68 +448,8 @@ private struct WeightCard: View {
             context.insert(BodyWeightEntry(date: .now, weight: kg))
         }
         try? context.save()
-        input = nil
-        hideKeyboard()
         let all = (try? context.fetch(FetchDescriptor<BodyWeightEntry>())) ?? entries
         store.checkAdjustment(entries: all)
-    }
-}
-
-// MARK: - Today's log
-
-private struct TodayLog: View {
-    @Environment(NutritionStore.self) private var store
-    @State private var isExpanded = false
-
-    var body: some View {
-        let log = store.todayLog
-        let total = store.eaten()
-        let slots = store.settings.slotTargets
-
-        DisclosureGroup(isExpanded: $isExpanded) {
-            VStack(spacing: 0) {
-                if log.isEmpty {
-                    Text("Rien de noté aujourd'hui.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.top, 10)
-                }
-                ForEach(log) { entry in
-                    HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(entry.name).font(.subheadline.weight(.semibold))
-                            Text("\(slots.first { $0.id == entry.slot }?.name ?? "") · \(Int(entry.kcal.rounded())) kcal · P \(NutritionFormat.number(entry.p))")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                        Text("\(Int(entry.g)) g")
-                            .font(.subheadline.weight(.semibold))
-                            .fontDesign(.rounded)
-                        Button {
-                            withAnimation { store.todayLog.removeAll { $0.id == entry.id } }
-                        } label: {
-                            Image(systemName: "xmark.circle.fill")
-                                .symbolRenderingMode(.hierarchical)
-                                .foregroundStyle(.secondary)
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel("Retirer \(entry.name)")
-                    }
-                    .padding(.vertical, 8)
-                }
-            }
-        } label: {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Mangé aujourd'hui").font(.headline)
-                Text("\(Int(total.kcal.rounded())) kcal · \(Int(total.p.rounded())) g de protéines")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .tint(.primary)
-        .card()
     }
 }
 
