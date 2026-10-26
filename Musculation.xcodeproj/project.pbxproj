@@ -6,7 +6,56 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		4D1A00012E00000000000051 /* MusculationWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 4D1A00012E00000000000020 /* MusculationWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		4D1A00012E00000000000053 /* MusculationWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 4D1A00012E00000000000021 /* MusculationWatch.app */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		4D1A00012E00000000000055 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4D1A00012E00000000000009 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4D1A00012E00000000000030;
+			remoteInfo = MusculationWidgets;
+		};
+		4D1A00012E00000000000057 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4D1A00012E00000000000009 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4D1A00012E00000000000040;
+			remoteInfo = MusculationWatch;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		4D1A00012E00000000000050 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				4D1A00012E00000000000051 /* MusculationWidgets.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4D1A00012E00000000000052 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				4D1A00012E00000000000053 /* MusculationWatch.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		4D1A00012E00000000000020 /* MusculationWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MusculationWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		4D1A00012E00000000000021 /* MusculationWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MusculationWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D1A00012E00000000000001 /* Musculation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Musculation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -16,10 +65,39 @@
 			path = Musculation;
 			sourceTree = "<group>";
 		};
+		4D1A00012E00000000000022 /* Shared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		4D1A00012E00000000000023 /* MusculationWidgets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = MusculationWidgets;
+			sourceTree = "<group>";
+		};
+		4D1A00012E00000000000024 /* MusculationWatch */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = MusculationWatch;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		4D1A00012E00000000000003 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4D1A00012E00000000000032 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4D1A00012E00000000000042 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -33,6 +111,9 @@
 			isa = PBXGroup;
 			children = (
 				4D1A00012E00000000000002 /* Musculation */,
+				4D1A00012E00000000000022 /* Shared */,
+				4D1A00012E00000000000023 /* MusculationWidgets */,
+				4D1A00012E00000000000024 /* MusculationWatch */,
 				4D1A00012E00000000000005 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,6 +122,8 @@
 			isa = PBXGroup;
 			children = (
 				4D1A00012E00000000000001 /* Musculation.app */,
+				4D1A00012E00000000000020 /* MusculationWidgets.appex */,
+				4D1A00012E00000000000021 /* MusculationWatch.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -55,19 +138,70 @@
 				4D1A00012E00000000000007 /* Sources */,
 				4D1A00012E00000000000003 /* Frameworks */,
 				4D1A00012E00000000000008 /* Resources */,
+				4D1A00012E00000000000050 /* Embed Foundation Extensions */,
+				4D1A00012E00000000000052 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				4D1A00012E00000000000054 /* PBXTargetDependency */,
+				4D1A00012E00000000000056 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				4D1A00012E00000000000002 /* Musculation */,
+				4D1A00012E00000000000022 /* Shared */,
 			);
 			name = Musculation;
 			packageProductDependencies = (
 			);
 			productName = Musculation;
 			productReference = 4D1A00012E00000000000001 /* Musculation.app */;
+			productType = "com.apple.product-type.application";
+		};
+		4D1A00012E00000000000030 /* MusculationWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4D1A00012E00000000000034 /* Build configuration list for PBXNativeTarget "MusculationWidgets" */;
+			buildPhases = (
+				4D1A00012E00000000000031 /* Sources */,
+				4D1A00012E00000000000032 /* Frameworks */,
+				4D1A00012E00000000000033 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				4D1A00012E00000000000022 /* Shared */,
+				4D1A00012E00000000000023 /* MusculationWidgets */,
+			);
+			name = MusculationWidgets;
+			packageProductDependencies = (
+			);
+			productName = MusculationWidgets;
+			productReference = 4D1A00012E00000000000020 /* MusculationWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		4D1A00012E00000000000040 /* MusculationWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4D1A00012E00000000000044 /* Build configuration list for PBXNativeTarget "MusculationWatch" */;
+			buildPhases = (
+				4D1A00012E00000000000041 /* Sources */,
+				4D1A00012E00000000000042 /* Frameworks */,
+				4D1A00012E00000000000043 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				4D1A00012E00000000000022 /* Shared */,
+				4D1A00012E00000000000024 /* MusculationWatch */,
+			);
+			name = MusculationWatch;
+			packageProductDependencies = (
+			);
+			productName = MusculationWatch;
+			productReference = 4D1A00012E00000000000021 /* MusculationWatch.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -81,6 +215,12 @@
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					4D1A00012E00000000000006 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					4D1A00012E00000000000030 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					4D1A00012E00000000000040 = {
 						CreatedOnToolsVersion = 16.0;
 					};
 				};
@@ -100,12 +240,28 @@
 			projectRoot = "";
 			targets = (
 				4D1A00012E00000000000006 /* Musculation */,
+				4D1A00012E00000000000030 /* MusculationWidgets */,
+				4D1A00012E00000000000040 /* MusculationWatch */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		4D1A00012E00000000000008 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4D1A00012E00000000000033 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4D1A00012E00000000000043 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -122,7 +278,34 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4D1A00012E00000000000031 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4D1A00012E00000000000041 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		4D1A00012E00000000000054 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4D1A00012E00000000000030 /* MusculationWidgets */;
+			targetProxy = 4D1A00012E00000000000055 /* PBXContainerItemProxy */;
+		};
+		4D1A00012E00000000000056 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4D1A00012E00000000000040 /* MusculationWatch */;
+			targetProxy = 4D1A00012E00000000000057 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		4D1A00012E0000000000000C /* Debug */ = {
@@ -186,6 +369,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Musculation;
+				CODE_SIGN_ENTITLEMENTS = Config/Musculation.entitlements;
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "La caméra sert à scanner le code-barres des produits que tu manges ou achètes.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -195,7 +380,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0;
+				MARKETING_VERSION = 4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.matthieumdb.musculation;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -214,6 +399,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Musculation;
+				CODE_SIGN_ENTITLEMENTS = Config/Musculation.entitlements;
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "La caméra sert à scanner le code-barres des produits que tu manges ou achètes.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -223,12 +410,116 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0;
+				MARKETING_VERSION = 4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.matthieumdb.musculation;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		4D1A00012E00000000000035 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Config/MusculationWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 9;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/MusculationWidgets-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Musculation;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 4.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.matthieumdb.musculation.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		4D1A00012E00000000000036 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Config/MusculationWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 9;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/MusculationWidgets-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Musculation;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 4.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.matthieumdb.musculation.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		4D1A00012E00000000000045 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 9;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Musculation;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.matthieumdb.musculation;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 4.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.matthieumdb.musculation.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+		4D1A00012E00000000000046 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 9;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Musculation;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.matthieumdb.musculation;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 4.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.matthieumdb.musculation.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Release;
 		};
@@ -249,6 +540,24 @@
 			buildConfigurations = (
 				4D1A00012E0000000000000E /* Debug */,
 				4D1A00012E0000000000000F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4D1A00012E00000000000034 /* Build configuration list for PBXNativeTarget "MusculationWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4D1A00012E00000000000035 /* Debug */,
+				4D1A00012E00000000000036 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4D1A00012E00000000000044 /* Build configuration list for PBXNativeTarget "MusculationWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4D1A00012E00000000000045 /* Debug */,
+				4D1A00012E00000000000046 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

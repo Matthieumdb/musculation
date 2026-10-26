@@ -15,6 +15,10 @@ struct WorkoutTabView: View {
             }
         }
         .animation(.appSpring, value: activeWorkouts.isEmpty)
+        .onChange(of: activeWorkouts.isEmpty, initial: true) { _, isEmpty in
+            // Also clears the watch and the lock screen when a workout ends elsewhere
+            if isEmpty { WorkoutLiveSync.shared.end() }
+        }
         .sheet(item: $summary) { WorkoutSummaryView(summary: $0) }
     }
 }

@@ -3,6 +3,10 @@ import SwiftData
 
 @main
 struct MusculationApp: App {
+    init() {
+        WorkoutLiveSync.shared.activate()
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()

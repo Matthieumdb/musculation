@@ -88,6 +88,10 @@ struct ActiveWorkoutView: View {
                 RestNotifier.cancel()
             }
         }
+        .onChange(of: workout.live(restEnd: restEndDate, restTotal: restTotal), initial: true) { _, live in
+            WorkoutLiveSync.shared.publish(live)
+        }
+        .onReceive(WorkoutLiveSync.shared.commands) { apply($0) }
         .navigationTitle("Séance en cours")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -137,6 +141,7 @@ struct ActiveWorkoutView: View {
             Button("Abandonner", role: .destructive) {
                 restEndDate = nil
                 RestNotifier.cancel()
+                WorkoutLiveSync.shared.end()
                 workout.discard(in: context)
             }
         } message: {
@@ -164,10 +169,30 @@ struct ActiveWorkoutView: View {
         }
     }
 
+    /// A tap made on the Apple Watch.
+    private func apply(_ command: WatchCommand) {
+        switch command {
+        case .complete(let e, let s):
+            let entries = workout.orderedExercises
+            guard entries.indices.contains(e) else { return }
+            let sets = entries[e].orderedSets
+            guard sets.indices.contains(s), !sets[s].isCompleted else { return }
+            withAnimation(.appSpring) { sets[s].isCompleted = true }
+            startRest(seconds: entries[e].restSeconds)
+        case .addRest:
+            guard let restEndDate else { return }
+            restTotal += 30
+            withAnimation(.appSpring) { self.restEndDate = max(restEndDate, .now).addingTimeInterval(30) }
+        case .skipRest:
+            withAnimation(.appSpring) { restEndDate = nil }
+        }
+    }
+
     private func finish() {
         let summary = WorkoutSummary(workout: workout)
         restEndDate = nil
         RestNotifier.cancel()
+        WorkoutLiveSync.shared.end()
         workout.finish(in: context)
         if summary.setCount > 0 {
             onFinish(summary)
