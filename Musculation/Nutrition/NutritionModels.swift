@@ -323,6 +323,14 @@ struct NutritionSettings: Codable, Hashable {
     var prefs: [String: Int] = [:]
     var adj = Adjustment()
     var currency = "€"
+    /// Today's training adjustment, filled in from the workouts when read through the store. Never saved.
+    var training: TrainingDay?
+}
+
+/// Calories added on a training day, or taken off a rest day so the week keeps the same average.
+struct TrainingDay: Codable, Hashable {
+    var kcal: Double
+    var trained: Bool
 }
 
 /// A line of the weekly grocery list.

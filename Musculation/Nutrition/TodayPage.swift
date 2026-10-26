@@ -91,6 +91,15 @@ private struct DayCard: View {
                     .contentTransition(.numericText())
             }
 
+            if let training = store.training {
+                Label(training.trained
+                      ? "Jour de séance : +\(Int(training.kcal)) kcal, en glucides"
+                      : "Jour de repos : \(Int(training.kcal)) kcal pour équilibrer tes séances de la semaine",
+                      systemImage: training.trained ? "dumbbell.fill" : "bed.double.fill")
+                    .font(.footnote)
+                    .foregroundStyle(training.trained ? Color.green : Color.secondary)
+            }
+
             if alert {
                 Label("Il te manque \(protLeft) g de protéines ce soir : un skyr, du poulet ou une dose de whey.", systemImage: "exclamationmark.circle.fill")
                     .font(.footnote)

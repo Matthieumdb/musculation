@@ -46,9 +46,20 @@ final class NutritionStore {
 
     // MARK: Shortcuts
 
+    /// Today's training adjustment, kept up to date from the workouts by `ContentView`.
+    var training: TrainingDay?
+
     var settings: NutritionSettings {
-        get { state.settings }
-        set { state.settings = newValue }
+        get {
+            var s = state.settings
+            s.training = training
+            return s
+        }
+        set {
+            var s = newValue
+            s.training = nil
+            state.settings = s
+        }
     }
 
     var todayLog: [LogEntry] {

@@ -1,4 +1,5 @@
 import Foundation
+import SwiftData
 
 /// Calculations ported from Portion: targets, scoring, aisles, portion solver, recipes and stats.
 enum NutritionEngine {}
@@ -88,8 +89,19 @@ extension NutritionSettings {
         return EnergyBreakdown(bmr: bmr, tdee: tdee, targets: Macros(kcal: kcal, p: prot, c: carbs, f: fat))
     }
 
-    var dayTargets: Macros {
+    /// Targets of an average day, before the training adjustment.
+    var baseTargets: Macros {
         manual.on ? manual.macros : computedTargets().targets
+    }
+
+    /// Today's targets: the training adjustment goes to carbs, protein and fat stay put.
+    var dayTargets: Macros {
+        var t = baseTargets
+        if let training, training.kcal != 0 {
+            t.kcal = max(0, t.kcal + training.kcal)
+            t.c = max(0, (t.c + training.kcal / 4).rounded())
+        }
+        return t
     }
 
     private var carbShare: Double {
@@ -707,5 +719,37 @@ struct DayStat: Identifiable {
     /// Calories between 90 and 105 % of the target, and protein at least 90 %.
     func onTarget(_ t: Macros) -> Bool {
         logged && macros.kcal >= t.kcal * 0.9 && macros.kcal <= t.kcal * 1.05 && macros.p >= t.p * 0.9
+    }
+}
+
+// MARK: - Training days
+
+enum TrainingLoad {
+    /// Net cost of a strength session, about 5 kcal a minute, kept between 100 and 400.
+    static func cost(minutes: Double) -> Double {
+        min(400, max(100, minutes * 5))
+    }
+
+    /// Bonus when there is a workout today (the usual cost while it runs), otherwise the rest-day
+    /// reduction that spreads the week's bonuses over the days off. Nil without any recent workout.
+    @MainActor
+    static func today(_ workouts: [Workout], now: Date = .now) -> TrainingDay? {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: now)
+        guard let since = calendar.date(byAdding: .day, value: -28, to: today) else { return nil }
+        let todays = workouts.filter { calendar.isDate($0.startedAt, inSameDayAs: now) }
+        let recent = workouts.filter { $0.endedAt != nil && $0.startedAt >= since && $0.startedAt < today }
+        let usual = recent.isEmpty ? 220 : recent.reduce(0) { $0 + cost(minutes: $1.duration / 60) } / Double(recent.count)
+
+        if !todays.isEmpty {
+            let done = todays.filter { $0.endedAt != nil }
+            let kcal = done.isEmpty ? usual : done.reduce(0) { $0 + cost(minutes: $1.duration / 60) }
+            return TrainingDay(kcal: (min(500, kcal) / 10).rounded() * 10, trained: true)
+        }
+        let days = Set(recent.map { calendar.startOfDay(for: $0.startedAt) }).count
+        let perWeek = min(6, Double(days) / 4)
+        guard perWeek > 0 else { return nil }
+        let rest = min(250, usual * perWeek / (7 - perWeek))
+        return TrainingDay(kcal: -(rest / 10).rounded() * 10, trained: false)
     }
 }

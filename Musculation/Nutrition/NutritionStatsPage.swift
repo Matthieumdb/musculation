@@ -31,7 +31,7 @@ struct NutritionStatsPage: View {
         let n = store.state.statPeriod
         let weights = NutritionStore.weightsByDay(entries)
         let settings = store.settings
-        let t = settings.dayTargets
+        let t = settings.baseTargets
         let tdee: Double? = settings.manual.on ? nil : settings.computedTargets().tdee
         let all = store.dayStats(n, weights: weights)
         let logged = all.filter(\.logged)

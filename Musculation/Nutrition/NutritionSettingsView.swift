@@ -14,7 +14,7 @@ struct NutritionSettingsView: View {
     var body: some View {
         @Bindable var store = store
         let breakdown = store.settings.computedTargets()
-        let targets = store.settings.dayTargets
+        let targets = store.settings.baseTargets
 
         NavigationStack {
             Form {
