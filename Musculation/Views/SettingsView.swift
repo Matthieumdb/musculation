@@ -7,6 +7,8 @@ struct SettingsView: View {
     @AppStorage(AppSettings.restDurationKey) private var restDuration = AppSettings.defaultRestDuration
     @AppStorage(AppSettings.progressionPercentKey) private var progressionPercent = AppSettings.defaultProgressionPercent
     @AppStorage(AppSettings.barWeightKey) private var barWeight = AppSettings.defaultBarWeight
+    @AppStorage(AppSettings.appearanceKey) private var appearance = Appearance.light
+    @AppStorage(WeeklyRecapNotifier.enabledKey) private var weeklyRecap = true
 
     @State private var exportURL: URL?
     @State private var isImporting = false
@@ -17,6 +19,30 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
+                Section {
+                    NavigationLink {
+                        ExerciseListView()
+                    } label: {
+                        Label("Exercices", systemImage: "list.bullet")
+                    }
+                    NavigationLink {
+                        LibraryView()
+                    } label: {
+                        Label("Bibliothèque d'exercices", systemImage: "books.vertical")
+                    }
+                }
+
+                Section("Affichage") {
+                    Picker("Apparence", selection: $appearance) {
+                        ForEach(Appearance.allCases) { Text($0.label).tag($0) }
+                    }
+                    Toggle("Bilan du dimanche soir", isOn: $weeklyRecap)
+                        .onChange(of: weeklyRecap) {
+                            if weeklyRecap { RestNotifier.requestAuthorization() }
+                            WeeklyRecapNotifier.schedule()
+                        }
+                }
+
                 Section {
                     Picker("Temps de repos", selection: $restDuration) {
                         ForEach(AppSettings.restOptions, id: \.self) { seconds in
@@ -53,7 +79,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Sauvegarde")
                 } footer: {
-                    Text("Tes données sont uniquement sur cet iPhone. Exporte-les de temps en temps vers Fichiers ou iCloud Drive, surtout avant de réinstaller l'app.")
+                    Text("Tes séances, tes pesées et ta nutrition sont uniquement sur cet iPhone. Exporte-les de temps en temps vers Fichiers ou iCloud Drive, surtout avant de réinstaller l'app.")
                 }
 
                 Section {

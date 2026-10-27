@@ -17,7 +17,7 @@ enum RestNotifier {
 
         let content = UNMutableNotificationContent()
         content.title = "Repos terminé"
-        content.body = "C'est reparti pour la série suivante 💪"
+        content.body = "C'est reparti pour la série suivante."
         content.sound = .default
 
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: interval, repeats: false)

@@ -19,10 +19,11 @@ jobs:
           xcodebuild -version
       - name: Build for iOS Simulator
         run: |
+          # The scheme builds the widget extension and the watch app for their own platforms
           xcodebuild build \
             -project Musculation.xcodeproj \
-            -target Musculation \
-            -sdk iphonesimulator \
+            -scheme Musculation \
+            -destination 'generic/platform=iOS Simulator' \
             -configuration Debug \
             CODE_SIGNING_ALLOWED=NO
 
@@ -40,10 +41,10 @@ jobs:
           xcodebuild -version
       - name: Build for iPhone (unsigned)
         run: |
+          # No -sdk: the watch app is built with its own watchOS SDK
           xcodebuild build \
             -project Musculation.xcodeproj \
             -target Musculation \
-            -sdk iphoneos \
             -configuration Release \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
@@ -56,6 +57,12 @@ jobs:
           echo "IPA=$IPA" >> "$GITHUB_ENV"
           mkdir -p Payload
           cp -R build/Release-iphoneos/Musculation.app Payload/
+          # Ad-hoc signatures carry the App Group entitlement, which the sideloading tool re-signs
+          APP=Payload/Musculation.app
+          ls "$APP/PlugIns" "$APP/Watch"
+          codesign --force --sign - --entitlements Config/MusculationWidgets.entitlements "$APP/PlugIns/MusculationWidgets.appex"
+          codesign --force --sign - "$APP/Watch/MusculationWatch.app"
+          codesign --force --sign - --entitlements Config/Musculation.entitlements "$APP"
           zip -qry "$IPA" Payload
       - uses: actions/upload-artifact@v4
         with:

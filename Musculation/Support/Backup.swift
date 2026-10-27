@@ -9,6 +9,11 @@ struct Backup: Codable {
     var workouts: [WorkoutRecord]
     var templates: [TemplateRecord]
     var bodyWeights: [BodyWeightRecord]
+    /// Missing in backups made before they existed.
+    var measurements: [MeasurementRecord]?
+    var checkIns: [CheckInRecord]?
+    /// Nutrition data; missing in backups made before it existed.
+    var nutrition: NutritionState?
 
     struct ExerciseRecord: Codable {
         var name: String
@@ -23,6 +28,7 @@ struct Backup: Codable {
         var reps: Int
         var weight: Double
         var isCompleted: Bool
+        var kind: String?
     }
 
     struct WorkoutExerciseRecord: Codable {
@@ -31,6 +37,7 @@ struct Backup: Codable {
         var minReps: Int?
         var restSeconds: Int?
         var note: String?
+        var supersetGroup: Int?
         var sets: [SetRecord]
     }
 
@@ -62,8 +69,28 @@ struct Backup: Codable {
         var date: Date
         var weight: Double
     }
+
+    struct MeasurementRecord: Codable {
+        var date: Date
+        var kind: String
+        var value: Double
+    }
+
+    struct CheckInRecord: Codable {
+        var day: String
+        var sleepHours: Double?
+        var sleepQuality: Int?
+        var energy: Int?
+        var soreness: Int?
+        var stress: Int?
+        var water: Int
+        var alcohol: Int
+        var caffeine: Int
+        var note: String
+    }
 }
 
+@MainActor
 enum BackupService {
     static func makeBackup(from context: ModelContext) throws -> Backup {
         let exercises = try context.fetch(FetchDescriptor<Exercise>(sortBy: [SortDescriptor(\.name)]))
@@ -73,6 +100,8 @@ enum BackupService {
         ))
         let templates = try context.fetch(FetchDescriptor<WorkoutTemplate>(sortBy: [SortDescriptor(\.createdAt)]))
         let bodyWeights = try context.fetch(FetchDescriptor<BodyWeightEntry>(sortBy: [SortDescriptor(\.date)]))
+        let measurements = try context.fetch(FetchDescriptor<BodyMeasurement>(sortBy: [SortDescriptor(\.date)]))
+        let checkIns = try context.fetch(FetchDescriptor<DailyCheckIn>(sortBy: [SortDescriptor(\.day)]))
 
         return Backup(
             version: 1,
@@ -93,8 +122,9 @@ enum BackupService {
                             minReps: entry.minReps,
                             restSeconds: entry.restSeconds,
                             note: entry.note,
+                            supersetGroup: entry.supersetGroup,
                             sets: entry.orderedSets.map {
-                                Backup.SetRecord(rpe: $0.rpe, reps: $0.reps, weight: $0.weight, isCompleted: $0.isCompleted)
+                                Backup.SetRecord(rpe: $0.rpe, reps: $0.reps, weight: $0.weight, isCompleted: $0.isCompleted, kind: $0.kindRaw)
                             }
                         )
                     }
@@ -117,7 +147,14 @@ enum BackupService {
                     }
                 )
             },
-            bodyWeights: bodyWeights.map { Backup.BodyWeightRecord(date: $0.date, weight: $0.weight) }
+            bodyWeights: bodyWeights.map { Backup.BodyWeightRecord(date: $0.date, weight: $0.weight) },
+            measurements: measurements.map { Backup.MeasurementRecord(date: $0.date, kind: $0.kindRaw, value: $0.value) },
+            checkIns: checkIns.map {
+                Backup.CheckInRecord(day: $0.day, sleepHours: $0.sleepHours, sleepQuality: $0.sleepQuality, energy: $0.energy,
+                                     soreness: $0.soreness, stress: $0.stress, water: $0.water, alcohol: $0.alcohol,
+                                     caffeine: $0.caffeine, note: $0.note)
+            },
+            nutrition: NutritionStore.shared.state
         )
     }
 
@@ -146,6 +183,8 @@ enum BackupService {
         try context.fetch(FetchDescriptor<Workout>()).forEach { context.delete($0) }
         try context.fetch(FetchDescriptor<WorkoutTemplate>()).forEach { context.delete($0) }
         try context.fetch(FetchDescriptor<BodyWeightEntry>()).forEach { context.delete($0) }
+        try context.fetch(FetchDescriptor<BodyMeasurement>()).forEach { context.delete($0) }
+        try context.fetch(FetchDescriptor<DailyCheckIn>()).forEach { context.delete($0) }
         try context.save()
         try context.fetch(FetchDescriptor<Exercise>()).forEach { context.delete($0) }
         try context.save()
@@ -177,10 +216,12 @@ enum BackupService {
                 entry.minReps = entryRecord.minReps
                 entry.restSeconds = entryRecord.restSeconds
                 entry.note = entryRecord.note
+                entry.supersetGroup = entryRecord.supersetGroup
                 for setRecord in entryRecord.sets {
                     let set = entry.addSet(reps: setRecord.reps, weight: setRecord.weight, in: context)
                     set.isCompleted = setRecord.isCompleted
                     set.rpe = setRecord.rpe
+                    set.kindRaw = setRecord.kind
                 }
             }
         }
@@ -204,7 +245,27 @@ enum BackupService {
         for record in backup.bodyWeights {
             context.insert(BodyWeightEntry(date: record.date, weight: record.weight))
         }
+        for record in backup.measurements ?? [] {
+            context.insert(BodyMeasurement(date: record.date, kind: MeasurementKind(rawValue: record.kind) ?? .waist, value: record.value))
+        }
+        for record in backup.checkIns ?? [] {
+            let entry = DailyCheckIn(day: record.day)
+            context.insert(entry)
+            entry.sleepHours = record.sleepHours
+            entry.sleepQuality = record.sleepQuality
+            entry.energy = record.energy
+            entry.soreness = record.soreness
+            entry.stress = record.stress
+            entry.water = record.water
+            entry.alcohol = record.alcohol
+            entry.caffeine = record.caffeine
+            entry.note = record.note
+        }
 
         try context.save()
+
+        if let nutrition = backup.nutrition {
+            NutritionStore.shared.replace(with: nutrition)
+        }
     }
 }

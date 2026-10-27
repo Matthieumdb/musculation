@@ -25,6 +25,11 @@ struct HistoryView: View {
     var body: some View {
         NavigationStack {
             List {
+                if !workouts.isEmpty {
+                    Section {
+                        WorkoutCalendar(days: Set(workouts.map { Calendar.current.startOfDay(for: $0.startedAt) }))
+                    }
+                }
                 ForEach(sections) { section in
                     Section {
                         ForEach(section.workouts) { workout in
@@ -101,6 +106,9 @@ struct WorkoutDetailView: View {
     @Environment(\.modelContext) private var context
     @Bindable var workout: Workout
     @State private var didCreateTemplate = false
+    @State private var didRepeat = false
+    @State private var shareImage: Image?
+    @Query(filter: #Predicate<Workout> { $0.endedAt == nil }) private var activeWorkouts: [Workout]
 
     var body: some View {
         List {
@@ -123,8 +131,8 @@ struct WorkoutDetailView: View {
                 Section {
                     ForEach(Array(entry.orderedSets.enumerated()), id: \.element.id) { pair in
                         HStack {
-                            Text("Série \(pair.offset + 1)")
-                                .foregroundStyle(.secondary)
+                            Text(pair.element.kind == .normal ? "Série \(pair.offset + 1)" : pair.element.kind.label)
+                                .foregroundStyle(pair.element.kind == .warmup ? Color.orange : Color.secondary)
                             Spacer()
                             Text("\(pair.element.weight.kgText) × \(pair.element.reps)")
                                 .monospacedDigit()
@@ -147,23 +155,65 @@ struct WorkoutDetailView: View {
                 TextField("Ressenti, douleurs, sommeil…", text: $workout.notes, axis: .vertical)
                     .lineLimit(2...8)
             }
+
+            Section("Horaires") {
+                DatePicker("Début", selection: $workout.startedAt)
+                DatePicker("Fin", selection: Binding(
+                    get: { workout.endedAt ?? workout.startedAt },
+                    set: { workout.endedAt = max($0, workout.startedAt) }
+                ), in: workout.startedAt...)
+            }
         }
         .navigationTitle(workout.title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Menu {
+                    Button("Refaire cette séance", systemImage: "arrow.clockwise") { repeatWorkout() }
                     Button("Enregistrer comme modèle", systemImage: "square.on.square") { createTemplate() }
+                    if let shareImage {
+                        ShareLink(item: shareImage, preview: SharePreview(workout.title, image: shareImage)) {
+                            Label("Partager", systemImage: "square.and.arrow.up")
+                        }
+                    }
                 } label: {
-                    Image(systemName: "ellipsis.circle")
+                    Label("Options", systemImage: "ellipsis.circle")
                 }
             }
+        }
+        .task { shareImage = WorkoutShareCard.render(workout) }
+        .alert("Séance démarrée", isPresented: $didRepeat) {
+            Button("OK") {}
+        } message: {
+            Text("Elle t'attend dans l'onglet Séance, avec les charges de cette fois-ci.")
         }
         .alert("Modèle créé", isPresented: $didCreateTemplate) {
             Button("OK") {}
         } message: {
             Text("Retrouve « \(workout.title) » dans l'onglet Séance.")
         }
+    }
+
+    /// Starts a new workout with the same exercises and number of sets.
+    private func repeatWorkout() {
+        guard activeWorkouts.isEmpty else { return }
+        let copy = Workout(title: workout.title)
+        context.insert(copy)
+        for entry in workout.orderedExercises {
+            guard let exercise = entry.exercise else { continue }
+            let added = copy.addExercise(
+                exercise,
+                targetSets: max(entry.sets.filter { $0.kind != .warmup }.count, 1),
+                targetReps: entry.targetReps,
+                minReps: entry.minReps,
+                restSeconds: entry.restSeconds,
+                note: entry.note,
+                in: context
+            )
+            added.supersetGroup = entry.supersetGroup
+        }
+        try? context.save()
+        didRepeat = true
     }
 
     private func createTemplate() {
@@ -180,5 +230,123 @@ struct WorkoutDetailView: View {
         }
         try? context.save()
         didCreateTemplate = true
+    }
+}
+
+/// Month grid with a dot on each training day, as in Hevy's profile.
+private struct WorkoutCalendar: View {
+    let days: Set<Date>
+    @State private var month = Calendar.current.dateInterval(of: .month, for: .now)?.start ?? .now
+
+    var body: some View {
+        let calendar = Calendar.current
+        let range = calendar.range(of: .day, in: .month, for: month) ?? 1..<31
+        let firstWeekday = calendar.component(.weekday, from: month)
+        let leading = (firstWeekday - calendar.firstWeekday + 7) % 7
+        let cells: [Date?] = Array(repeating: nil, count: leading) + range.compactMap { calendar.date(byAdding: .day, value: $0 - 1, to: month) }
+        let count = cells.compactMap { $0 }.filter { days.contains($0) }.count
+        let symbols = calendar.veryShortStandaloneWeekdaySymbols
+        let ordered = Array(symbols[(calendar.firstWeekday - 1)...] + symbols[..<(calendar.firstWeekday - 1)])
+
+        VStack(spacing: 10) {
+            HStack {
+                Text(month.formatted(.dateTime.month(.wide).year()).capitalized).font(.headline)
+                Text("· \(count) séance\(count > 1 ? "s" : "")").font(.subheadline).foregroundStyle(.secondary)
+                Spacer()
+                Button { shift(-1) } label: { Image(systemName: "chevron.left") }
+                    .accessibilityLabel("Mois précédent")
+                Button { shift(1) } label: { Image(systemName: "chevron.right") }
+                    .accessibilityLabel("Mois suivant")
+                    .disabled(calendar.isDate(month, equalTo: .now, toGranularity: .month))
+            }
+            .buttonStyle(.borderless)
+            .font(.headline)
+
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 4), count: 7), spacing: 6) {
+                ForEach(Array(ordered.enumerated()), id: \.offset) { _, symbol in
+                    Text(symbol).font(.caption2.weight(.semibold)).foregroundStyle(.secondary)
+                }
+                ForEach(Array(cells.enumerated()), id: \.offset) { _, day in
+                    if let day {
+                        let trained = days.contains(day)
+                        Text("\(calendar.component(.day, from: day))")
+                            .font(.footnote.weight(trained ? .bold : .regular))
+                            .monospacedDigit()
+                            .frame(width: 30, height: 30)
+                            .foregroundStyle(trained ? Color.white : (calendar.isDateInToday(day) ? Color.accentColor : Color.primary))
+                            .background {
+                                if trained { Circle().fill(Color.accentColor) }
+                                else if calendar.isDateInToday(day) { Circle().strokeBorder(Color.accentColor, lineWidth: 1.5) }
+                            }
+                    } else {
+                        Color.clear.frame(height: 30)
+                    }
+                }
+            }
+        }
+        .padding(.vertical, 4)
+    }
+
+    private func shift(_ months: Int) {
+        if let next = Calendar.current.date(byAdding: .month, value: months, to: month) {
+            withAnimation(.appSpring) { month = next }
+        }
+    }
+}
+
+/// Image to share a workout: title, figures and the best set of each exercise.
+struct WorkoutShareCard: View {
+    let workout: Workout
+
+    @MainActor
+    static func render(_ workout: Workout) -> Image? {
+        let renderer = ImageRenderer(content: WorkoutShareCard(workout: workout).environment(\.colorScheme, .light))
+        renderer.scale = 3
+        return renderer.uiImage.map { Image(uiImage: $0) }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Label("Musculation", systemImage: "dumbbell.fill")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(Color.accentColor)
+                Spacer()
+                Text(workout.startedAt.formatted(date: .abbreviated, time: .omitted))
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            Text(workout.title).font(.largeTitle.bold())
+            HStack(spacing: 24) {
+                figure(durationText(workout.duration), "durée")
+                figure("\(workout.setCount)", "séries")
+                figure(workout.totalVolume.kgText, "volume")
+            }
+            Divider()
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(workout.orderedExercises.prefix(8)) { entry in
+                    HStack {
+                        Text(entry.exercise?.name ?? "Exercice").lineLimit(1)
+                        Spacer()
+                        if let best = entry.bestSet {
+                            Text("\(best.weight.kgText) × \(best.reps)")
+                                .monospacedDigit()
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .font(.subheadline)
+                }
+            }
+        }
+        .padding(24)
+        .frame(width: 380)
+        .background(Color.white)
+    }
+
+    private func figure(_ value: String, _ label: String) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(value).font(.display(22))
+            Text(label).font(.caption).foregroundStyle(.secondary)
+        }
     }
 }

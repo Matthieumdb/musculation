@@ -1,39 +1,34 @@
 import SwiftUI
 
 enum Theme {
-    static let gradient = LinearGradient(
-        colors: [Color(red: 1.0, green: 0.55, blue: 0.2), Color(red: 0.84, green: 0.13, blue: 0.24)],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
+    /// The accent color with the light system gradient used by SF Symbols and widgets.
+    static let gradient = Color.accentColor.gradient
     static let background = Color(.systemGroupedBackground)
     static let card = Color(.secondarySystemGroupedBackground)
     static let field = Color(.tertiarySystemFill)
     static let accentRed = Color(red: 0.84, green: 0.13, blue: 0.24)
+    /// Matches inset grouped lists: rounder on iOS 26.
+    static let cardRadius: CGFloat = {
+        if #available(iOS 26, *) { return 26 }
+        return 12
+    }()
+
+    // Macro colors, shared by every nutrition screen
+    static let calories = Color.orange
+    static let protein = Color.blue
+    /// Amber in light mode: system yellow is too pale on white.
+    static let carbs = Color(UIColor { $0.userInterfaceStyle == .dark
+        ? .systemYellow
+        : UIColor(red: 0.86, green: 0.58, blue: 0, alpha: 1) })
+    static let fat = Color.pink
 }
 
-/// Soft colored backdrop, so that glass surfaces have something to refract.
+/// The system grouped background, as in Health, Fitness and Settings.
 struct AppBackground: View {
     var body: some View {
-        ZStack {
-            Theme.background
-            Circle()
-                .fill(Color.orange.opacity(0.30))
-                .frame(width: 360, height: 360)
-                .blur(radius: 90)
-                .offset(x: -150, y: -320)
-            Circle()
-                .fill(Theme.accentRed.opacity(0.22))
-                .frame(width: 320, height: 320)
-                .blur(radius: 90)
-                .offset(x: 170, y: -140)
-            Circle()
-                .fill(Color.purple.opacity(0.14))
-                .frame(width: 340, height: 340)
-                .blur(radius: 100)
-                .offset(x: -80, y: 340)
-        }
-        .ignoresSafeArea()
+        Theme.background
+            .ignoresSafeArea()
+            .allowsHitTesting(false)
     }
 }
 
@@ -178,7 +173,7 @@ struct StatTile: View {
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(tint)
             Text(value)
-                .font(.title2.bold())
+                .font(.display(22))
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)
                 .contentTransition(.numericText())
@@ -190,7 +185,7 @@ struct StatTile: View {
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .glassSurface(in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .background(Theme.card, in: RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous))
     }
 }
 
@@ -199,7 +194,7 @@ struct CardModifier: ViewModifier {
         content
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .glassSurface(in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+            .background(Theme.card, in: RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous))
     }
 }
 
@@ -228,5 +223,126 @@ struct PressableButtonStyle: ButtonStyle {
         configuration.label
             .scaleEffect(configuration.isPressed ? 0.94 : 1)
             .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
+    }
+}
+
+/// Section title in the style of Health and Fitness: bold, with an optional action on the right.
+struct SectionHeader<Trailing: View>: View {
+    let title: String
+    @ViewBuilder var trailing: Trailing
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline) {
+            Text(title).font(.title2.bold())
+            Spacer()
+            trailing
+                .font(.subheadline.weight(.semibold))
+        }
+    }
+}
+
+extension SectionHeader where Trailing == EmptyView {
+    init(_ title: String) {
+        self.title = title
+        self.trailing = EmptyView()
+    }
+}
+
+extension SectionHeader {
+    init(_ title: String, @ViewBuilder trailing: () -> Trailing) {
+        self.title = title
+        self.trailing = trailing()
+    }
+}
+
+/// Activity-style ring: a track and a rounded progress stroke that can go past 100 %.
+struct ProgressRing: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    let progress: Double
+    let tint: Color
+    var lineWidth: CGFloat = 14
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .stroke(tint.opacity(0.18), lineWidth: lineWidth)
+            Circle()
+                .trim(from: 0, to: min(max(progress, 0), 1))
+                .stroke(tint.gradient, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
+                .rotationEffect(.degrees(-90))
+            if progress > 1 {
+                Circle()
+                    .trim(from: 0, to: min(progress - 1, 1))
+                    .stroke(tint, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
+                    .shadow(color: .black.opacity(0.25), radius: 2)
+            }
+        }
+        .animation(reduceMotion ? nil : .appEaseSlow, value: progress)
+    }
+}
+
+/// Thin horizontal bar used for macro progress.
+struct ProgressBar: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    let progress: Double
+    let tint: Color
+    var height: CGFloat = 6
+
+    var body: some View {
+        GeometryReader { proxy in
+            ZStack(alignment: .leading) {
+                Capsule().fill(tint.opacity(0.18))
+                Capsule()
+                    .fill(tint.gradient)
+                    .frame(width: proxy.size.width * min(max(progress, 0), 1))
+            }
+        }
+        .frame(height: height)
+        .animation(reduceMotion ? nil : .appEaseSlow, value: progress)
+    }
+}
+
+extension View {
+    /// Subtitle under the large title on iOS 26, nothing before.
+    @ViewBuilder
+    func navigationSubtitleIfAvailable(_ subtitle: String) -> some View {
+        #if compiler(>=6.2)
+        if #available(iOS 26, *) {
+            navigationSubtitle(subtitle)
+        } else {
+            self
+        }
+        #else
+        self
+        #endif
+    }
+
+    /// Prominent Liquid Glass button on iOS 26, filled bordered button before.
+    @ViewBuilder
+    func glassProminentButton() -> some View {
+        #if compiler(>=6.2)
+        if #available(iOS 26, *) {
+            buttonStyle(.glassProminent)
+        } else {
+            buttonStyle(.borderedProminent)
+        }
+        #else
+        buttonStyle(.borderedProminent)
+        #endif
+    }
+
+    /// Liquid Glass button on iOS 26, bordered button before.
+    @ViewBuilder
+    func glassButton() -> some View {
+        #if compiler(>=6.2)
+        if #available(iOS 26, *) {
+            buttonStyle(.glass)
+        } else {
+            buttonStyle(.bordered)
+        }
+        #else
+        buttonStyle(.bordered)
+        #endif
     }
 }

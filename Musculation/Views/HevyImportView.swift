@@ -257,7 +257,7 @@ struct HevyImportView: View {
             }
             if let weights = HevyImport.parseBodyWeights(text) {
                 guard !weights.isEmpty else { throw HevyImport.ImportError.empty }
-                withAnimation(.snappy) { bodyWeights = weights.sorted { $0.date < $1.date } }
+                withAnimation(.appSpring) { bodyWeights = weights.sorted { $0.date < $1.date } }
                 return
             }
             let parsed = try HevyImport.parse(text)
@@ -267,7 +267,7 @@ struct HevyImportView: View {
             targets = Dictionary(uniqueKeysWithValues: names.map {
                 ($0, HevyImport.suggestedTarget(for: $0, exercises: exercises))
             })
-            withAnimation(.snappy) {
+            withAnimation(.appSpring) {
                 bodyWeights = []
                 workouts = parsed
             }

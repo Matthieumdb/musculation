@@ -4,6 +4,7 @@ import Charts
 
 struct BodyWeightView: View {
     @Environment(\.modelContext) private var context
+    @Environment(NutritionStore.self) private var nutrition
     @Query(sort: \BodyWeightEntry.date, order: .reverse) private var entries: [BodyWeightEntry]
 
     @State private var newWeight: Double?
@@ -43,6 +44,7 @@ struct BodyWeightView: View {
                     guard let newWeight, newWeight > 0 else { return }
                     context.insert(BodyWeightEntry(date: newDate, weight: newWeight))
                     try? context.save()
+                    nutrition.checkAdjustment(entries: (try? context.fetch(FetchDescriptor<BodyWeightEntry>())) ?? entries)
                     self.newWeight = nil
                     newDate = .now
                     hideKeyboard()
