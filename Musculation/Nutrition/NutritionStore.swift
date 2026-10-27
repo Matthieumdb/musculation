@@ -109,11 +109,11 @@ final class NutritionStore {
         var title: String { entries.map(\.name).joined(separator: ", ") }
     }
 
-    /// Meals of the previous days, newest first, each identical meal listed once.
+    /// Meals already eaten, today's included, newest first, each identical meal listed once.
     func pastMeals(days: Int = 60) -> [PastMeal] {
         var seen: [String: Int] = [:]
         var meals: [PastMeal] = []
-        for n in 1...days {
+        for n in 0...days {
             let day = DayKey.offset(n)
             guard let entries = state.logs[day], !entries.isEmpty else { continue }
             var slots: [String] = []

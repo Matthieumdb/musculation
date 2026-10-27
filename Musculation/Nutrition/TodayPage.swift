@@ -491,7 +491,7 @@ struct ChartPoint: Identifiable {
 
 // MARK: - Past meals
 
-/// Meals from the previous days, to log again in one tap.
+/// Meals already eaten, to log again in one tap.
 private struct PastMealsSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(NutritionStore.self) private var store
@@ -578,7 +578,10 @@ private struct PastMealRow: View {
 
     private var when: String {
         let date = DayKey.date(meal.day) ?? .now
-        let day = Calendar.current.isDateInYesterday(date) ? "Hier" : date.formatted(.dateTime.weekday(.wide).day().month()).capitalized
+        let calendar = Calendar.current
+        let day = calendar.isDateInToday(date) ? "Aujourd'hui"
+            : calendar.isDateInYesterday(date) ? "Hier"
+            : date.formatted(.dateTime.weekday(.wide).day().month()).capitalized
         return [day, slotName].compactMap { $0 }.joined(separator: " · ")
     }
 }
